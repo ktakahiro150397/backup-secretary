@@ -1,0 +1,5 @@
+runtime/
+workspace/*
+!workspace/.gitkeep
+.env
+*:Zone.Identifier

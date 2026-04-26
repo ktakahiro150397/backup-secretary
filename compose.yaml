@@ -1,0 +1,100 @@
+name: backup-secretary-hermes
+
+x-hermes-common: &hermes-common
+  image: ${HERMES_IMAGE:-backup-secretary/hermes-agent:local}
+  build:
+    context: .
+    dockerfile: docker/hermes/Dockerfile
+    args:
+      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent:latest}
+      HERMES_UID: ${HERMES_UID:-1000}
+      HERMES_GID: ${HERMES_GID:-1000}
+  restart: unless-stopped
+  environment:
+    HERMES_HOME: /opt/data
+    HOME: /opt/data
+    HERMES_EXEC_ASK: "1"
+  volumes:
+    - type: bind
+      source: ${HERMES_DATA_DIR:-./runtime/hermes-data}
+      target: /opt/data
+    - type: bind
+      source: ${HERMES_WORKSPACE_DIR:-./workspace}
+      target: /workspace
+  networks:
+    - hermes-net
+  read_only: ${HERMES_READ_ONLY:-false}
+  tmpfs:
+    - /tmp:rw,nosuid,size=512m
+    - /var/tmp:rw,noexec,nosuid,size=256m
+    - /run:rw,noexec,nosuid,size=64m
+  cap_drop:
+    - ALL
+  cap_add:
+    - CHOWN
+    - SETGID
+    - SETUID
+  security_opt:
+    - no-new-privileges:true
+  pids_limit: 256
+  mem_limit: ${HERMES_MEMORY_LIMIT:-4g}
+  cpus: ${HERMES_CPU_LIMIT:-2}
+  shm_size: ${HERMES_SHM_SIZE:-1g}
+
+services:
+  hermes:
+    <<: *hermes-common
+    container_name: ${HERMES_CONTAINER_NAME:-backup-secretary-hermes}
+    command: gateway run
+    ports:
+      - "${HERMES_GATEWAY_BIND:-127.0.0.1}:${HERMES_GATEWAY_PORT:-8642}:8642"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "pgrep -f 'hermes gateway run' >/dev/null"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  dashboard:
+    <<: *hermes-common
+    container_name: ${HERMES_DASHBOARD_CONTAINER_NAME:-backup-secretary-hermes-dashboard}
+    command: dashboard --host 0.0.0.0 --insecure
+    profiles:
+      - dashboard
+    ports:
+      - "${HERMES_DASHBOARD_BIND:-127.0.0.1}:${HERMES_DASHBOARD_PORT:-9119}:9119"
+    environment:
+      HERMES_HOME: /opt/data
+      HOME: /opt/data
+      GATEWAY_HEALTH_URL: http://hermes:8642
+      GATEWAY_HEALTH_TIMEOUT: ${GATEWAY_HEALTH_TIMEOUT:-3}
+    depends_on:
+      - hermes
+    mem_limit: ${HERMES_DASHBOARD_MEMORY_LIMIT:-512m}
+    cpus: ${HERMES_DASHBOARD_CPU_LIMIT:-0.5}
+
+  setup:
+    <<: *hermes-common
+    container_name: ${HERMES_SETUP_CONTAINER_NAME:-backup-secretary-hermes-setup}
+    command: setup
+    profiles:
+      - setup
+    restart: "no"
+    stdin_open: true
+    tty: true
+
+  cli:
+    <<: *hermes-common
+    container_name: ${HERMES_CLI_CONTAINER_NAME:-backup-secretary-hermes-cli}
+    command: bash
+    profiles:
+      - cli
+    restart: "no"
+    stdin_open: true
+    tty: true
+
+networks:
+  hermes-net:
+    driver: bridge
