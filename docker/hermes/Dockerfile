@@ -5,6 +5,11 @@ ARG HERMES_UID=1000
 ARG HERMES_GID=1000
 
 RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends gh; \
+    rm -rf /var/lib/apt/lists/*; \
+    npm install -g @openai/codex; \
+    npm cache clean --force; \
     if [ "$HERMES_GID" != "$(id -g hermes)" ]; then \
       groupmod -o -g "$HERMES_GID" hermes; \
     fi; \
