@@ -6,7 +6,7 @@ author: backup-secretary
 license: MIT
 metadata:
   hermes:
-    tags: [web-research, delegation, subagent, openrouter, gemma]
+    tags: [web-research, delegation, subagent, google, gemma]
     related_skills: [hermes-agent]
 ---
 
@@ -61,10 +61,11 @@ Initial entry:
   "gemma": {
     "display_name": "三崎ほの",
     "call_name": "ほの",
-    "provider": "openrouter",
-    "model": "google/gemma-4-31b-it",
+    "provider": "google",
+    "model": "gemma-4-31b-it",
     "toolsets": ["web"],
-    "purpose": "Web-heavy/token-heavy research, broad source gathering, first-pass summaries"
+    "purpose": "Web-heavy/token-heavy research, broad source gathering, first-pass summaries",
+    "notes": "Call Google directly, not OpenRouter, to avoid OpenRouter charges."
   }
 }
 ```
@@ -96,8 +97,10 @@ Dry-run the generated Hermes command:
 python3 skills/research/web-research-agents/scripts/web_research_agent.py \
   --agent gemma \
   --dry-run \
-  "OpenRouterでtool calling対応のQwenモデルを調べて"
+  "Hermes Agentのprofile機能とdelegate_taskの違いを一次情報ベースで調べて"
 ```
+
+Gemma is configured to use `--provider google -m gemma-4-31b-it`, matching the existing `delegation` config and avoiding OpenRouter charges.
 
 Run Gemma web research:
 
@@ -148,15 +151,16 @@ Add entries to `templates/agents.json`:
 }
 ```
 
-Before adding an OpenRouter model for web work, check whether the exact model advertises tool support. Model-family names are not enough; support differs by exact SKU.
+Before adding an OpenRouter model for web work, check whether the exact model advertises tool support. Model-family names are not enough; support differs by exact SKU. For Gemma, prefer the direct `google` provider unless the user explicitly approves OpenRouter usage.
 
 ## Common Pitfalls
 
 1. **Assuming the model browses by itself.** It does not. Hermes must expose `web_search` / `web_extract` through the `web` toolset, and the selected model/provider must support tool calls.
-2. **Putting secrets in the catalog.** The catalog should contain provider/model/toolset metadata only. API keys stay in Hermes `.env` / provider config.
-3. **Treating worker output as verified truth.** The worker is a source-gathering assistant. The parent agent owns final judgment and verification.
-4. **Using this for every tiny lookup.** For one or two simple current facts, direct `web_search` is cheaper and less fragile.
-5. **Expecting current-session skill discovery to update immediately.** New/edited skills may require a new Hermes session before `skill_view` sees them by name.
+2. **Accidentally routing Gemma through OpenRouter.** Use `provider: google` and `model: gemma-4-31b-it` for the default Gemma worker, matching `delegation.model` / `delegation.provider` and avoiding OpenRouter charges.
+3. **Putting secrets in the catalog.** The catalog should contain provider/model/toolset metadata only. API keys stay in Hermes `.env` / provider config.
+4. **Treating worker output as verified truth.** The worker is a source-gathering assistant. The parent agent owns final judgment and verification.
+5. **Using this for every tiny lookup.** For one or two simple current facts, direct `web_search` is cheaper and less fragile.
+6. **Expecting current-session skill discovery to update immediately.** New/edited skills may require a new Hermes session before `skill_view` sees them by name.
 
 ## Verification Checklist
 
