@@ -107,15 +107,15 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 2
+        "completed": 3
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-04-29T12:00:00+00:00",
-      "last_run_at": "2026-04-28T12:00:40.696630+00:00",
+      "next_run_at": "2026-04-30T12:00:00+00:00",
+      "last_run_at": "2026-04-29T12:00:36.764660+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -148,17 +148,17 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 1
+        "completed": 2
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-28T06:44:35.643862+00:00",
-      "next_run_at": "2026-04-29T12:00:00+00:00",
-      "last_run_at": "2026-04-28T12:05:59.526765+00:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-04-30T12:00:00+00:00",
+      "last_run_at": "2026-04-29T12:01:03.444883+00:00",
+      "last_status": "error",
+      "last_error": "Agent completed but produced empty response (model error, timeout, or misconfiguration)",
       "last_delivery_error": null,
       "deliver": "origin",
       "origin": {
@@ -198,7 +198,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-04-29T15:00:00+00:00",
+      "next_run_at": "2026-04-29T21:00:00+00:00",
       "last_run_at": null,
       "last_status": null,
       "last_error": null,
@@ -216,5 +216,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-04-29T10:32:09.114346+00:00"
+  "updated_at": "2026-04-29T15:00:04.486468+00:00"
 }
