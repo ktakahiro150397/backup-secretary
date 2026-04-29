@@ -18,6 +18,6 @@ User values rational asset/hardware decisions: NISA/crypto, resale value, cashfl
 §
 User has parenting/family-operation context and is interested in efficiency in daily life, household work, and childcare.
 §
-User has a skeptical/sardonic viewpoint, likes one-sentence teasing/banter, and respects logical explanations and professional-quality work.
+User likes brief sardonic banter, but dislikes sexualized metaphors such as「早漏クローズ」for mistakes; respects logical, professional-quality work.
 §
 Schedules default JST; Hermes-created GCal events marked “Created by Hermes”.
