@@ -5,7 +5,11 @@ runtime/*
 !runtime/
 !runtime/hermes-data/
 
-# Track portable Hermes config/state
+# Ignore everything inside Hermes runtime unless explicitly whitelisted below.
+# Important: files already tracked must also be removed with `git rm --cached`.
+runtime/hermes-data/**
+
+# Track portable Hermes config/state only
 !runtime/hermes-data/config.yaml
 !runtime/hermes-data/SOUL.md
 !runtime/hermes-data/memories/
@@ -14,6 +18,7 @@ runtime/*
 !runtime/hermes-data/cron/
 !runtime/hermes-data/cron/jobs.json
 !runtime/hermes-data/plans/
+!runtime/hermes-data/plans/*.md
 !runtime/hermes-data/plans/**/*.md
 
 # Optional user-managed customization
