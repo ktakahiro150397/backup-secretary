@@ -118,18 +118,33 @@ def search(con: sqlite3.Connection, query: str, include_closed: bool, limit: int
     if not query:
         raise ValueError("query must not be empty")
     status_filter = "" if include_closed else "and n.status in ('open', 'suggested')"
-    rows = con.execute(
-        f"""
-        select n.*
-        from notes_fts f
-        join notes n on n.id = f.rowid
-        where notes_fts match ?
-        {status_filter}
-        order by bm25(notes_fts), n.created_at desc
-        limit ?
-        """,
-        (query, limit),
-    ).fetchall()
+
+    if len(query) < 3:
+        like_query = f"%{query}%"
+        rows = con.execute(
+            f"""
+            select n.*
+            from notes n
+            where (n.body like ? or n.tags_json like ?)
+            {status_filter}
+            order by n.created_at desc
+            limit ?
+            """,
+            (like_query, like_query, limit),
+        ).fetchall()
+    else:
+        rows = con.execute(
+            f"""
+            select n.*
+            from notes_fts f
+            join notes n on n.id = f.rowid
+            where notes_fts match ?
+            {status_filter}
+            order by bm25(notes_fts), n.created_at desc
+            limit ?
+            """,
+            (query, limit),
+        ).fetchall()
     return {"status": "ok", "results": [note_to_dict(row) for row in rows]}
 
 

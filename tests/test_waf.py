@@ -74,6 +74,16 @@ def test_search_returns_matching_open_notes_by_default(tmp_path):
     assert payload["results"][0]["tags"] == ["llm"]
 
 
+def test_search_falls_back_to_substring_for_short_japanese_queries(tmp_path):
+    run_waf(tmp_path, "capture", "ローカル同期テスト", "--tags", "test,waf")
+
+    out, _ = run_waf(tmp_path, "search", "同期")
+
+    payload = json.loads(out)
+    assert payload["status"] == "ok"
+    assert [item["body"] for item in payload["results"]] == ["ローカル同期テスト"]
+
+
 def test_status_update_hides_closed_notes_unless_requested(tmp_path):
     out, _ = run_waf(tmp_path, "capture", "あとでGitHub issueにする")
     note_id = json.loads(out)["note"]["id"]
