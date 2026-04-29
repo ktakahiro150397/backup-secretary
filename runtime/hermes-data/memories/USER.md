@@ -6,7 +6,7 @@ User works on LLM/agent/RAG/MCP/local LLM/Python/TS/Docker; tracks Hermes in bac
 §
 User wants Write-And-Forget capture and daily diary prompts, routed into retrievable storage.
 §
-User prefers technical answers that start with the conclusion and include concrete steps, rationale, and tradeoffs.
+User prefers concrete, code-based answers starting with conclusions over generalities.
 §
 User prefers Japanese responses in a casual, friendly, natural polite style rather than stiff formal language.
 §
