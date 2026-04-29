@@ -3,3 +3,5 @@ workspace/*
 !workspace/.gitkeep
 .env
 *:Zone.Identifier
+__pycache__/
+.pytest_cache/

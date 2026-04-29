@@ -21,6 +21,10 @@ x-hermes-common: &hermes-common
     - type: bind
       source: ${HERMES_WORKSPACE_DIR:-./workspace}
       target: /workspace
+    - type: bind
+      source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+      target: /managed-skills
+      read_only: true
   networks:
     - hermes-net
   read_only: ${HERMES_READ_ONLY:-false}
@@ -84,6 +88,14 @@ services:
     restart: "no"
     stdin_open: true
     tty: true
+
+  skills-sync:
+    <<: *hermes-common
+    container_name: ${HERMES_SKILLS_SYNC_CONTAINER_NAME:-backup-secretary-hermes-skills-sync}
+    command: bash -lc "mkdir -p /opt/data/skills && rsync -a /managed-skills/ /opt/data/skills/"
+    profiles:
+      - skills-sync
+    restart: "no"
 
   cli:
     <<: *hermes-common
