@@ -79,7 +79,7 @@ def test_save_creates_dated_markdown_on_hermes_branch(tmp_path):
     assert "type: diary" in text
     assert "date: 2026-04-29" in text
     assert "source: hermes-discord" in text
-    assert "- diary" in text
+    assert text.count("  - diary") == 1
     assert "- hermes" in text
     assert "今日はHermesの日記保存を試した" in text
 

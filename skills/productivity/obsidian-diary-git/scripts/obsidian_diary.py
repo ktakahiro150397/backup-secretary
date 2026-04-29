@@ -110,7 +110,18 @@ def parse_tags(raw: str | None) -> list[str]:
     return tags
 
 
+def unique_values(values: list[str]) -> list[str]:
+    unique: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if value not in seen:
+            unique.append(value)
+            seen.add(value)
+    return unique
+
+
 def yaml_list(values: list[str], indent: str = "  ") -> str:
+    values = unique_values(values)
     if not values:
         return "[]"
     return "\n" + "\n".join(f"{indent}- {value}" for value in values)
