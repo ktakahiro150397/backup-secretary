@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -56,7 +57,7 @@ def agent_prompt(agent: dict[str, Any], prompt: str) -> str:
 """
 
 
-def build_command(agent: dict[str, Any], prompt: str) -> list[str]:
+def build_command(agent: dict[str, Any], prompt: str, hermes_bin: str = "hermes") -> list[str]:
     provider = agent.get("provider")
     model = agent.get("model")
     toolsets = agent.get("toolsets", ["web"])
@@ -66,7 +67,7 @@ def build_command(agent: dict[str, Any], prompt: str) -> list[str]:
         raise SystemExit("agent toolsets must be a list of strings")
 
     return [
-        "hermes",
+        hermes_bin,
         "chat",
         "-q",
         agent_prompt(agent, prompt),
@@ -93,6 +94,11 @@ def main() -> int:
     parser.add_argument("--list", action="store_true", help="list available agents")
     parser.add_argument("--dry-run", action="store_true", help="print the Hermes command JSON without running it")
     parser.add_argument("--timeout", type=int, default=600, help="subprocess timeout seconds (default: 600)")
+    parser.add_argument(
+        "--hermes-bin",
+        default=os.environ.get("HERMES_BIN", "hermes"),
+        help="Hermes CLI executable (default: HERMES_BIN or hermes)",
+    )
     args = parser.parse_args()
 
     catalog = load_catalog(args.catalog)
@@ -107,10 +113,17 @@ def main() -> int:
     if args.agent not in catalog:
         raise SystemExit(f"unknown agent: {args.agent}. available: {', '.join(sorted(catalog))}")
 
-    cmd = build_command(catalog[args.agent], args.prompt)
+    cmd = build_command(catalog[args.agent], args.prompt, hermes_bin=args.hermes_bin)
     if args.dry_run:
         print(json.dumps({"command": cmd}, ensure_ascii=False, indent=2))
         return 0
+
+    if shutil.which(args.hermes_bin) is None:
+        print(
+            f"Hermes CLI not found: {args.hermes_bin}. Install Hermes or set HERMES_BIN/--hermes-bin to the executable path.",
+            file=sys.stderr,
+        )
+        return 127
 
     completed = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=args.timeout)
     if completed.stdout:
