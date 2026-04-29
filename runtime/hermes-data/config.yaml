@@ -8,8 +8,6 @@ model:
   default: gpt-5.5
   provider: openai-codex
   base_url: https://chatgpt.com/backend-api/codex
-  # model: gemma-4-31b-it
-  # provider: google
 providers: {}
 fallback_providers: []
 credential_pool_strategies: {}
