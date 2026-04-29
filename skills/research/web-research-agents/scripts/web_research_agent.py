@@ -83,7 +83,7 @@ def build_command(agent: dict[str, Any], prompt: str, hermes_bin: str = "hermes"
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run named Hermes web-research agents")
-    parser.add_argument("prompt", nargs="?", help="research prompt; omit with --list")
+    parser.add_argument("prompt", nargs="?", help="research prompt; omit with --list or use --prompt-file")
     parser.add_argument("--agent", default="gemma", help="agent key in the catalog (default: gemma)")
     parser.add_argument(
         "--catalog",
@@ -92,6 +92,7 @@ def main() -> int:
         help="path to agents.json",
     )
     parser.add_argument("--list", action="store_true", help="list available agents")
+    parser.add_argument("--prompt-file", type=Path, help="read the research prompt from a UTF-8 text file")
     parser.add_argument("--dry-run", action="store_true", help="print the Hermes command JSON without running it")
     parser.add_argument("--timeout", type=int, default=600, help="subprocess timeout seconds (default: 600)")
     parser.add_argument(
@@ -107,13 +108,22 @@ def main() -> int:
         print(json.dumps({"agents": catalog}, ensure_ascii=False, indent=2))
         return 0
 
-    if not args.prompt:
-        parser.error("prompt is required unless --list is used")
+    if args.prompt and args.prompt_file:
+        parser.error("use either positional prompt or --prompt-file, not both")
+    if args.prompt_file:
+        try:
+            prompt = args.prompt_file.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            raise SystemExit(f"prompt file not found: {args.prompt_file}")
+    elif args.prompt:
+        prompt = args.prompt
+    else:
+        parser.error("prompt is required unless --list is used; use --prompt-file for long or non-ASCII prompts")
 
     if args.agent not in catalog:
         raise SystemExit(f"unknown agent: {args.agent}. available: {', '.join(sorted(catalog))}")
 
-    cmd = build_command(catalog[args.agent], args.prompt, hermes_bin=args.hermes_bin)
+    cmd = build_command(catalog[args.agent], prompt, hermes_bin=args.hermes_bin)
     if args.dry_run:
         print(json.dumps({"command": cmd}, ensure_ascii=False, indent=2))
         return 0
