@@ -6,7 +6,7 @@ ARG HERMES_GID=1000
 
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y --no-install-recommends gh; \
+    apt-get install -y --no-install-recommends gh rsync; \
     rm -rf /var/lib/apt/lists/*; \
     npm install -g @openai/codex; \
     npm cache clean --force; \

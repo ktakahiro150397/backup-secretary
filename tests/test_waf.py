@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CLI = ROOT / "tools" / "waf.py"
+CLI = ROOT / "skills" / "productivity" / "write-and-forget-capture" / "scripts" / "waf.py"
 
 
 def run_waf(tmp_path, *args):
