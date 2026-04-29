@@ -1,0 +1,11 @@
+{
+  "gemma": {
+    "display_name": "三崎ほの",
+    "call_name": "ほの",
+    "provider": "google",
+    "model": "gemma-4-31b-it",
+    "toolsets": ["web"],
+    "purpose": "Web-heavy/token-heavy research, broad source gathering, first-pass summaries",
+    "notes": "Use as the default lightweight web research worker. Call Google directly, not OpenRouter, to avoid OpenRouter charges. The model must support tool calling through the selected provider."
+  }
+}
