@@ -16,6 +16,11 @@ HERMES_HOME = Path(os.environ.get("HERMES_HOME", "/opt/data"))
 PYTHON = "/opt/hermes/.venv/bin/python"
 GAPI = HERMES_HOME / "skills/productivity/google-workspace/scripts/google_api.py"
 
+HIGH_SIGNAL_KEYWORDS = (
+    "支払", "支払い", "期限", "振込", "解約", "予約", "病院", "耳鼻", "歯科",
+    "カウンセリング", "面談", "締切", "提出", "実家", "保育", "学校",
+)
+
 
 def run_json(args: list[str]) -> object:
     proc = subprocess.run(
@@ -99,6 +104,90 @@ def fmt_task(task: dict, list_title: str, today: date) -> tuple[date, str] | Non
     return due, f"- {title} [{list_title}]{overdue}"
 
 
+def contains_high_signal(text: str) -> bool:
+    return any(k in text for k in HIGH_SIGNAL_KEYWORDS)
+
+
+def event_priority_item(ev: dict, today: date, last_day: date) -> tuple[int, str] | None:
+    start, all_day = parse_event_dt(ev.get("start", ""))
+    end, _ = parse_event_dt(ev.get("end", ""))
+    if start is None:
+        return None
+    d = start.date()
+    if not (today <= d <= last_day):
+        return None
+
+    title = ev.get("summary") or "(無題)"
+    cal = ev.get("calendar") or "calendar"
+    signal = contains_high_signal(title)
+    diff = (d - today).days
+
+    if all_day:
+        when = "終日"
+    elif end and end.date() == d:
+        when = f"{start:%H:%M}-{end:%H:%M}"
+    else:
+        when = f"{start:%H:%M}〜"
+
+    if diff == 0:
+        if "支払" in title or "支払い" in title or "期限" in title or "振込" in title:
+            return 1, f"今日の最優先: {title} を午前中に処理/確認。放置すると忘れるやつです。"
+        if not all_day:
+            return 5, f"今日の固定予定: {when} {title} [{cal}]。開始30分前に移動/準備。"
+        return 12, f"今日中: {title} [{cal}] を片付ける/確認する。"
+
+    if signal:
+        if "予約" in title:
+            action = "予約・持ち物・移動時間を前日までに確認"
+        elif "病院" in title or "耳鼻" in title or "歯科" in title or "カウンセリング" in title:
+            action = "保険証/診察券/移動時間を先に確認"
+        elif "実家" in title:
+            action = "持ち物と出発時間を決める"
+        else:
+            action = "前倒しで準備"
+        return 30 + diff, f"先回り: {day_label(d, today)} {when} {title} — {action}。"
+
+    return None
+
+
+def task_priority_item(task: dict, list_title: str, today: date, last_day: date) -> tuple[int, str] | None:
+    if task.get("status") == "completed":
+        return None
+    due = parse_task_due(task.get("due", ""))
+    if due is None or due > last_day:
+        return None
+    title = task.get("title") or "(無題タスク)"
+    if due < today:
+        return 0, f"期限切れ: {title} [{list_title}] をまず処理するか、不要なら完了/削除。"
+    diff = (due - today).days
+    if diff == 0:
+        return 3, f"今日のタスク: {title} [{list_title}] を午前中に着手。"
+    if contains_high_signal(title):
+        return 20 + diff, f"先回りタスク: {day_label(due, today)}期限の {title} [{list_title}] を今日少し進める。"
+    return 45 + diff, f"余力枠: {day_label(due, today)}期限の {title} [{list_title}]。"
+
+
+def build_priority_lines(priority_items: list[tuple[int, str]]) -> list[str]:
+    if not priority_items:
+        return [
+            "## まずやること",
+            "- 今日は固定の優先アクションは少なめ。カレンダー確認だけして、重い作業を1つ先に置くのがよさそうです。",
+        ]
+
+    lines = ["## まずやること"]
+    seen: set[str] = set()
+    rank = 1
+    for _, text in sorted(priority_items, key=lambda x: x[0]):
+        if text in seen:
+            continue
+        seen.add(text)
+        lines.append(f"{rank}. {text}")
+        rank += 1
+        if rank > 5:
+            break
+    return lines
+
+
 def main() -> int:
     now = datetime.now(JST)
     today = now.date()
@@ -111,12 +200,16 @@ def main() -> int:
         events = []
 
     events_by_day: dict[date, list[str]] = defaultdict(list)
+    priority_items: list[tuple[int, str]] = []
     for ev in events:
         if not isinstance(ev, dict):
             continue
         d, line = fmt_event(ev)
         if today <= d <= last_day:
             events_by_day[d].append(line)
+        priority = event_priority_item(ev, today, last_day)
+        if priority:
+            priority_items.append(priority)
 
     tasks_by_day: dict[date, list[str]] = defaultdict(list)
     task_lists = run_json(["tasks", "lists", "--max", "50"])
@@ -138,10 +231,15 @@ def main() -> int:
                 due, line = item
                 if due <= last_day:  # include overdue, because forgotten tasks are the point.
                     tasks_by_day[due].append(line)
+                priority = task_priority_item(task, list_title, today, last_day)
+                if priority:
+                    priority_items.append(priority)
 
     lines: list[str] = []
     lines.append(f"☀️ 朝の予定・タスク確認（{today:%Y-%m-%d} 07:00 JST想定）")
     lines.append(f"対象: 今日〜3日後（{today:%-m/%-d}〜{last_day:%-m/%-d}）")
+    lines.append("")
+    lines.extend(build_priority_lines(priority_items))
 
     any_items = False
     for i in range(4):
@@ -186,3 +284,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Google予定・タスク通知の生成に失敗しました: {e}", file=sys.stderr)
         raise
+
