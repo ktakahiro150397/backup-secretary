@@ -1,4 +1,4 @@
-User can transfer files from Windows PowerShell/WSL path to the server with scp, e.g. from \\wsl.localhost\Ubuntu\home\takahiro\repo\backup-secretary\tools\twitter: `scp ".\personalization.ja.0001.jsonl" yanelmoserver:~/repo/backup-secretary/runtime/hermes-data/_twitter_data/`.
+Windows/WSL→server file transfer works via scp to yanelmoserver.
 §
 User's Hermes/assistant code is managed in GitHub repo ktakahiro150397/backup-secretary.
 §
@@ -17,3 +17,5 @@ User's Obsidian vault repo is ktakahiro150397/obsidian_git; Hermes uses a persis
 Daily diary reminder responses should be saved into the Obsidian vault via /opt/data/obsidian/obsidian_git on the hermes branch, using the obsidian-diary-git skill; do not store diary body in Hermes memory.
 §
 In user's Hermes setup, Gemma delegation/web-worker usage should call the Google provider directly (`provider: google`, `model: gemma-4-31b-it`); avoid routing Gemma through OpenRouter unless explicitly approved because it incurs OpenRouter charges.
+§
+User's Hermes Discord topic channels: hermes-dev 1499234022725779619, diary 1499234070897365043, notify 1499234114694418674; cron notifications default to notify.

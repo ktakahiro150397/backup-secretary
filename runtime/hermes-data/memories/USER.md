@@ -20,4 +20,4 @@ User has parenting/family-operation context and is interested in efficiency in d
 §
 User likes brief sardonic banter, but dislikes sexualized metaphors such as「早漏クローズ」for mistakes; respects logical, professional-quality work.
 §
-Schedules default JST; Hermes-created GCal events marked “Created by Hermes”.
+Schedules JST; daily 07:00 GCal+dated Tasks today〜+3d to notify.
