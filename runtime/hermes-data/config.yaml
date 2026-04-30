@@ -1,10 +1,4 @@
 model:
-  # default: gpt-5.5
-  # provider: openrouter
-  # model: qwen/qwen3.6-27b
-  # model: stepfun/step-3.5-flash
-  # model: deepseek/deepseek-v4-pro
-  # base_url: https://openrouter.ai/api/v1
   default: gpt-5.5
   provider: openai-codex
   base_url: https://chatgpt.com/backend-api/codex
@@ -22,6 +16,8 @@ agent:
   tool_use_enforcement: auto
   gateway_timeout_warning: 900
   gateway_notify_interval: 180
+  gateway_auto_continue_freshness: 3600
+  image_input_mode: auto
   verbose: false
   reasoning_effort: medium
   personalities:
@@ -84,6 +80,7 @@ terminal:
   container_persistent: true
   docker_volumes: []
   docker_mount_cwd_to_workspace: false
+  docker_run_as_host_user: false
   persistent_shell: true
   lifetime_seconds: 300
 browser:
@@ -91,6 +88,7 @@ browser:
   command_timeout: 30
   record_sessions: false
   allow_private_urls: false
+  auto_local_for_private_urls: true
   cdp_url: ''
   dialog_policy: must_respond
   dialog_timeout_s: 300
@@ -99,6 +97,10 @@ browser:
 checkpoints:
   enabled: true
   max_snapshots: 50
+  auto_prune: false
+  retention_days: 7
+  delete_orphans: true
+  min_interval_hours: 24
 file_read_max_chars: 100000
 tool_output:
   max_bytes: 50000
@@ -109,6 +111,7 @@ compression:
   threshold: 0.5
   target_ratio: 0.2
   protect_last_n: 20
+  hygiene_hard_message_limit: 400
 prompt_caching:
   cache_ttl: 5m
 bedrock:
@@ -186,6 +189,7 @@ display:
   personality: kawaii
   resume_display: full
   busy_input_mode: interrupt
+  tui_auto_resume_recent: false
   bell_on_complete: false
   show_reasoning: false
   streaming: true
@@ -193,6 +197,7 @@ display:
   inline_diffs: true
   show_cost: false
   skin: default
+  tui_status_indicator: kaomoji
   user_message_preview:
     first_lines: 2
     last_lines: 2
@@ -201,6 +206,12 @@ display:
   tool_progress_overrides: {}
   tool_preview_length: 0
   platforms: {}
+  runtime_footer:
+    enabled: false
+    fields:
+    - model
+    - context_pct
+    - cwd
   tool_progress: all
   background_process_notifications: all
 dashboard:
@@ -283,6 +294,15 @@ skills:
   guard_agent_created: false
   creation_nudge_interval: 15
   disabled: []
+curator:
+  enabled: true
+  interval_hours: 168
+  min_idle_hours: 2
+  stale_after_days: 30
+  archive_after_days: 90
+  auxiliary:
+    provider: null
+    model: null
 honcho: {}
 timezone: ''
 discord:
@@ -292,15 +312,31 @@ discord:
   auto_thread: true
   reactions: true
   channel_prompts:
-    '1499234022725779619': |-
-      このチャンネルは hermes-dev。Hermes Agent / backup-secretary の開発、issue調査、設定変更、Docker/Discord/GitHub運用、デバッグ相談を扱う。技術的な回答では結論、具体手順、根拠、トレードオフを短く示す。必要ならツールで実際に確認・修正する。
-    '1499234070897365043': |-
-      このチャンネルは diary。日記、生活ログ、振り返り、家族・家事・育児・体調・作業メモを扱う。日記として保存すべき内容は Obsidian 日記への保存を優先し、本文をHermes memoryには保存しない。
-    '1499234114694418674': |-
-      このチャンネルは notify。cron、バックアップ、定期実行、監視、エラー通知、完了報告を扱う。通知は要点、結果、次に必要なアクションを簡潔にまとめる。
+    '1499234022725779619': "\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F hermes-dev\u3002\
+      Hermes Agent / backup-secretary \u306E\u958B\u767A\u3001issue\u8ABF\u67FB\u3001\
+      \u8A2D\u5B9A\u5909\u66F4\u3001Docker/Discord/GitHub\u904B\u7528\u3001\u30C7\u30D0\
+      \u30C3\u30B0\u76F8\u8AC7\u3092\u6271\u3046\u3002\u6280\u8853\u7684\u306A\u56DE\
+      \u7B54\u3067\u306F\u7D50\u8AD6\u3001\u5177\u4F53\u624B\u9806\u3001\u6839\u62E0\
+      \u3001\u30C8\u30EC\u30FC\u30C9\u30AA\u30D5\u3092\u77ED\u304F\u793A\u3059\u3002\
+      \u5FC5\u8981\u306A\u3089\u30C4\u30FC\u30EB\u3067\u5B9F\u969B\u306B\u78BA\u8A8D\
+      \u30FB\u4FEE\u6B63\u3059\u308B\u3002"
+    '1499234070897365043': "\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F diary\u3002\
+      \u65E5\u8A18\u3001\u751F\u6D3B\u30ED\u30B0\u3001\u632F\u308A\u8FD4\u308A\u3001\
+      \u5BB6\u65CF\u30FB\u5BB6\u4E8B\u30FB\u80B2\u5150\u30FB\u4F53\u8ABF\u30FB\u4F5C\
+      \u696D\u30E1\u30E2\u3092\u6271\u3046\u3002\u65E5\u8A18\u3068\u3057\u3066\u4FDD\
+      \u5B58\u3059\u3079\u304D\u5185\u5BB9\u306F Obsidian \u65E5\u8A18\u3078\u306E\
+      \u4FDD\u5B58\u3092\u512A\u5148\u3057\u3001\u672C\u6587\u3092Hermes memory\u306B\
+      \u306F\u4FDD\u5B58\u3057\u306A\u3044\u3002"
+    '1499234114694418674': "\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F notify\u3002\
+      cron\u3001\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3001\u5B9A\u671F\u5B9F\u884C\
+      \u3001\u76E3\u8996\u3001\u30A8\u30E9\u30FC\u901A\u77E5\u3001\u5B8C\u4E86\u5831\
+      \u544A\u3092\u6271\u3046\u3002\u901A\u77E5\u306F\u8981\u70B9\u3001\u7D50\u679C\
+      \u3001\u6B21\u306B\u5FC5\u8981\u306A\u30A2\u30AF\u30B7\u30E7\u30F3\u3092\u7C21\
+      \u6F54\u306B\u307E\u3068\u3081\u308B\u3002"
   server_actions: ''
 whatsapp: {}
 telegram:
+  reactions: false
   channel_prompts: {}
 slack:
   channel_prompts: {}
@@ -310,7 +346,8 @@ approvals:
   mode: manual
   timeout: 60
   cron_mode: deny
-command_allowlist: []
+command_allowlist:
+- script execution via -e/-c flag
 quick_commands: {}
 hooks: {}
 hooks_auto_accept: false
@@ -337,6 +374,11 @@ logging:
   level: INFO
   max_size_mb: 5
   backup_count: 3
+model_catalog:
+  enabled: true
+  url: https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
+  ttl_hours: 24
+  providers: {}
 network:
   force_ipv4: false
 sessions:
@@ -344,6 +386,12 @@ sessions:
   retention_days: 90
   vacuum_after_prune: true
   min_interval_hours: 24
+onboarding:
+  seen:
+    busy_input_prompt: true
+updates:
+  pre_update_backup: false
+  backup_keep: 5
 _config_version: 22
 session_reset:
   mode: both
@@ -388,6 +436,24 @@ known_plugin_toolsets:
   cli:
   - spotify
 DISCORD_HOME_CHANNEL: '1496905790496182353'
-onboarding:
-  seen:
-    busy_input_prompt: true
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

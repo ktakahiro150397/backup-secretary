@@ -2,7 +2,7 @@ User prefers responses in Japanese.
 §
 User wants tasks offloaded to subagents whenever practical; Gemma 31B delegation is preferred/available for delegate_task.
 §
-User works on LLM/agent/RAG/MCP/local LLM/Python/TS/Docker; tracks Hermes in backup-secretary issues; close issues with resolution comments; consider workflow utilities as Hermes skills+scripts.
+User tracks Hermes in backup-secretary issues; close issues with resolution comments; custom Hermes skills prefer MCP/tool APIs over CLI, and CLI additions require confirmation.
 §
 User wants Write-And-Forget capture and daily diary prompts, routed into retrievable storage.
 §
