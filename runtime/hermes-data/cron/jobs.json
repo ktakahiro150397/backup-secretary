@@ -119,7 +119,7 @@
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
-      "deliver": "discord:1499234114694418674",
+      "deliver": "discord:1499234070897365043",
       "origin": {
         "platform": "discord",
         "chat_id": "1496905790496182353",
@@ -216,5 +216,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-04-30T02:28:58.074516+00:00"
+  "updated_at": "2026-04-30T02:30:54.003607+00:00"
 }
