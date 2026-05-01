@@ -1,7 +1,9 @@
 model:
-  default: gpt-5.5
-  provider: openai-codex
-  base_url: https://chatgpt.com/backend-api/codex
+  model: moonshotai/kimi-k2.6
+  base_url: https://opencode.ai/zen/go/v1
+  default: kimi-k2.6
+  provider: opencode-go
+  api_mode: chat_completions
 providers: {}
 fallback_providers: []
 credential_pool_strategies: {}
@@ -74,6 +76,7 @@ terminal:
   singularity_image: docker://nikolaik/python-nodejs:python3.11-nodejs20
   modal_image: nikolaik/python-nodejs:python3.11-nodejs20
   daytona_image: nikolaik/python-nodejs:python3.11-nodejs20
+  vercel_runtime: node24
   container_cpu: 1
   container_memory: 5120
   container_disk: 51200
@@ -184,6 +187,13 @@ auxiliary:
     api_key: ''
     timeout: 30
     extra_body: {}
+  curator:
+    provider: auto
+    model: ''
+    base_url: ''
+    api_key: ''
+    timeout: 600
+    extra_body: {}
 display:
   compact: false
   personality: kawaii
@@ -241,6 +251,8 @@ tts:
     ref_text: ''
     model: neuphonic/neutts-air-q4-gguf
     device: cpu
+  piper:
+    voice: en_US-lessac-medium
 stt:
   enabled: true
   provider: local
@@ -346,6 +358,7 @@ approvals:
   mode: manual
   timeout: 60
   cron_mode: deny
+  mcp_reload_confirm: true
 command_allowlist:
 - script execution via -e/-c flag
 quick_commands: {}
@@ -366,6 +379,9 @@ security:
 cron:
   wrap_response: true
   max_parallel_jobs: null
+kanban:
+  dispatch_in_gateway: true
+  dispatch_interval_seconds: 60
 code_execution:
   mode: project
   timeout: 300
