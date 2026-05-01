@@ -1,5 +1,5 @@
-# Gemma-only free-tier Hermes config for the family instance.
-# Copy into runtime/hermes-family-data/config.yaml after setup.
+# Gemma-only free-tier Hermes config for the owashota instance.
+# Copy into ~/repo/backup-secretary-data/owashota/hermes-data/config.yaml after setup.
 # No paid providers — Google AI Studio free key only.
 
 model:

@@ -304,25 +304,25 @@ docker compose up -d hermes
 
 ```bash
 # 1. 専用 .env を作成
-cp .env.family.example .env.family
+cp .env.owashota.example .env.owashota
 # 必要に応じて HERMES_UID / HERMES_GID を修正
 
 # 2. データディレクトリ作成
-mkdir -p runtime/hermes-family-data
+mkdir -p ~/repo/backup-secretary-data/owashota/hermes-data
 
 # 3. 設定コピー
-mkdir -p runtime/hermes-family-data
-cp config/hermes-config.family.yaml runtime/hermes-family-data/config.yaml
+mkdir -p ~/repo/backup-secretary-data/owashota/hermes-data
+cp config/hermes-config.owashota.yaml ~/repo/backup-secretary-data/owashota/hermes-data/config.yaml
 
 # 4. SOUL.md はメインからコピーするか、家族向けに調整
-# cp runtime/hermes-data/SOUL.md runtime/hermes-family-data/SOUL.md
+# cp runtime/hermes-data/SOUL.md ~/repo/backup-secretary-data/owashota/hermes-data/SOUL.md
 
 # 5. セットアップウィザード
-#    環境変数 .env.family を使用してセットアップ
-docker compose --env-file .env.family --profile setup run --rm setup
+#    環境変数 .env.owashota を使用してセットアップ
+docker compose --env-file .env.owashota --profile setup run --rm setup
 ```
 
-セットアップ後、`runtime/hermes-family-data/.env` に以下を記載する。
+セットアップ後、`~/repo/backup-secretary-data/owashota/hermes-data/.env` に以下を記載する。
 
 ```env
 # 無料 Google AI Studio キーのみ
@@ -339,27 +339,27 @@ GATEWAY_ALLOW_ALL_USERS=false
 起動:
 
 ```bash
-docker compose --env-file .env.family up -d hermes-family
-docker compose --env-file .env.family logs -f hermes-family
+docker compose --env-file .env.owashota up -d hermes-owashota
+docker compose --env-file .env.owashota logs -f hermes-owashota
 ```
 
 停止:
 
 ```bash
-docker compose --env-file .env.family down
+docker compose --env-file .env.owashota down
 ```
 
 ### 注意
 
 - **bot token**: メインインスタンスと同じ Discord bot token を使うと競合・切断ループが起きる。必ず別 token を発行すること。
-- **有料 provider キーの混入防止**: `runtime/hermes-family-data/.env` に `OPENROUTER_API_KEY` や `OPENAI_API_KEY` などを含めない。config で `fallback_providers: []` かつ auxiliary を全て `google/gemma-4-31b-it` に固定しているが、キーがあれば fallback/auxiliary で有料モデルへの逃げが可能な場合がある。
+- **有料 provider キーの混入防止**: `~/repo/backup-secretary-data/owashota/hermes-data/.env` に `OPENROUTER_API_KEY` や `OPENAI_API_KEY` などを含めない。config で `fallback_providers: []` かつ auxiliary を全て `google/gemma-4-31b-it` に固定しているが、キーがあれば fallback/auxiliary で有料モデルへの逃げが可能な場合がある。
 - **quota 切れ**: Google AI Studio 無料枠の制限に達した場合、素直に失敗する。有料 fallback はしない。
-- **ディスク**: `runtime/hermes-family-data` は `runtime/hermes-data` と完全に分離している。セッションログや添付ファイルが混ざらない。
+- **ディスク**: `~/repo/backup-secretary-data/owashota/hermes-data` は `runtime/hermes-data` と完全に分離している。セッションログや添付ファイルが混ざらない。
 
 ### 運用チェック
 
 ```bash
-docker compose --env-file .env.family config
-docker compose --env-file .env.family ps
-docker compose --env-file .env.family logs --tail 100 hermes-family
+docker compose --env-file .env.owashota config
+docker compose --env-file .env.owashota ps
+docker compose --env-file .env.owashota logs --tail 100 hermes-owashota
 ```
