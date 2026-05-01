@@ -203,38 +203,67 @@ def commit_and_push(vault: Path, rel_path: str, date_text: str, branch: str, *, 
     return {"committed": True, "commit": commit, "pushed": pushed}
 
 
-def save_diary(args: argparse.Namespace) -> dict[str, Any]:
-    vault = args.vault.resolve()
-    ensure_vault(vault, args.repo or None)
-    sync_before_write(vault, args.branch, skip_pull=args.no_pull)
+def save_diary_entry(
+    vault: Path,
+    repo: str | None,
+    branch: str,
+    diary_dir: str,
+    body: str,
+    date: str | None,
+    source: str,
+    tags: list[str],
+    no_pull: bool,
+    no_push: bool,
+) -> dict[str, Any]:
+    vault = vault.resolve()
+    ensure_vault(vault, repo)
+    sync_before_write(vault, branch, skip_pull=no_pull)
 
     now = datetime.now(JST)
-    day = datetime.strptime(args.date, "%Y-%m-%d").replace(tzinfo=JST) if args.date else now
-    tags = parse_tags(args.tags)
-    path = diary_path(vault, args.diary_dir, day)
+    day = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=JST) if date else now
+    path = diary_path(vault, diary_dir, day)
     if path.exists():
         update_frontmatter_timestamp(path, now)
     else:
-        create_entry_file(path, day, now, args.source, tags)
-    append_entry(path, args.body, now, args.source, tags)
+        create_entry_file(path, day, now, source, tags)
+    append_entry(path, body, now, source, tags)
 
     rel_path = path.relative_to(vault).as_posix()
-    git_result = commit_and_push(vault, rel_path, day.strftime("%Y-%m-%d"), args.branch, no_push=args.no_push)
+    git_result = commit_and_push(vault, rel_path, day.strftime("%Y-%m-%d"), branch, no_push=no_push)
     return {
         "status": "saved",
         "vault": str(vault),
-        "branch": args.branch,
+        "branch": branch,
         "path": rel_path,
         **git_result,
     }
 
 
-def status(args: argparse.Namespace) -> dict[str, Any]:
-    vault = args.vault.resolve()
-    ensure_vault(vault, args.repo or None)
-    branch = current_branch(vault)
+def get_status(vault: Path, repo: str | None, branch: str) -> dict[str, Any]:
+    vault = vault.resolve()
+    ensure_vault(vault, repo)
+    current = current_branch(vault)
     proc = run_git(vault, "status", "--porcelain")
-    return {"status": "ok", "vault": str(vault), "branch": branch, "dirty": bool(proc.stdout.strip())}
+    return {"status": "ok", "vault": str(vault), "branch": current, "dirty": bool(proc.stdout.strip())}
+
+
+def save_diary(args: argparse.Namespace) -> dict[str, Any]:
+    return save_diary_entry(
+        vault=args.vault,
+        repo=args.repo or None,
+        branch=args.branch,
+        diary_dir=args.diary_dir,
+        body=args.body,
+        date=args.date,
+        source=args.source,
+        tags=parse_tags(args.tags),
+        no_pull=args.no_pull,
+        no_push=args.no_push,
+    )
+
+
+def status(args: argparse.Namespace) -> dict[str, Any]:
+    return get_status(vault=args.vault, repo=args.repo or None, branch=args.branch)
 
 
 def build_parser() -> argparse.ArgumentParser:

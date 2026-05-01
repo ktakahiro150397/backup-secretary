@@ -140,16 +140,47 @@ python3 skills/research/web-research-agents/scripts/web_research_agent.py \
 ## Parent Agent Workflow
 
 1. Decide whether the task is worth delegating. Use this skill for broad web research, not tiny lookups.
-2. Run the wrapper with `--agent gemma` and the user's research question.
-3. Read the worker's final answer.
-4. Verify important claims if they affect user decisions or external side effects.
-5. Synthesize the final response in あかり's voice. Do not paste raw worker output unless the user asks.
+2. Load the agent catalog with `skill_view` or `execute_code` to read `templates/agents.json`.
+3. Call `delegate_task` with the `web` toolset and a self-contained research prompt (including the persona prompt from the catalog entry). This avoids CLI invocation and approval prompts entirely.
+4. Read the worker's final answer.
+5. Verify important claims if they affect user decisions or external side effects.
+6. Synthesize the final response in あかり's voice. Do not paste raw worker output unless the user asks.
 
-Recommended parent prompt shape:
+### Example: Gemma web research via delegate_task
 
-```text
-<調査対象>について、一次情報・公式情報を優先して調査してください。
-根拠URL、未確認事項、親エージェント向け所見を分けて返してください。
+```python
+# Read catalog (optional — you can also inline the persona prompt)
+import json, sys
+sys.path.insert(0, "/workspace/backup-secretary/skills/research/web-research-agents/scripts")
+from web_research_agent import load_catalog, agent_prompt
+
+catalog = load_catalog(Path("/workspace/backup-secretary/skills/research/web-research-agents/templates/agents.json"))
+gemma = catalog["gemma"]
+prompt = agent_prompt(gemma, "Hermes Agent\u306eprofile\u6a5f\u80fd\u3068delegate_task\u306e\u9055\u3044\u3092\u4e00\u6b21\u60c5\u5831\u30d9\u30fc\u30b9\u3067\u8abf\u3079\u3066")
+
+# Spawn the worker
+delegate_task(
+    goal=prompt,
+    toolsets=["web"],
+    context="\u8abf\u67fb\u8a00\u8a9e: \u65e5\u672c\u8a9e\u3002\u4e00\u6b21\u60c5\u5831\u30fb\u516c\u5f0f\u60c5\u5831\u3092\u512a\u5148\u3002\u6839\u62e0URL\u3001\u672a\u78ba\u8a8d\u4e8b\u9805\u3001\u89aa\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u5411\u3051\u6240\u898b\u3092\u5206\u3051\u3066\u8fd4\u3059\u3002"
+)
+```
+
+The `delegate_task` approach:
+- **No CLI invocation** — no `hermes chat`, no `subprocess.run`, no approval prompts
+- **No escaping issues** — the prompt is passed as a structured tool argument, not a shell string
+- **Isolated context** — the subagent runs in its own session with only the `web` toolset
+
+**Note:** `delegate_task` uses the model/provider configured in Hermes' `delegation` config section. If you need a specific model (e.g. Gemma via Google), ensure `config.yaml` has the desired delegation model set, or use `acp_command` to spawn a specific agent.
+
+## Legacy: CLI wrapper (not recommended)
+
+The old wrapper script (`scripts/web_research_agent.py`) still works for local CLI testing, but **do not use it from gateway/Discord sessions** because it shells out to `hermes chat` and triggers approval prompts on Japanese prompts.
+
+```bash
+# Local testing only
+python3 skills/research/web-research-agents/scripts/web_research_agent.py --list
+python3 skills/research/web-research-agents/scripts/web_research_agent.py --agent gemma --dry-run "\u8abf\u67fb\u30c6\u30fc\u30de"
 ```
 
 ## Adding More Models Later

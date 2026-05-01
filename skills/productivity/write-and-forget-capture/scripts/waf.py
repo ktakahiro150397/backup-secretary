@@ -167,21 +167,22 @@ def update_status(con: sqlite3.Connection, note_id: int, status: str) -> dict[st
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Write-And-Forget capture MVP")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB, help=f"SQLite DB path (default: {DEFAULT_DB})")
+    parser.add_argument("--stdin", action="store_true", help="Read JSON payload from stdin instead of CLI arguments")
     sub = parser.add_subparsers(dest="command", required=True)
 
     capture_parser = sub.add_parser("capture", help="Capture a note into the WAF inbox")
-    capture_parser.add_argument("body", help="Note body")
+    capture_parser.add_argument("body", nargs="?", help="Note body")
     capture_parser.add_argument("--source", default="manual", help="Source label, e.g. discord/manual")
     capture_parser.add_argument("--tags", default="", help="Comma-separated tags")
 
     search_parser = sub.add_parser("search", help="Search captured notes with SQLite FTS5")
-    search_parser.add_argument("query", help="FTS query")
+    search_parser.add_argument("query", nargs="?", help="FTS query")
     search_parser.add_argument("--include-closed", action="store_true", help="Include closed/actioned/dismissed notes")
     search_parser.add_argument("--limit", type=int, default=20, help="Maximum results")
 
     status_parser = sub.add_parser("status", help="Update note status")
-    status_parser.add_argument("note_id", type=int, help="Note ID")
-    status_parser.add_argument("status", choices=sorted(VALID_STATUSES), help="New status")
+    status_parser.add_argument("note_id", nargs="?", type=int, help="Note ID")
+    status_parser.add_argument("status", nargs="?", choices=sorted(VALID_STATUSES), help="New status")
 
     return parser
 
@@ -189,14 +190,35 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    stdin_payload: dict[str, Any] | None = None
+    if args.stdin:
+        try:
+            raw = sys.stdin.read()
+            stdin_payload = json.loads(raw) if raw.strip() else {}
+        except json.JSONDecodeError as exc:
+            parser.exit(2, f"error: invalid JSON on stdin: {exc}\n")
     try:
         with connect(args.db) as con:
             if args.command == "capture":
-                emit(capture(con, args.body, args.source, parse_tags(args.tags)))
+                body = stdin_payload.get("body", args.body) if stdin_payload else args.body
+                source = stdin_payload.get("source", args.source) if stdin_payload else args.source
+                tags_str = stdin_payload.get("tags", args.tags) if stdin_payload else args.tags
+                if not body:
+                    parser.error("capture requires body (positional arg or stdin JSON)")
+                emit(capture(con, body, source, parse_tags(tags_str)))
             elif args.command == "search":
-                emit(search(con, args.query, args.include_closed, args.limit))
+                query = stdin_payload.get("query", args.query) if stdin_payload else args.query
+                include_closed = stdin_payload.get("include_closed", args.include_closed) if stdin_payload else args.include_closed
+                limit = stdin_payload.get("limit", args.limit) if stdin_payload else args.limit
+                if not query:
+                    parser.error("search requires query (positional arg or stdin JSON)")
+                emit(search(con, query, include_closed, limit))
             elif args.command == "status":
-                emit(update_status(con, args.note_id, args.status))
+                note_id = stdin_payload.get("note_id", args.note_id) if stdin_payload else args.note_id
+                status_val = stdin_payload.get("status", args.status) if stdin_payload else args.status
+                if note_id is None or status_val is None:
+                    parser.error("status requires note_id and status (positional args or stdin JSON)")
+                emit(update_status(con, note_id, status_val))
             else:  # pragma: no cover - argparse prevents this
                 parser.error(f"unknown command: {args.command}")
     except (ValueError, LookupError, sqlite3.Error) as exc:
