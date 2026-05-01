@@ -51,7 +51,7 @@ The safe pattern is:
 
 ## Execution Policy
 
-Custom skills in this repository follow the **Skill Execution Policy** in `docs/skill-execution-policy.md`:
+Custom skills in this repository follow the **Skill Execution Policy** in `guide/skill-execution-policy.md`:
 
 > **Hermes native tools / MCP tools first; CLI only as last resort.**
 
