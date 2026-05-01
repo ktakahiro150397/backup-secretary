@@ -48,3 +48,13 @@ The safe pattern is:
 - Keep runtime DBs out of Git.
 - Track skill source and docs, not private user data.
 - Run a secret scan before committing skill changes.
+
+## Execution Policy
+
+Custom skills in this repository follow the **Skill Execution Policy** in `docs/skill-execution-policy.md`:
+
+> **Hermes native tools / MCP tools first; CLI only as last resort.**
+
+When a skill needs to access an external service, prefer built-in Hermes tools or MCP servers. Avoid `terminal`-based shell wrappers that pass Japanese text, newlines, or quotes through CLI arguments, because Hermes' pre-exec security scanner flags them and stops execution with an approval prompt.
+
+Read the full policy before authoring or refactoring repo-managed skills.

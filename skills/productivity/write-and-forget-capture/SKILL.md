@@ -98,6 +98,7 @@ All commands print compact JSON.
 - Do not store OAuth codes, API keys, tokens, or authorization URLs in the WAF DB.
 - Do not commit `/opt/data/waf/waf.db` or any exported private archive.
 - Keep standard Hermes memory small and durable; use WAF for noisy/private fragments.
+- **Execution Policy:** This skill currently passes capture body through CLI arguments (`python3 scripts/waf.py capture "..."`), which violates the Skill Execution Policy for Japanese/newline/quote-heavy input. See `docs/skill-execution-policy.md` and Issue #30. Migration to a Hermes native tool is planned.
 
 ## Implementation notes
 

@@ -125,6 +125,7 @@ If pull/commit/push fails, do not auto-resolve conflicts. Report the failing com
 - Keep OAuth tokens, `.env`, `.obsidian/workspace*.json`, and plugin data out of committed diary changes.
 - Prefer `--no-push --no-pull` for smoke tests.
 - Use `hermes` branch until the format is proven stable.
+- **Execution Policy:** This skill currently passes diary body through CLI arguments (`python3 scripts/obsidian_diary.py save "..."`), which violates the Skill Execution Policy for Japanese/newline/quote-heavy input. See `docs/skill-execution-policy.md` and Issue #30. Migration to a Hermes native tool is planned.
 
 ## Tests
 

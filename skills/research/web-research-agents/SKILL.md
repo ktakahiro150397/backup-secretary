@@ -181,6 +181,7 @@ Before adding an OpenRouter model for web work, check whether the exact model ad
 6. **Treating worker output as verified truth.** The worker is a source-gathering assistant. The parent agent owns final judgment and verification.
 7. **Using this for every tiny lookup.** For one or two simple current facts, direct `web_search` is cheaper and less fragile.
 8. **Expecting current-session skill discovery to update immediately.** New/edited skills may require a new Hermes session before `skill_view` sees them by name.
+9. **Violating the Skill Execution Policy.** This skill currently shells out to `hermes chat` via `subprocess.run`, which is flagged by the policy as a high-priority replacement target. See `docs/skill-execution-policy.md` and Issue #30 for the migration plan to MCP/native tools or `delegate_task`.
 
 ## Verification Checklist
 
