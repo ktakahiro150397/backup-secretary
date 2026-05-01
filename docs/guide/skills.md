@@ -1,8 +1,8 @@
-# Repo-managed Hermes skills
+# リポジトリ管理の Hermes Skills
 
-This repository can manage custom Hermes skills and sync them into the Hermes runtime skills directory.
+このリポジトリでは、カスタム Hermes skill を管理し、Hermes のランタイム skills ディレクトリへ同期できる。
 
-## Layout
+## 構成
 
 ```text
 skills/
@@ -13,48 +13,48 @@ skills/
         waf.py
 ```
 
-Runtime target:
+ランタイムの同期先：
 
 ```text
 /opt/data/skills/
 ```
 
-In the Docker Compose setup, `/opt/data` is backed by `runtime/hermes-data` on the host.
+Docker Compose 構成では、ホストの `runtime/hermes-data` がコンテナ内の `/opt/data` にマップされている。
 
-## Sync
+## 同期方法
 
-Use the dedicated Compose profile:
+専用の Compose profile を使う：
 
 ```bash
 docker compose --profile skills-sync run --rm --build skills-sync
 ```
 
-This copies repo-managed skills from `/managed-skills/` into `/opt/data/skills/` with `rsync -a`.
-It merges into the existing skills directory instead of replacing it.
+これはリポジトリ管理の skills を `/managed-skills/` から `/opt/data/skills/` へ `rsync -a` でコピーする。
+既存の skills ディレクトリを上書きするのではなく、マージする。
 
-## Why not bind mount over `/opt/data/skills`?
+## なぜ `/opt/data/skills` へのバインドマウントは避けるか
 
-Do not mount `./skills` directly on `/opt/data/skills`.
-That would hide the existing Hermes skills and any installed/generated skills.
+`./skills` を直接 `/opt/data/skills` にマウントしないでください。
+そうすると、Hermes 既存の skills やインストール/生成済みの skills が見えなくなります。
 
-The safe pattern is:
+安全なパターン：
 
-1. mount repo-managed skills read-only at `/managed-skills`
-2. copy/merge into `/opt/data/skills`
+1. リポジトリ管理の skills を `/managed-skills` に読み取り専用でマウントする
+2. `/opt/data/skills` へコピー/マージする
 
-## Safety
+## 安全上の注意
 
-- Keep secrets out of skills.
-- Keep runtime DBs out of Git.
-- Track skill source and docs, not private user data.
-- Run a secret scan before committing skill changes.
+- skill に secret を含めない
+- ランタイム DB は Git 管理しない
+- skill のソースとドキュメントだけを追跡し、個人データは管理しない
+- skill の変更を commit する前に secret スキャンを実施する
 
-## Execution Policy
+## 実行ポリシー
 
-Custom skills in this repository follow the **Skill Execution Policy** in `guide/skill-execution-policy.md`:
+このリポジトリのカスタム skill は、`guide/skill-execution-policy.md` の **Skill 実行方針** に従う：
 
-> **Hermes native tools / MCP tools first; CLI only as last resort.**
+> **Hermes 組み込みツール / MCP ツールを最優先。CLI 直打ちは最終手段。**
 
-When a skill needs to access an external service, prefer built-in Hermes tools or MCP servers. Avoid `terminal`-based shell wrappers that pass Japanese text, newlines, or quotes through CLI arguments, because Hermes' pre-exec security scanner flags them and stops execution with an approval prompt.
+skill が外部サービスにアクセスする場合、Hermes の組み込みツールや MCP サーバーを優先して使う。日本語文字、改行、引用符を CLI 引数として渡す `terminal` ベースの shell wrapper は避ける。Hermes の実行前セキュリティスキャナに引っかかり、承認プロンプトが出て自動実行が止まるからだ。
 
-Read the full policy before authoring or refactoring repo-managed skills.
+カスタム skill を作成またはリファクタリングする前に、完全なポリシーを一度読んでおくこと。
