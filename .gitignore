@@ -1,13 +1,16 @@
 # Hide runtime noise by default
 runtime/*
+!runtime/hermes-family-data/  # directory itself allowed if needed, contents ignored by wildcard below
 
 # Allow whitelist traversal
 !runtime/
 !runtime/hermes-data/
+!runtime/hermes-family-data/  # allow the directory to be created, but ignore contents
 
 # Ignore everything inside Hermes runtime unless explicitly whitelisted below.
 # Important: files already tracked must also be removed with `git rm --cached`.
 runtime/hermes-data/**
+runtime/hermes-family-data/**
 
 # Track portable Hermes config/state only
 !runtime/hermes-data/config.yaml

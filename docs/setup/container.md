@@ -293,3 +293,73 @@ docker run --rm --entrypoint sh -v "$PWD/runtime:/host" nousresearch/hermes-agen
 docker compose build hermes
 docker compose up -d hermes
 ```
+
+---
+
+## Family instance — Gemma-only 無料別インスタンス
+
+身内向けの別 Hermes インスタンス。メインインスタンスとは完全に分離し、Google AI Studio の無料キーで `gemma-4-31b-it` のみを使う。
+
+### 起動手順
+
+```bash
+# 1. 専用 .env を作成
+cp .env.family.example .env.family
+# 必要に応じて HERMES_UID / HERMES_GID を修正
+
+# 2. データディレクトリ作成
+mkdir -p runtime/hermes-family-data
+
+# 3. 設定コピー
+mkdir -p runtime/hermes-family-data
+cp config/hermes-config.family.yaml runtime/hermes-family-data/config.yaml
+
+# 4. SOUL.md はメインからコピーするか、家族向けに調整
+# cp runtime/hermes-data/SOUL.md runtime/hermes-family-data/SOUL.md
+
+# 5. セットアップウィザード
+#    環境変数 .env.family を使用してセットアップ
+docker compose --env-file .env.family --profile setup run --rm setup
+```
+
+セットアップ後、`runtime/hermes-family-data/.env` に以下を記載する。
+
+```env
+# 無料 Google AI Studio キーのみ
+GOOGLE_API_KEY=***
+# または GEMINI_API_KEY=***
+
+# Discord を使う場合は別 bot token が必須
+DISCORD_BOT_TOKEN=***
+DISCORD_ALLOWED_USERS=123456789012345678
+DISCORD_ALLOW_ALL_USERS=false
+GATEWAY_ALLOW_ALL_USERS=false
+```
+
+起動:
+
+```bash
+docker compose --env-file .env.family up -d hermes-family
+docker compose --env-file .env.family logs -f hermes-family
+```
+
+停止:
+
+```bash
+docker compose --env-file .env.family down
+```
+
+### 注意
+
+- **bot token**: メインインスタンスと同じ Discord bot token を使うと競合・切断ループが起きる。必ず別 token を発行すること。
+- **有料 provider キーの混入防止**: `runtime/hermes-family-data/.env` に `OPENROUTER_API_KEY` や `OPENAI_API_KEY` などを含めない。config で `fallback_providers: []` かつ auxiliary を全て `google/gemma-4-31b-it` に固定しているが、キーがあれば fallback/auxiliary で有料モデルへの逃げが可能な場合がある。
+- **quota 切れ**: Google AI Studio 無料枠の制限に達した場合、素直に失敗する。有料 fallback はしない。
+- **ディスク**: `runtime/hermes-family-data` は `runtime/hermes-data` と完全に分離している。セッションログや添付ファイルが混ざらない。
+
+### 運用チェック
+
+```bash
+docker compose --env-file .env.family config
+docker compose --env-file .env.family ps
+docker compose --env-file .env.family logs --tail 100 hermes-family
+```

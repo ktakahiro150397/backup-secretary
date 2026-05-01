@@ -1,0 +1,92 @@
+# Gemma-only free-tier Hermes config for the family instance.
+# Copy into runtime/hermes-family-data/config.yaml after setup.
+# No paid providers — Google AI Studio free key only.
+
+model:
+  model: gemma-4-31b-it
+  provider: google
+  default: gemma-4-31b-it
+  api_mode: chat_completions
+providers: {}
+fallback_providers: []
+credential_pool_strategies: {}
+
+delegation:
+  provider: google
+  model: gemma-4-31b-it
+  max_concurrent_children: 3
+  max_spawn_depth: 1
+  orchestrator_enabled: true
+  subagent_auto_approve: false
+
+# Lock all auxiliary tasks to the same free Gemma model so nothing
+# silently routes to a paid provider.
+auxiliary:
+  vision:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 120
+  web_extract:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 360
+  compression:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 120
+  session_search:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 30
+    max_concurrency: 3
+  skills_hub:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 30
+  approval:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 30
+  mcp:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 30
+  title_generation:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 30
+  curator:
+    provider: google
+    model: gemma-4-31b-it
+    timeout: 600
+
+terminal:
+  backend: local
+  cwd: /workspace
+  timeout: 180
+  env_passthrough: []
+
+approvals:
+  mode: manual
+  timeout: 60
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+
+tool_output:
+  max_bytes: 50000
+  max_lines: 2000
+  max_line_length: 2000
+
+security:
+  website_blocklist:
+    enabled: true
+    domains:
+      - "169.254.169.254"
+      - "localhost"
+      - "127.0.0.1"
+      - "*.local"
+    shared_files: []
