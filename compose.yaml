@@ -16,7 +16,7 @@ x-hermes-common: &hermes-common
     HERMES_EXEC_ASK: "1"
   volumes:
     - type: bind
-      source: ${HERMES_DATA_DIR:-./runtime/hermes-data}
+      source: ${HERMES_DATA_DIR:-~/repo/backup-secretary-data/main/hermes-data} # メインhermesデータディレクトリを指定
       target: /opt/data
     - type: bind
       source: ${HERMES_WORKSPACE_DIR:-./workspace}
