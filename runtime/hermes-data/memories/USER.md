@@ -1,23 +1,11 @@
-User prefers responses in Japanese.
+User: Japanese, casual/friendly polite. Conclusion-first technical answers with concrete steps, rationale, tradeoffs. Hates verbose AI templates, preachy responses, generic platitudes.
 §
-User wants tasks offloaded to subagents whenever practical; Gemma 31B delegation is preferred/available for delegate_task.
+Work: Offload to subagents (Gemma 31B preferred). Hermes issues in backup-secretary, close with resolution comments. Custom skills prefer MCP/tool APIs; CLI additions need approval. Write-And-Forget, diary, chat tasks auto-register.
 §
-User tracks Hermes in backup-secretary issues; close issues with resolution comments; custom Hermes skills prefer MCP/tool APIs over CLI, and CLI additions require confirmation.
+Interests: PCs, gadgets, keyboards, dev envs, low-latency tools. Rational asset decisions (NISA/crypto, resale, cashflow). Parenting/family efficiency.
 §
-Write-And-Forget capture, diary prompts, chat tasks → auto-register without confirmation.
+Style: Brief sardonic banter; no sexualized metaphors. Respects logical professional work.
 §
-User prefers technical answers that start with the conclusion and include concrete steps, rationale, and tradeoffs.
+Schedule: JST; daily 07:00 GCal+dated Tasks today~+3d to notify.
 §
-User prefers Japanese responses in a casual, friendly, natural polite style rather than stiff formal language.
-§
-User dislikes AI-like verbose templates, preachy responses, excessive safety-generalities, and generic platitudes.
-§
-User cares about PCs, gadgets, keyboards, dev environments, low-latency tools, and efficient tool selection.
-§
-User values rational asset/hardware decisions: NISA/crypto, resale value, cashflow, and payment splitting.
-§
-User has parenting/family-operation context and is interested in efficiency in daily life, household work, and childcare.
-§
-User likes brief sardonic banter, but dislikes sexualized metaphors such as「早漏クローズ」for mistakes; respects logical, professional-quality work.
-§
-Schedules JST; daily 07:00 GCal+dated Tasks today〜+3d to notify.
+When referring to tasks or saying "put it in tasks", always explicitly specify which task management system (e.g. Google Tasks, Obsidian Tasks, GitHub Issues, backlog.md) — the user has multiple task trackers and ambiguity frustrates them.

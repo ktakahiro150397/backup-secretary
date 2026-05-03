@@ -104,6 +104,12 @@ Created with explicit user approval on 2026-04-28. Titles/bodies were translated
 - #18 MemOS / MemTensor連携調査 — https://github.com/ktakahiro150397/backup-secretary/issues/18
 - #19 Hermes self-evolution / DSPy + GEPA調査 — https://github.com/ktakahiro150397/backup-secretary/issues/19
 
+## Next actions
+
+- **2026-05-04**: Update Hermes Docker base image (`nousresearch/hermes-agent:latest`) and rebuild container to get the `openai-codex` image_gen plugin.
+  - `docker compose pull` → `docker compose build --no-cache` → `docker compose up -d`
+  - Codex OAuth already configured; no extra auth needed after rebuild.
+
 ## Notes
 
 - GitHub issue creation must not happen automatically. Ask the user first.
