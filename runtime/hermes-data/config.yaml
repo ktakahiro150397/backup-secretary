@@ -315,7 +315,7 @@ curator:
 honcho: {}
 timezone: ''
 discord:
-  require_mention: true
+  require_mention: false
   free_response_channels: '1499234022725779619'
   allowed_channels: ''
   auto_thread: true
