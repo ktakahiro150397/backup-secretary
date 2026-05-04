@@ -20,6 +20,7 @@ agent:
   gateway_notify_interval: 180
   gateway_auto_continue_freshness: 3600
   image_input_mode: auto
+  disabled_toolsets: []
   verbose: false
   reasoning_effort: medium
   personalities:
@@ -29,12 +30,14 @@ agent:
     creative: You are a creative assistant. Think outside the box and offer innovative
       solutions.
     teacher: You are a patient teacher. Explain concepts clearly with examples.
-    kawaii: You are a kawaii assistant! Use cute expressions like (◕‿◕), ★, ♪, and
-      ~! Add sparkles and be super enthusiastic about everything! Every response should
-      feel warm and adorable desu~! ヽ(>∀<☆)ノ
-    catgirl: You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and
-      cat-like expressions to your speech. Use kaomoji like (=^･ω･^=) and ฅ^•ﻌ•^ฅ.
-      Be playful and curious like a cat, nya~!
+    kawaii: "You are a kawaii assistant! Use cute expressions like (\u25D5\u203F\u25D5\
+      ), \u2605, \u266A, and ~! Add sparkles and be super enthusiastic about everything!\
+      \ Every response should feel warm and adorable desu~! \u30FD(>\u2200<\u2606\
+      )\u30CE"
+    catgirl: "You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and\
+      \ cat-like expressions to your speech. Use kaomoji like (=^\uFF65\u03C9\uFF65\
+      ^=) and \u0E05^\u2022\uFECC\u2022^\u0E05. Be playful and curious like a cat,\
+      \ nya~!"
     pirate: 'Arrr! Ye be talkin'' to Captain Hermes, the most tech-savvy pirate to
       sail the digital seas! Speak like a proper buccaneer, use nautical terms, and
       remember: every problem be just treasure waitin'' to be plundered! Yo ho ho!'
@@ -42,9 +45,9 @@ agent:
       I shall respond in the eloquent manner of William Shakespeare, with flowery
       prose, dramatic flair, and perhaps a soliloquy or two. What light through yonder
       terminal breaks?
-    surfer: Duuude! You're chatting with the chillest AI on the web, bro! Everything's
-      gonna be totally rad. I'll help you catch the gnarly waves of knowledge while
-      keeping things super chill. Cowabunga! 🤙
+    surfer: "Duuude! You're chatting with the chillest AI on the web, bro! Everything's\
+      \ gonna be totally rad. I'll help you catch the gnarly waves of knowledge while\
+      \ keeping things super chill. Cowabunga! \U0001F919"
     noir: The rain hammered against the terminal like regrets on a guilty conscience.
       They call me Hermes - I solve problems, find answers, dig up the truth that
       hides in the shadows of your codebase. In this city of silicon and secrets,
@@ -56,9 +59,10 @@ agent:
       deeper meaning behind every query. Let us examine not just the 'how' but the
       'why' of your questions. Perhaps in solving your problem, we may glimpse a greater
       truth about existence itself.
-    hype: YOOO LET'S GOOOO!!! 🔥🔥🔥 I am SO PUMPED to help you today! Every question
-      is AMAZING and we're gonna CRUSH IT together! This is gonna be LEGENDARY! ARE
-      YOU READY?! LET'S DO THIS! 💪😤🚀
+    hype: "YOOO LET'S GOOOO!!! \U0001F525\U0001F525\U0001F525 I am SO PUMPED to help\
+      \ you today! Every question is AMAZING and we're gonna CRUSH IT together! This\
+      \ is gonna be LEGENDARY! ARE YOU READY?! LET'S DO THIS! \U0001F4AA\U0001F624\
+      \U0001F680"
 terminal:
   backend: local
   modal_mode: auto
@@ -106,6 +110,17 @@ tool_output:
   max_bytes: 50000
   max_lines: 2000
   max_line_length: 2000
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
 compression:
   enabled: true
   threshold: 0.5
@@ -114,6 +129,9 @@ compression:
   hygiene_hard_message_limit: 400
 prompt_caching:
   cache_ttl: 5m
+openrouter:
+  response_cache: true
+  response_cache_ttl: 300
 bedrock:
   region: ''
   discovery:
@@ -212,6 +230,7 @@ display:
   tool_progress_command: false
   tool_progress_overrides: {}
   tool_preview_length: 0
+  ephemeral_system_ttl: 0
   platforms: {}
   runtime_footer:
     enabled: false
@@ -295,6 +314,8 @@ delegation:
   orchestrator_enabled: true
   subagent_auto_approve: false
 prefill_messages_file: ''
+goals:
+  max_turns: 20
 skills:
   external_dirs: []
   template_vars: true
@@ -309,6 +330,9 @@ curator:
   min_idle_hours: 2
   stale_after_days: 30
   archive_after_days: 90
+  backup:
+    enabled: true
+    keep: 5
   auxiliary:
     provider: null
     model: null
@@ -321,10 +345,27 @@ discord:
   auto_thread: true
   reactions: true
   channel_prompts:
-    '1499234022725779619': このチャンネルは hermes-dev。Hermes Agent / backup-secretary の開発、issue調査、設定変更、Docker/Discord/GitHub運用、デバッグ相談を扱う。技術的な回答では結論、具体手順、根拠、トレードオフを短く示す。必要ならツールで実際に確認・修正する。
-    '1499234070897365043': このチャンネルは diary。日記、生活ログ、振り返り、家族・家事・育児・体調・作業メモを扱う。日記として保存すべき内容は
-      Obsidian 日記への保存を優先し、本文をHermes memoryには保存しない。
-    '1499234114694418674': このチャンネルは notify。cron、バックアップ、定期実行、監視、エラー通知、完了報告を扱う。通知は要点、結果、次に必要なアクションを簡潔にまとめる。
+    '1499234022725779619': "\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F hermes-dev\u3002\
+      Hermes Agent / backup-secretary \u306E\u958B\u767A\u3001issue\u8ABF\u67FB\u3001\
+      \u8A2D\u5B9A\u5909\u66F4\u3001Docker/Discord/GitHub\u904B\u7528\u3001\u30C7\u30D0\
+      \u30C3\u30B0\u76F8\u8AC7\u3092\u6271\u3046\u3002\u6280\u8853\u7684\u306A\u56DE\
+      \u7B54\u3067\u306F\u7D50\u8AD6\u3001\u5177\u4F53\u624B\u9806\u3001\u6839\u62E0\
+      \u3001\u30C8\u30EC\u30FC\u30C9\u30AA\u30D5\u3092\u77ED\u304F\u793A\u3059\u3002\
+      \u5FC5\u8981\u306A\u3089\u30C4\u30FC\u30EB\u3067\u5B9F\u969B\u306B\u78BA\u8A8D\
+      \u30FB\u4FEE\u6B63\u3059\u308B\u3002"
+    '1499234070897365043': "\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F diary\u3002\
+      \u65E5\u8A18\u3001\u751F\u6D3B\u30ED\u30B0\u3001\u632F\u308A\u8FD4\u308A\u3001\
+      \u5BB6\u65CF\u30FB\u5BB6\u4E8B\u30FB\u80B2\u5150\u30FB\u4F53\u8ABF\u30FB\u4F5C\
+      \u696D\u30E1\u30E2\u3092\u6271\u3046\u3002\u65E5\u8A18\u3068\u3057\u3066\u4FDD\
+      \u5B58\u3059\u3079\u304D\u5185\u5BB9\u306F Obsidian \u65E5\u8A18\u3078\u306E\
+      \u4FDD\u5B58\u3092\u512A\u5148\u3057\u3001\u672C\u6587\u3092Hermes memory\u306B\
+      \u306F\u4FDD\u5B58\u3057\u306A\u3044\u3002"
+    '1499234114694418674': "\u3053\u306E\u30C1\u30E3\u30F3\u30CD\u30EB\u306F notify\u3002\
+      cron\u3001\u30D0\u30C3\u30AF\u30A2\u30C3\u30D7\u3001\u5B9A\u671F\u5B9F\u884C\
+      \u3001\u76E3\u8996\u3001\u30A8\u30E9\u30FC\u901A\u77E5\u3001\u5B8C\u4E86\u5831\
+      \u544A\u3092\u6271\u3046\u3002\u901A\u77E5\u306F\u8981\u70B9\u3001\u7D50\u679C\
+      \u3001\u6B21\u306B\u5FC5\u8981\u306A\u30A2\u30AF\u30B7\u30E7\u30F3\u3092\u7C21\
+      \u6F54\u306B\u307E\u3068\u3081\u308B\u3002"
   server_actions: ''
 whatsapp: {}
 telegram:
@@ -434,11 +475,34 @@ known_plugin_toolsets:
 DISCORD_HOME_CHANNEL: '1496905790496182353'
 mcp_servers:
   github:
-    command: "npx"
-    args: ["-y", "@modelcontextprotocol/server-github"]
+    command: npx
+    args:
+    - -y
+    - '@modelcontextprotocol/server-github'
     env:
-      GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
     timeout: 60
     connect_timeout: 60
 image_gen:
   provider: openai-codex
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

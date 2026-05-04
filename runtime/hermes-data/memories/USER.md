@@ -11,3 +11,5 @@ Schedule: JST; daily 07:00 GCal+dated Tasks today~+3d to notify.
 When referring to tasks or saying "put it in tasks", always explicitly specify which task management system (e.g. Google Tasks, Obsidian Tasks, GitHub Issues, backlog.md) — the user has multiple task trackers and ambiguity frustrates them.
 §
 Prefers gh CLI for GitHub operations to avoid command-approval blocks and MCP permission issues.
+§
+User wants to set up role-based Hermes profiles (research/taskmaster/lifestyle) inspired by vmiss33 and gkisokay articles. Finds delegate_task too coarse for structured multi-agent work. Primarily uses Discord gateway, not CLI. Currently runs single profile (kimi-k2.6 via OpenCode Go) with no Hermes profiles configured. Interested in vault-based research agent patterns with evidence accumulation.

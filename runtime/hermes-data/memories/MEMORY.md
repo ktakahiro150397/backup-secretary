@@ -1,10 +1,8 @@
 File transfer: WSL→server via scp (yanelmoserver).
 §
-Hermes code repo: ktakahiro150397/backup-secretary.
+Hermes code repo: ktakahiro150397/backup-secretary; issue backlog at /opt/data/plans/hermes-issues-backlog.md; create issues only with approval.
 §
 Hermes and house-expense run in separate Docker containers on the same server.
-§
-Issue backlog: /opt/data/plans/hermes-issues-backlog.md; create issues only with approval.
 §
 Obsidian vault: ktakahiro150397/obsidian_git; clone at /opt/data/obsidian/obsidian_git; writes to main branch.
 §
@@ -23,3 +21,5 @@ When user says "put in tasks" / "タスクに入れる", they mean Google Tasks.
 Cron job testing workflow: temporarily redirect deliver to the current DM thread, run the job, verify output, then revert deliver to the original channel.
 §
 Hermes Agent image generation via Codex OAuth: add `image_gen.provider: openai-codex` to `config.yaml` to use GPT Image 2 without a FAL key. Model quality can be set via `image_gen.openai-codex.model` with values `gpt-image-2-low`, `gpt-image-2-medium` (default), or `gpt-image-2-high`. Generated images are saved to `$HERMES_HOME/cache/images/`.
+§
+Terminal commands require user approval in this environment. GitHub operations MUST use gh CLI or MCP server APIs exclusively. Never use curl/browser for GitHub releases or pages when gh/MCP alternative exists.
