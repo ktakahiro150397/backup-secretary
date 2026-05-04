@@ -12,6 +12,8 @@ RUN set -eux; \
   npm install -g @openai/codex; \
   npm install -g @anthropic-ai/claude-code; \
   npm cache clean --force; \
+  # Install Scrapling for web extraction fallback (stealthy_fetch / fetch for JS-required & bot-protected sites)
+  . /opt/hermes/.venv/bin/activate && uv pip install --no-cache-dir "scrapling[ai]"; \
   if [ "$HERMES_GID" != "$(id -g hermes)" ]; then \
   groupmod -o -g "$HERMES_GID" hermes; \
   fi; \
