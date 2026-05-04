@@ -140,6 +140,24 @@ services:
     cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
+  open-llm-vtuber:
+    image: ${OLLV_IMAGE:-open-llm-vtuber:latest}
+    container_name: open-llm-vtuber
+    restart: unless-stopped
+    networks:
+      - hermes-net
+    volumes:
+      - type: bind
+        source: ${OLLV_CONFIG_DIR:-./config/open-llm-vtuber}
+        target: /app/config
+      - type: bind
+        source: ${OLLV_MODELS_DIR:-./runtime/ollv-models}
+        target: /app/models
+    ports:
+      - "${OLLV_PORT:-12393}:12393"
+    environment:
+      - TZ=Asia/Tokyo
+
 networks:
   hermes-net:
     driver: bridge

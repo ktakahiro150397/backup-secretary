@@ -123,29 +123,28 @@ def event_priority_item(ev: dict, today: date, last_day: date) -> tuple[int, str
     diff = (d - today).days
 
     if all_day:
-        when = "終日"
-    elif end and end.date() == d:
+        return None
+
+    if end and end.date() == d:
         when = f"{start:%H:%M}-{end:%H:%M}"
     else:
         when = f"{start:%H:%M}〜"
 
     if diff == 0:
         if "支払" in title or "支払い" in title or "期限" in title or "振込" in title:
-            return 1, f"今日の最優先: {title} を午前中に処理/確認。放置すると忘れるやつです。"
-        if not all_day:
-            return 5, f"今日の固定予定: {when} {title} [{cal}]。開始30分前に移動/準備。"
-        return 12, f"今日中: {title} [{cal}] を片付ける/確認する。"
+            return 1, f"【最優先】{title} を午前中に処理する。"
+        return 3, f"【固定予定】{when} {title} [{cal}] 。開始30分前に準備する。"
 
     if signal:
         if "予約" in title:
-            action = "予約・持ち物・移動時間を前日までに確認"
+            action = "予約・持ち物・移動時間を前日までに確認する"
         elif "病院" in title or "耳鼻" in title or "歯科" in title or "カウンセリング" in title:
-            action = "保険証/診察券/移動時間を先に確認"
+            action = "保険証と診察券を準備する"
         elif "実家" in title:
             action = "持ち物と出発時間を決める"
         else:
-            action = "前倒しで準備"
-        return 30 + diff, f"先回り: {day_label(d, today)} {when} {title} — {action}。"
+            action = "前倒しで準備する"
+        return 20 + diff, f"【先回り】{day_label(d, today)} {when} {title} — {action}。"
 
     return None
 
@@ -158,23 +157,21 @@ def task_priority_item(task: dict, list_title: str, today: date, last_day: date)
         return None
     title = task.get("title") or "(無題タスク)"
     if due < today:
-        return 0, f"期限切れ: {title} [{list_title}] をまず処理するか、不要なら完了/削除。"
+        return 0, f"【期限切れ】{title} [{list_title}] を完了または延期する。"
     diff = (due - today).days
     if diff == 0:
-        return 3, f"今日のタスク: {title} [{list_title}] を午前中に着手。"
-    if contains_high_signal(title):
-        return 20 + diff, f"先回りタスク: {day_label(due, today)}期限の {title} [{list_title}] を今日少し進める。"
-    return 45 + diff, f"余力枠: {day_label(due, today)}期限の {title} [{list_title}]。"
+        return 2, f"【今日のタスク】{title} [{list_title}] を午前中に着手する。"
+    return None
 
 
 def build_priority_lines(priority_items: list[tuple[int, str]]) -> list[str]:
     if not priority_items:
         return [
-            "## まずやること",
-            "- 今日は固定の優先アクションは少なめ。カレンダー確認だけして、重い作業を1つ先に置くのがよさそうです。",
+            "## 今日の優先アクション",
+            "特に急ぎのアクションはなし。ゆっくり始める。",
         ]
 
-    lines = ["## まずやること"]
+    lines = ["## 今日の優先アクション"]
     seen: set[str] = set()
     rank = 1
     for _, text in sorted(priority_items, key=lambda x: x[0]):
@@ -246,29 +243,17 @@ def main() -> int:
         d = today + timedelta(days=i)
         evs = sorted(events_by_day.get(d, []))
         tks = sorted(tasks_by_day.get(d, []))
+        if not evs and not tks:
+            continue
+        any_items = True
         lines.append("")
         lines.append(f"## {day_label(d, today)}")
         if evs:
-            any_items = True
             lines.append("予定:")
             lines.extend(evs)
-        else:
-            lines.append("予定: なし")
         if tks:
-            any_items = True
             lines.append("タスク:")
             lines.extend(tks)
-        else:
-            lines.append("タスク: なし")
-
-    overdue_days = sorted(d for d in tasks_by_day if d < today)
-    if overdue_days:
-        any_items = True
-        lines.append("")
-        lines.append("## 期限切れタスク")
-        for d in overdue_days:
-            lines.append(day_label(d, today))
-            lines.extend(sorted(tasks_by_day[d]))
 
     if not any_items:
         lines.append("")
