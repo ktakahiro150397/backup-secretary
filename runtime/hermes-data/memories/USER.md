@@ -10,6 +10,4 @@ Schedule: JST; daily 07:00 GCal+dated Tasks today~+3d to notify.
 §
 When referring to tasks or saying "put it in tasks", always explicitly specify which task management system (e.g. Google Tasks, Obsidian Tasks, GitHub Issues, backlog.md) — the user has multiple task trackers and ambiguity frustrates them.
 §
-Avoids OpenRouter for automated/cron jobs due to billing concerns; prefers Google/gemma provider for scheduled tasks.
-§
 Prefers gh CLI for GitHub operations to avoid command-approval blocks and MCP permission issues.

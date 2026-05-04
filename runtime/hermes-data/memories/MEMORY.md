@@ -21,3 +21,5 @@ Web extraction fallback: Scrapling (`stealthy_fetch`/`fetch`) is used as a fallb
 When user says "put in tasks" / "タスクに入れる", they mean Google Tasks. Not backlog.md, not Obsidian Tasks, not todo lists — always Google Tasks. Same correction was given before. Do not ask again.
 §
 Cron job testing workflow: temporarily redirect deliver to the current DM thread, run the job, verify output, then revert deliver to the original channel.
+§
+Hermes Agent image generation via Codex OAuth: add `image_gen.provider: openai-codex` to `config.yaml` to use GPT Image 2 without a FAL key. Model quality can be set via `image_gen.openai-codex.model` with values `gpt-image-2-low`, `gpt-image-2-medium` (default), or `gpt-image-2-high`. Generated images are saved to `$HERMES_HOME/cache/images/`.

@@ -107,15 +107,15 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 7
+        "completed": 8
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-04T12:00:00+00:00",
-      "last_run_at": "2026-05-03T12:01:16.897442+00:00",
+      "next_run_at": "2026-05-05T12:00:00+00:00",
+      "last_run_at": "2026-05-04T12:00:24.357992+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -148,15 +148,15 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 9
+        "completed": 10
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-28T06:44:35.643862+00:00",
-      "next_run_at": "2026-05-04T12:00:00+00:00",
-      "last_run_at": "2026-05-03T12:35:07.534298+00:00",
+      "next_run_at": "2026-05-05T12:00:00+00:00",
+      "last_run_at": "2026-05-04T12:24:01.016524+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -191,15 +191,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 19
+        "completed": 20
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-04T15:00:00+00:00",
-      "last_run_at": "2026-05-04T03:00:52.152405+00:00",
+      "next_run_at": "2026-05-04T21:00:00+00:00",
+      "last_run_at": "2026-05-04T09:00:52.422202+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -257,7 +257,54 @@
         "terminal"
       ],
       "workdir": null
+    },
+    {
+      "id": "b0bf063ae7e2",
+      "name": "obsidian-wiki-weekly-update",
+      "prompt": "Obsidian vault \u306b\u3042\u308b test_takahiro Wiki \u3092\u9031\u6b21\u3067\u66f4\u65b0\u3059\u308b\u3002\n\n**Vault \u30d1\u30b9**: /opt/data/obsidian/obsidian_git\n**Wiki \u30d5\u30a1\u30a4\u30eb**: /opt/data/obsidian/obsidian_git/20_Areas/\u81ea\u5df1\u7ba1\u7406/test_takahiro Wiki.md\n\n## \u624b\u9806\n\n1. `terminal`\u3067 `git pull --rebase --autostash origin main || true` \u3092\u5b9f\u884c\u3057\u3001\u6700\u65b0\u3092\u53d6\u5f97\n2. `session_search`\u3067 `query=\"test_takahiro\", limit=5` \u3092\u5b9f\u884c\u3057\u3001\u76f4\u8fd1\u306e\u4f1a\u8a71\u3092\u78ba\u8a8d\n3. `read_file`\u3067 Wiki \u30d5\u30a1\u30a4\u30eb\u3092\u8aad\u307f\u8fbc\u307f\n4. \u65b0\u3057\u3044\u6c7a\u5b9a\u4e8b\u9805\u3001\u8208\u547b\u30fb\u95a2\u5fc3\u306e\u5909\u5316\u3001\u74b0\u5883\u5909\u66f4\u3001\u91cd\u8981\u306a\u51fa\u6765\u4e8b\u306a\u3069\u304c\u3042\u308c\u3070\u3001\u300c## \u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u30fb\u6c7a\u5b9a\u4e8b\u9805\u5c65\u6b74\u300d\u30bb\u30af\u30b7\u30e7\u30f3\u306b\u8ffd\u8a18\uff08`| \u65e5\u4ed8 | \u5185\u5bb9 | \u72b6\u614b |`\u306e\u5f62\u5f0f\uff09\n5. frontmatter \u306e `updated:` \u65e5\u4ed8\u3092\u4eca\u65e5\u306b\u66f4\u65b0\n6. `terminal`\u3067 `git add -A && git commit -m \"wiki: weekly update $(date +%Y-%m-%d)\" && git push origin main` \u3092\u5b9f\u884c\n7. \u5909\u66f4\u5185\u5bb9\u306e\u30b5\u30de\u30ea\u30fc\u3092\u5831\u544a\u3002\u5909\u66f4\u304c\u306a\u3051\u308c\u3070\u300c\u4eca\u9031\u306e\u66f4\u65b0\u306f\u3042\u308a\u307e\u305b\u3093\u3067\u3057\u305f\u300d\u3068\u5831\u544a\n\n## \u6ce8\u610f\n- \u65e5\u8a18\u3084\u500b\u4eba\u7684\u306a\u30d7\u30e9\u30a4\u30d9\u30fc\u30c8\u5185\u5bb9\u306f\u8ffd\u8a18\u3057\u306a\u3044\n- \u6280\u884c\u7684\u306a\u6c7a\u5b9a\u4e8b\u9805\u3001\u8208\u547b\u306e\u5909\u5316\u3001\u74b0\u5883\u5909\u66f4\u3001\u65b0\u898f\u30d7\u30ed\u30b8\u30a7\u30af\u30c8\u767a\u8db3\u306a\u3069\u306e\u307f\u8ffd\u8a18\n- table \u306e\u5f62\u5f0f\u3092\u5d29\u3055\u306a\u3044\u3088\u3046\u306b\u884c\u3092\u8ffd\u52a0\u3059\u308b\n- \u8ffd\u8a18\u3059\u308b\u5185\u5bb9\u304c\u306a\u3044\u5834\u5408\u306f updated: \u3060\u3051\u66f4\u65b0\u3057\u3066 commit \u3057\u3066\u3082\u3088\u3044",
+      "skills": [
+        "obsidian"
+      ],
+      "skill": "obsidian",
+      "model": "kimi-k2.6",
+      "provider": "opencode-go",
+      "base_url": null,
+      "script": null,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 22 * * 0",
+        "display": "0 22 * * 0"
+      },
+      "schedule_display": "0 22 * * 0",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-04T11:03:48.155135+00:00",
+      "next_run_at": "2026-05-10T22:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "discord",
+        "chat_id": "1500796866105835582",
+        "chat_name": "BotGarden / #hermes-dev / \u4eca\u307e\u3067\u306e\u5c65\u6b74\u304b\u3089\u3001\u4ffa\u306b\u95a2\u3059\u308b\u60c5\u5831\u306eobsidian\u3067\u53c2\u7167\u3067\u304d\u308bwiki\u3092\u4f5c\u6210\u3001\u30e1\u30f3\u30c6\u3059\u308b\u3053\u3068\u3063\u3066\u3067\u304d\u308b\uff1f \u305d\u306e\u5834\u5408\u3001\u73fe\u6642\u70b9\u3067\u306f\u3069\u306e\u3088\u3046\u306a\u5185\u5bb9\u306b\u306a\u308b\u304b\u306a",
+        "thread_id": "1500796866105835582"
+      },
+      "enabled_toolsets": [
+        "terminal",
+        "file",
+        "search"
+      ],
+      "workdir": "/opt/data/obsidian/obsidian_git"
     }
   ],
-  "updated_at": "2026-05-04T09:00:27.483773+00:00"
+  "updated_at": "2026-05-04T15:00:02.411514+00:00"
 }

@@ -315,8 +315,8 @@ curator:
 honcho: {}
 timezone: ''
 discord:
-  require_mention: false
-  free_response_channels: '1499234022725779619'
+  require_mention: true
+  free_response_channels: ''
   allowed_channels: ''
   auto_thread: true
   reactions: true
@@ -440,3 +440,5 @@ mcp_servers:
       GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_PERSONAL_ACCESS_TOKEN}"
     timeout: 60
     connect_timeout: 60
+image_gen:
+  provider: openai-codex
