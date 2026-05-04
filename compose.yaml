@@ -107,6 +107,39 @@ services:
     stdin_open: true
     tty: true
 
+  hermes-owashota:
+    <<: *hermes-common
+    container_name: ${HERMES_OWASHOTA_CONTAINER_NAME:-backup-secretary-hermes-owashota}
+    command: gateway run
+    environment:
+      HERMES_HOME: /opt/data
+      HOME: /opt/data
+      HERMES_EXEC_ASK: "1"
+    volumes:
+      - type: bind
+        source: ${HERMES_OWASHOTA_DATA_DIR:-${HOME}/repo/backup-secretary-data/owashota/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+    ports:
+      - "${HERMES_OWASHOTA_GATEWAY_BIND:-127.0.0.1}:${HERMES_OWASHOTA_GATEWAY_PORT:-8643}:8642"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "pgrep -f 'hermes gateway run' >/dev/null"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: ${HERMES_OWASHOTA_MEMORY_LIMIT:-2g}
+    cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
+    shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
+
 networks:
   hermes-net:
     driver: bridge
