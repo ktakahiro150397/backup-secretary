@@ -301,9 +301,9 @@ memory:
   nudge_interval: 10
   flush_min_turns: 6
 delegation:
-  model: gemma-4-31b-it
-  provider: google
-  base_url: ''
+  model: moonshotai/kimi-k2.6
+  provider: opencode-go
+  base_url: https://opencode.ai/zen/go/v1
   api_key: ''
   inherit_mcp_toolsets: true
   max_iterations: 50
