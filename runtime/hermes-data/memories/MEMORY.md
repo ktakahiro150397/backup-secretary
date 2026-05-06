@@ -10,9 +10,9 @@ Web extraction fallback: Scrapling (`stealthy_fetch`/`fetch`) is used as a fallb
 §
 When user says "put in tasks" / "タスクに入れる", they mean Google Tasks. Not backlog.md, not Obsidian Tasks, not todo lists — always Google Tasks. Same correction was given before. Do not ask again.
 §
-Cron job testing workflow: temporarily redirect deliver to the current DM thread, run the job, verify output, then revert deliver to the original channel.
+User expects confirmation before installing software or running setup; dislikes unrequested installations. Values content density in creative outputs — must be self-explanatory to first-time viewers.
 §
-Hermes Agent image generation via Codex OAuth: add `image_gen.provider: openai-codex` to `config.yaml` to use GPT Image 2 without a FAL key. Model quality can be set via `image_gen.openai-codex.model` with values `gpt-image-2-low`, `gpt-image-2-medium` (default), or `gpt-image-2-high`. Generated images are saved to `$HERMES_HOME/cache/images/`.
+Google Workspace OAuth redirect URI customized to `https://yanelmo.net/hermes-auth` in setup.py for mobile auth. Must also be registered in Google Cloud Console authorized redirect URIs.
 §
 Terminal commands require user approval in this environment. GitHub operations MUST use gh CLI or MCP server APIs exclusively. Never use curl/browser for GitHub releases or pages when gh/MCP alternative exists.
 §
