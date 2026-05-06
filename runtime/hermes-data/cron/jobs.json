@@ -107,17 +107,17 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 9
+        "completed": 10
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-06T12:00:00+00:00",
-      "last_run_at": "2026-05-05T12:01:20.873165+00:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-05-07T12:00:00+00:00",
+      "last_run_at": "2026-05-06T12:01:03.108072+00:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: HTTP 500: Gemini HTTP 500 (INTERNAL): Internal error encountered.",
       "last_delivery_error": null,
       "deliver": "discord:1499234070897365043",
       "origin": {
@@ -151,15 +151,15 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 12
+        "completed": 13
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-28T06:44:35.643862+00:00",
-      "next_run_at": "2026-05-06T12:00:00+00:00",
-      "last_run_at": "2026-05-05T12:26:07.910386+00:00",
+      "next_run_at": "2026-05-07T12:00:00+00:00",
+      "last_run_at": "2026-05-06T12:22:19.718505+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -195,17 +195,17 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 27
+        "completed": 29
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-06T15:00:00+00:00",
-      "last_run_at": "2026-05-06T03:01:09.083508+00:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-05-07T03:00:00+00:00",
+      "last_run_at": "2026-05-06T15:00:32.433294+00:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: HTTP 500: Gemini HTTP 500 (INTERNAL): Internal error encountered.",
       "last_delivery_error": null,
       "deliver": "discord:1499234114694418674",
       "origin": {
@@ -355,5 +355,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-05-06T09:00:12.817520+00:00"
+  "updated_at": "2026-05-06T21:00:36.179955+00:00"
 }
