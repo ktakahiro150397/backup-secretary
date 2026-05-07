@@ -195,17 +195,17 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 29
+        "completed": 30
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-07T03:00:00+00:00",
-      "last_run_at": "2026-05-06T15:00:32.433294+00:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: HTTP 500: Gemini HTTP 500 (INTERNAL): Internal error encountered.",
+      "next_run_at": "2026-05-07T09:00:00+00:00",
+      "last_run_at": "2026-05-06T21:01:05.142606+00:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "discord:1499234114694418674",
       "origin": {
@@ -238,15 +238,15 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 7
+        "completed": 8
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-30T02:41:51.937939+00:00",
-      "next_run_at": "2026-05-06T22:00:00+00:00",
-      "last_run_at": "2026-05-05T22:01:22.043896+00:00",
+      "next_run_at": "2026-05-07T22:00:00+00:00",
+      "last_run_at": "2026-05-06T22:00:19.184065+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -312,7 +312,7 @@
     {
       "id": "7c3ac6af70dd",
       "name": "research-vault-daily-refresh",
-      "prompt": "\u6bce\u65e5\u65e5\u672c\u6642\u95937:00\u306b\u3001research-vault \u3092\u66f4\u65b0\u3059\u308b\u30b8\u30e7\u30d6\u3067\u3059\u3002\n\n**Vault \u30d1\u30b9**: `/opt/data/obsidian/obsidian_git/research-vault/`\n\n## \u5b9f\u884c\u624b\u9806\n\n1. **source-plan.md \u3092\u8aad\u3080**: `/opt/data/obsidian/obsidian_git/research-vault/context/source-plan.md` \u3092\u8aad\u3093\u3067\u3001\u4eca\u65e5\u306e\u53ce\u96c6\u5bfe\u8c61\u3092\u6c7a\u3081\u308b\u3002\n2. **\u60c5\u5831\u53ce\u96c6**: source-plan \u306b\u8f09\u3063\u3066\u3044\u308b\u5404\u30bd\u30fc\u30b9\u306b\u3064\u3044\u3066 `web_search` \u3067\u6700\u65b0\u60c5\u5831\u3092\u8abf\u3079\u308b\u3002\u6642\u9593\u306e\u90fd\u5408\u4e0a\u30012\u301c3\u30c8\u30d4\u30c3\u30af\u3060\u3051\u306b\u7d5e\u308b\u3002\n   - \u4f8b: \"OpenRouter free models tool calling\" \"Hermes Agent release\" \"\u660e\u77f3\u5e02 \u88dc\u52a9\u91d1\" \"\u500b\u4eba\u958b\u767a SaaS 2026\" \u306a\u3069\n3. **dossier \u66f4\u65b0**: \u8abf\u3079\u305f\u30c8\u30d4\u30c3\u30af\u306e dossier \u30d5\u30a1\u30a4\u30eb\uff08`dossiers/*.md`\uff09\u306b\u3001\u65b0\u3057\u3044\u60c5\u5831\u3092\u7b87\u6761\u66f8\u304d\u3067\u8ffd\u8a18\u3002\u65e2\u5b58\u30c6\u30ad\u30b9\u30c8\u306f\u6d88\u3055\u306a\u3044\u3002\n4. **findings.jsonl \u306b\u8ffd\u8a18**: `/opt/data/obsidian/obsidian_git/research-vault/knowledge/findings.jsonl` \u306e\u6700\u7d42\u884c\u306b\u3001\u8abf\u67fb\u7d50\u679c\u3092 JSON Lines \u5f62\u5f0f\u3067\u8ffd\u52a0\u3002\u5f62\u5f0f: `{\"timestamp\":\"ISO8601\",\"topic\":\"...\",\"source\":\"URL\",\"finding\":\"...\",\"evidence_strength\":\"medium\",\"tags\":[\"...\"]}`\n5. **claims.jsonl \u306b\u8ffd\u8a18\uff08\u4efb\u610f\uff09**: \u62bd\u51fa\u3067\u304d\u305f\u4e3b\u5f35\u304c\u3042\u308c\u3070 `/opt/data/obsidian/obsidian_git/research-vault/knowledge/claims.jsonl` \u306b\u8ffd\u52a0\u3002`{\"timestamp\":\"ISO8601\",\"claim\":\"...\",\"status\":\"verified|unverified\",\"source_refs\":[\"...\"],\"confidence\":0.0-1.0}`\n6. **sources.jsonl \u306b\u8ffd\u8a18**: `/opt/data/obsidian/obsidian_git/research-vault/knowledge/sources.jsonl` \u306b\u3001\u4f7f\u7528\u3057\u305f\u30bd\u30fc\u30b9\u3092\u8ffd\u52a0\u3002`{\"timestamp\":\"ISO8601\",\"source_type\":\"web_search|web_page\",\"url\":\"...\",\"title\":\"...\",\"trust_tier\":1-3,\"excerpt\":\"...\"}`\n7. **operator-brief.md \u66f4\u65b0**: `/opt/data/obsidian/obsidian_git/research-vault/notes/operator-brief.md` \u306e\u300c\u4f55\u304c\u5909\u308f\u3063\u305f\u304b\u300d\u306b\u3001\u4eca\u65e5\u306e\u53ce\u96c6\u7d50\u679c\u3092\u7c21\u6f54\u306b\u8ffd\u8a18\u3002\u65e2\u5b58\u30c6\u30ad\u30b9\u30c8\u306f\u6d88\u3055\u306a\u3044\u3002\n8. **daily-summary.md \u66f4\u65b0**: `/opt/data/obsidian/obsidian_git/research-vault/notes/daily-summary.md` \u3092\u3001\u4eca\u65e5\u306e\u65e5\u4ed8\u3068\u8abf\u67fb\u8981\u7d04\u3067\u66f8\u304d\u63db\u3048\u308b\u3002\n9. **Git commit/push**:\n   ```bash\n   cd /opt/data/obsidian/obsidian_git && git add research-vault/ && git diff --cached --quiet || (git commit -m \"cron: daily refresh $(date -u +'%Y-%m-%d')\" && git push origin main)\n   ```\n\n## \u51fa\u529b\u30eb\u30fc\u30eb\n- \u3059\u3079\u3066\u306e Markdown \u306f\u81ea\u7136\u306a\u65e5\u672c\u8a9e\u3067\u66f8\u304f\u3002\u30ab\u30bf\u30ab\u30ca\u8a9e\u306e\u4e71\u7528\u3084\u76f4\u8a33\u8abf\u3092\u907f\u3051\u308b\u3002\n- \u53ce\u96c6\u7d50\u679c\u304c\u306a\u3044\u5834\u5408\u306f\u3001\u300c\u4eca\u65e5\u306f\u65b0\u3057\u3044\u60c5\u5831\u306a\u3057\u300d\u3068\u8a18\u8f09\u3057\u3066\u7d42\u4e86\u3002\n- \u5f37\u3044\u4e3b\u5f35\u306f verified\u3001\u78ba\u8a3c\u4e0d\u5341\u5206\u306a\u3082\u306e\u306f unverified \u3068\u660e\u8a18\u3002\n- \u53e4\u3044\u60c5\u5831\u3092\u65b0\u3057\u3044\u3082\u306e\u3060\u3068\u507d\u3089\u306a\u3044\u3002\n\n## \u5b9f\u884c\u5f8c\n- \u4eca\u65e5\u306e\u53ce\u96c6\u7d50\u679c\u306e\u30b5\u30de\u30ea\u30fc\u3092\u30c7\u30a3\u30b9\u30b3\u30fc\u30c9\u306b\u901a\u77e5\u3059\u308b\u3002",
+      "prompt": "\u6bce\u65e5\u65e5\u672c\u6642\u95937:00\u306b\u3001research-vault \u3092\u66f4\u65b0\u3059\u308b\u30b8\u30e7\u30d6\u3067\u3059\u3002\n\n**Vault \u30d1\u30b9**: `/opt/data/obsidian/obsidian_git/research-vault/`\n\n## \u5b9f\u884c\u624b\u9806\n\n1. **source-plan.md \u3092\u8aad\u3080**: `/opt/data/obsidian/obsidian_git/research-vault/context/source-plan.md` \u3092\u8aad\u3093\u3067\u3001\u4eca\u65e5\u306e\u53ce\u96c6\u5bfe\u8c61\u3092\u6c7a\u3081\u308b\u3002\n2. **\u60c5\u5831\u53ce\u96c6**: source-plan \u306b\u8f09\u3063\u3066\u3044\u308b\u5404\u30bd\u30fc\u30b9\u306b\u3064\u3044\u3066 `web_search` \u3067\u6700\u65b0\u60c5\u5831\u3092\u8abf\u3079\u308b\u3002\u6642\u9593\u306e\u90fd\u5408\u4e0a\u30012\u301c3\u30c8\u30d4\u30c3\u30af\u3060\u3051\u306b\u7d5e\u308b\u3002\n3. **dossier \u66f4\u65b0**: \u8abf\u3079\u305f\u30c8\u30d4\u30c3\u30af\u306e dossier \u30d5\u30a1\u30a4\u30eb\uff08`dossiers/*.md`\uff09\u306b\u3001\u65b0\u3057\u3044\u60c5\u5831\u3092\u7b87\u6761\u66f8\u304d\u3067\u8ffd\u8a18\u3002\u65e2\u5b58\u30c6\u30ad\u30b9\u30c8\u306f\u6d88\u3055\u306a\u3044\u3002\n4. **findings.jsonl \u306b\u8ffd\u8a18**: `/opt/data/obsidian/obsidian_git/research-vault/knowledge/findings.jsonl` \u306e\u6700\u7d42\u884c\u306b\u3001\u8abf\u67fb\u7d50\u679c\u3092 JSON Lines \u5f62\u5f0f\u3067\u8ffd\u52a0\u3002\n5. **claims.jsonl \u306b\u8ffd\u8a18\uff08\u4efb\u610f\uff09**: \u62bd\u51fa\u3067\u304d\u305f\u4e3b\u5f35\u304c\u3042\u308c\u3070 `/opt/data/obsidian/obsidian_git/research-vault/knowledge/claims.jsonl` \u306b\u8ffd\u52a0\u3002\n6. **sources.jsonl \u306b\u8ffd\u8a18**: `/opt/data/obsidian/obsidian_git/research-vault/knowledge/sources.jsonl` \u306b\u3001\u4f7f\u7528\u3057\u305f\u30bd\u30fc\u30b9\u3092\u8ffd\u52a0\u3002\n7. **operator-brief.md \u66f4\u65b0**: `/opt/data/obsidian/obsidian_git/research-vault/notes/operator-brief.md` \u306e\u300c\u4f55\u304c\u5909\u308f\u3063\u305f\u304b\u300d\u306b\u3001\u4eca\u65e5\u306e\u53ce\u96c6\u7d50\u679c\u3092\u7c21\u6f54\u306b\u8ffd\u8a18\u3002\n8. **daily-summary.md \u66f4\u65b0**: `/opt/data/obsidian/obsidian_git/research-vault/notes/daily-summary.md` \u3092\u3001\u4eca\u65e5\u306e\u65e5\u4ed8\u3068\u8abf\u67fb\u8981\u7d04\u3067\u66f8\u304d\u63db\u3048\u308b\u3002\n9. **Git commit/push**:\n   ```bash\n   cd /opt/data/obsidian/obsidian_git && git add research-vault/ && git diff --cached --quiet || (git commit -m \"cron: daily refresh $(date -u +'%Y-%m-%d')\" && git push origin main)\n   ```\n\n## \u51fa\u529b\u30eb\u30fc\u30eb\n- \u3059\u3079\u3066\u306e Markdown \u306f\u81ea\u7136\u306a\u65e5\u672c\u8a9e\u3067\u66f8\u304f\u3002\u30ab\u30bf\u30ab\u30ca\u8a9e\u306e\u4e71\u7528\u3084\u76f4\u8a33\u8abf\u3092\u907f\u3051\u308b\u3002\n- \u53ce\u96c6\u7d50\u679c\u304c\u306a\u3044\u5834\u5408\u306f\u3001\u300c\u4eca\u65e5\u306f\u65b0\u3057\u3044\u60c5\u5831\u306a\u3057\u300d\u3068\u8a18\u8f09\u3057\u3066\u7d42\u4e86\u3002\n- \u5f37\u3044\u4e3b\u5f35\u306f verified\u3001\u78ba\u8a3c\u4e0d\u5341\u5206\u306a\u3082\u306e\u306f unverified \u3068\u660e\u8a18\u3002\n- \u53e4\u3044\u60c5\u5831\u3092\u65b0\u3057\u3044\u3082\u306e\u3060\u3068\u507d\u3089\u306a\u3044\u3002\n\n## Discord \u901a\u77e5\uff08\u6700\u7d42\u51fa\u529b\uff09\n\u30d5\u30a1\u30a4\u30eb\u66f4\u65b0\u30fbgit push \u307e\u3067\u5b8c\u4e86\u3057\u305f\u5f8c\u3001**\u6975\u3081\u3066\u77ed\u3044\u6982\u8981\u3060\u3051**\u3092 Discord \u306b\u901a\u77e5\u3059\u308b\u3002\n\n**\u5f62\u5f0f:**\n```\nresearch-vault \u66f4\u65b0\u5b8c\u4e86\uff08YYYY-MM-DD\uff09\n\n\u53ce\u96c6\u30c8\u30d4\u30c3\u30af:\n- [\u30c8\u30d4\u30c3\u30af1]: [1\u884c\u306e\u8981\u70b9]\n- [\u30c8\u30d4\u30c3\u30af2]: [1\u884c\u306e\u8981\u70b9]\n- [\u30c8\u30d4\u30c3\u30af3]: [1\u884c\u306e\u8981\u70b9]\uff08\u3042\u308c\u3070\uff09\n\n\u66f4\u65b0: dossiers/X, knowledge/jsonl, notes/\nCommit: cron: daily refresh YYYY-MM-DD\n```\n\n**\u7d76\u5bfe\u306b\u5b88\u308b\u3053\u3068:**\n- \u5168\u4f53\u3067 **500\u6587\u5b57\u4ee5\u5185**\u306b\u6291\u3048\u308b\n- \u9577\u3044\u89e3\u8aac\u3001\u5f15\u7528\u3001URL\u30ea\u30b9\u30c8\u3001\u8a73\u7d30\u306a\u6240\u898b\u306f\u66f8\u304b\u306a\u3044\uff08\u305d\u308c\u3089\u306f\u30d5\u30a1\u30a4\u30eb\u306b\u6b8b\u3063\u3066\u3044\u308b\uff09\n- \u7b87\u6761\u66f8\u304d\u306f3\u884c\u307e\u3067\u3002\u305d\u308c\u4ee5\u4e0a\u306e\u5834\u5408\u306f\u300c\u4ed62\u30c8\u30d4\u30c3\u30af\u300d\u3092\u7701\u7565\u8868\u8a18\u306b\u3059\u308b\n- \u30c8\u30d4\u30c3\u30af\u304c\u306a\u3044\u5834\u5408\u306f\u300c\u4eca\u65e5\u306f\u65b0\u3057\u3044\u60c5\u5831\u306a\u3057\u300d\u3068\u3060\u3051\u51fa\u529b\u3059\u308b",
       "skills": [],
       "skill": null,
       "model": "kimi-k2.6",
@@ -328,15 +328,15 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 7
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-04T22:00:34.644978+00:00",
-      "next_run_at": "2026-05-06T22:00:00+00:00",
-      "last_run_at": "2026-05-05T22:43:51.535559+00:00",
+      "next_run_at": "2026-05-07T22:00:00+00:00",
+      "last_run_at": "2026-05-07T00:19:45.198970+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -355,5 +355,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-05-06T21:00:36.179955+00:00"
+  "updated_at": "2026-05-07T03:00:46.936727+00:00"
 }
