@@ -107,17 +107,17 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 10
+        "completed": 11
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-07T12:00:00+00:00",
-      "last_run_at": "2026-05-06T12:01:03.108072+00:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: HTTP 500: Gemini HTTP 500 (INTERNAL): Internal error encountered.",
+      "next_run_at": "2026-05-08T12:00:00+00:00",
+      "last_run_at": "2026-05-07T12:01:20.941419+00:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "discord:1499234070897365043",
       "origin": {
@@ -127,53 +127,6 @@
         "thread_id": null
       },
       "enabled_toolsets": null,
-      "workdir": null
-    },
-    {
-      "id": "18615d6afc96",
-      "name": "M2 Ultra 128GB Mac Studio 52\u4e07\u5186\u4ee5\u4e0b\u30a6\u30a9\u30c3\u30c1",
-      "prompt": "\u65e5\u672c\u6642\u9593\u306e\u6bce\u65e521:00\u306b\u3001Mac Studio M2 Ultra 128GB\u69cb\u6210\uff08SSD\u5bb9\u91cf\u306f\u554f\u308f\u306a\u3044\uff09\u306e\u4e2d\u53e4\u30fb\u672a\u4f7f\u7528\u54c1\u3067\u8cfc\u5165\u5019\u88dc\u3068\u306a\u308a\u3046\u308b\u5546\u54c1\u3092\u8abf\u67fb\u3057\u3066\u5831\u544a\u3057\u3066\u304f\u3060\u3055\u3044\u3002\n\n## \u8abf\u67fb\u5bfe\u8c61\n- \u4fa1\u683c\uff1a52\u4e07\u5186\u4ee5\u4e0b\n- \u5546\u54c1\u72b6\u614b\uff1a\u4e2d\u53e4\u30fb\u672a\u4f7f\u7528\u54c1\u554f\u308f\u305a\n- \u5fc5\u9808\u30b9\u30da\u30c3\u30af\uff1aM2 Ultra + 128GB RAM\uff08SSD\u306f\u554f\u308f\u306a\u3044\uff09\n- \u9664\u5916\uff1aM2 Max\u3001M1 Ultra\u300164GB\u69cb\u6210\u306a\u3069\n\n## \u8abf\u67fb\u5bfe\u8c61\u30b5\u30a4\u30c8\n1. \u30e1\u30eb\u30ab\u30ea\uff08\u512a\u5148\uff09\n2. Yahoo!\u30aa\u30fc\u30af\u30b7\u30e7\u30f3 / PayPay\u30d5\u30ea\u30de\n3. \u30d1\u30bd\u30b3\u30f3\u5de5\u623f\u3001\u3058\u3083\u3093\u3071\u3089\u3001\u30bd\u30d5\u30de\u30c3\u30d7\u3001\u30a4\u30aa\u30b7\u30b9\n4. Amazon\u3001\u697d\u5929\u5e02\u5834\n5. Apple\u8a8d\u5b9a\u6574\u5099\u6e08\u88fd\u54c1\n\n## \u5728\u5eab\u78ba\u8a8d\u30eb\u30fc\u30eb\uff08\u6700\u91cd\u8981\uff09\n- **\u58f2\u308a\u5207\u308c\u307e\u305f\u306f\u5728\u5eab\u4e0d\u660e\u306e\u5546\u54c1\u306f\u7d76\u5bfe\u306b\u5831\u544a\u3057\u306a\u3044**\n- \u30e1\u30eb\u30ab\u30ea\u306f `web_extract` \u304c\u5931\u6557\u3059\u308b\u3002**`browser_navigate` \u3092\u4f7f\u7528\u3057\u3066\u30da\u30fc\u30b8\u3092\u30ec\u30f3\u30c0\u30ea\u30f3\u30b0\u3057\u3001\u5728\u5eab\u3092\u78ba\u8a8d\u3059\u308b\u3053\u3068**\n- \u30e1\u30eb\u30ab\u30ea\u306e\u5728\u5eab\u78ba\u8a8d\u306b\u306f\u4ee5\u4e0b\u3092\u898b\u308b\u3053\u3068\uff1a\n  - \u300c\u8cfc\u5165\u624b\u7d9a\u304d\u3078\u300d\u30dc\u30bf\u30f3\u304c\u3042\u308b\u304b\n  - \u300c\u58f2\u308a\u5207\u308c\u300d\u300cSOLD\u300d\u300c\u58f2\u308a\u5207\u308c\u307e\u3057\u305f\u300d\u306a\u3069\u306e\u30e9\u30d9\u30eb\u304c\u306a\u3044\u304b\n  - OG\u30e1\u30bf\u30c0\u30bf\u3084 `<meta name=\"product:price\">` \u3060\u3051\u3067\u306f\u5728\u5eab\u8a3c\u660e\u306b\u306a\u3089\u306a\u3044\uff08\u58f2\u308a\u5207\u308c\u5f8c\u3082\u6b8b\u308b\u305f\u3081\uff09\n- \u4ed6\u30b5\u30a4\u30c8\u3082 `web_extract` \u3067\u5728\u5eab\u30fb\u4fa1\u683c\u304c\u53d6\u308c\u306a\u3044\u5834\u5408\u306f `browser_navigate` \u3067\u30d5\u30a9\u30fc\u30eb\u30d0\u30c3\u30af\u3059\u308b\u3053\u3068\n- `browser_console` \u3092\u4f7f\u7528\u3057\u3066 `document.querySelector('[data-testid=\"price\"]')` \u3084\u985e\u4f3c\u306e\u30bb\u30ec\u30af\u30bf\u3067\u4fa1\u683c\u3092\u53d6\u5f97\u3057\u3066\u3082\u3088\u3044\n\n## \u64cd\u4f5c\u624b\u9806\n1. `web_search` \u3067\u5404\u30b5\u30a4\u30c8\u3092\u691c\u7d22\n2. \u30e1\u30eb\u30ab\u30ea\u306e\u5834\u5408\uff1a`browser_navigate('https://jp.mercari.com/search?keyword=mac+studio+m2+ultra+128gb')` \u3067\u691c\u7d22\u7d50\u679c\u3092\u958b\u304d\u3001`browser_console` \u3067\u30a2\u30a4\u30c6\u30e0URL\u3092\u53d6\u5f97\n3. \u5404\u30a2\u30a4\u30c6\u30e0\u30da\u30fc\u30b8\u3092 `browser_navigate` \u3067\u958b\u304d\u3001\u300c\u8cfc\u5165\u624b\u7d9a\u304d\u3078\u300d\u30dc\u30bf\u30f3\u3068\u4fa1\u683c\u3092\u78ba\u8a8d\n4. \u4ed6\u30b5\u30a4\u30c8\u3082\u540c\u69d8\u306b\u5728\u5eab\u78ba\u8a8d\n5. 52\u4e07\u5186\u4ee5\u4e0b\u3067\u5728\u5eab\u3042\u308a\u306e\u3082\u306e\u3060\u3051\u3092\u5831\u544a\n\n## \u5831\u544a\u5f62\u5f0f\n- \u7d50\u8ad6\uff1a\u8a72\u5f53\u3042\u308a / \u8a72\u5f53\u306a\u3057\n- \u6709\u529b\u5019\u88dc\uff1a\u5546\u54c1\u540d\u3001\u4fa1\u683c\u3001\u72b6\u614b\u3001URL\u3001\u5728\u5eab\u8a3c\u62e0\uff08\u300c\u8cfc\u5165\u30dc\u30bf\u30f3\u78ba\u8a8d\u6e08\u307f\u300d\u7b49\uff09\n- \u53c2\u8003\uff1a\u8a72\u5f53\u3057\u306a\u304b\u3063\u305f\u3082\u306e\u306e\u4e2d\u3067\u8fd1\u3044\u5024\u6bb5\u306e\u3082\u306e\n\n## \u6ce8\u610f\n- `web_extract` \u304c\u5931\u6557\u3057\u305f\u304b\u3089\u3068\u3044\u3063\u3066\u5831\u544a\u5bfe\u8c61\u5916\u306b\u3057\u306a\u3044\u3002`browser` \u30c4\u30fc\u30eb\u3092\u4f7f\u3063\u3066\u518d\u8a66\u884c\u3059\u308b\u3053\u3068\n- \u691c\u7d22\u7d50\u679c\u306e\u30b9\u30cb\u30da\u30c3\u30c8\u3060\u3051\u3067\u306f\u5728\u5eab\u3092\u65ad\u5b9a\u3057\u306a\u3044\uff08Google\u30ad\u30e3\u30c3\u30b7\u30e5\u306e\u53e4\u3044\u60c5\u5831\u306e\u53ef\u80fd\u6027\u3042\u308a\uff09\n- \u904e\u53bb\u306b\u58f2\u308a\u5207\u308c\u3068\u5224\u660e\u3057\u305fURL\u306f\u518d\u5ea6\u5831\u544a\u3057\u306a\u3044\uff08m13752057726 \u7b49\uff09",
-      "skills": [
-        "marketplace-watch",
-        "scrapling-fallback"
-      ],
-      "skill": "marketplace-watch",
-      "model": "kimi-k2.6",
-      "provider": "openrouter",
-      "base_url": null,
-      "script": null,
-      "context_from": null,
-      "schedule": {
-        "kind": "cron",
-        "expr": "0 12 * * *",
-        "display": "0 12 * * *"
-      },
-      "schedule_display": "0 12 * * *",
-      "repeat": {
-        "times": null,
-        "completed": 13
-      },
-      "enabled": true,
-      "state": "scheduled",
-      "paused_at": null,
-      "paused_reason": null,
-      "created_at": "2026-04-28T06:44:35.643862+00:00",
-      "next_run_at": "2026-05-07T12:00:00+00:00",
-      "last_run_at": "2026-05-06T12:22:19.718505+00:00",
-      "last_status": "ok",
-      "last_error": null,
-      "last_delivery_error": null,
-      "deliver": "discord:1499234114694418674",
-      "origin": {
-        "platform": "discord",
-        "chat_id": "1496905790496182353",
-        "chat_name": "k_takahiro_1503",
-        "thread_id": null
-      },
-      "enabled_toolsets": [
-        "web",
-        "browser"
-      ],
       "workdir": null
     },
     {
@@ -195,17 +148,17 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 31
+        "completed": 32
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-07T15:00:00+00:00",
-      "last_run_at": "2026-05-07T03:01:16.319727+00:00",
-      "last_status": "error",
-      "last_error": "RuntimeError: HTTP 503: Gemini HTTP 503 (UNAVAILABLE): This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+      "next_run_at": "2026-05-07T21:00:00+00:00",
+      "last_run_at": "2026-05-07T09:00:57.856559+00:00",
+      "last_status": "ok",
+      "last_error": null,
       "last_delivery_error": null,
       "deliver": "discord:1499234114694418674",
       "origin": {
@@ -355,5 +308,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-05-07T09:00:20.049149+00:00"
+  "updated_at": "2026-05-07T15:00:44.630290+00:00"
 }
