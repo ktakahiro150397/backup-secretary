@@ -340,7 +340,7 @@ honcho: {}
 timezone: ''
 discord:
   require_mention: true
-  free_response_channels: ''
+  free_response_channels: '1499234114694418674'
   allowed_channels: ''
   auto_thread: true
   reactions: true
