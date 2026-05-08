@@ -340,8 +340,8 @@ honcho: {}
 timezone: ''
 discord:
   require_mention: true
-  free_response_channels: '1499234114694418674'
-  allowed_channels: ''
+  free_response_channels: '1499234114694418674,1502253658803278004'
+  allowed_channels: '1502253658803278004'
   auto_thread: true
   reactions: true
   channel_prompts:
@@ -366,6 +366,10 @@ discord:
       \u544A\u3092\u6271\u3046\u3002\u901A\u77E5\u306F\u8981\u70B9\u3001\u7D50\u679C\
       \u3001\u6B21\u306B\u5FC5\u8981\u306A\u30A2\u30AF\u30B7\u30E7\u30F3\u3092\u7C21\
       \u6F54\u306B\u307E\u3068\u3081\u308B\u3002"
+    '1502253658803278004': "webhook\u7D4C\u7531\u3067\u3044\u308D\u3093\u306A\u3082\u306E\u304C\
+      \u6295\u7A3F\u3055\u308C\u308B\u30C1\u30E3\u30F3\u30CD\u30EB\u3067\u3059\u3002\
+      \u5185\u5BB9\u3092\u78BA\u8A8D\u3057\u3001\u6982\u8981\u3092\u307E\u3068\u3081\
+      \u3066\u304F\u3060\u3055\u3044\u3002"
   server_actions: ''
 whatsapp: {}
 telegram:

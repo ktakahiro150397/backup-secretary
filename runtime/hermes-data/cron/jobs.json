@@ -19,15 +19,15 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 12
+        "completed": 13
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-08T12:00:00+00:00",
-      "last_run_at": "2026-05-08T06:51:03.458625+00:00",
+      "next_run_at": "2026-05-09T12:00:00+00:00",
+      "last_run_at": "2026-05-08T12:01:05.412012+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 36
+        "completed": 37
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-08T15:00:00+00:00",
-      "last_run_at": "2026-05-08T06:51:12.021063+00:00",
+      "next_run_at": "2026-05-08T21:00:00+00:00",
+      "last_run_at": "2026-05-08T09:00:14.485093+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -171,7 +171,50 @@
         "terminal"
       ],
       "workdir": null
+    },
+    {
+      "id": "2d6b7c3b941e",
+      "name": "vault-auto-organize",
+      "prompt": "python3 /workspace/backup-secretary/scripts/vault-auto-organize.py \u3092\u5b9f\u884c\u3057\u3001\u7d50\u679c\u3092\u5831\u544a\u3057\u3066\u304f\u3060\u3055\u3044\u3002",
+      "skills": [],
+      "skill": null,
+      "model": "deepseek-v4-flash",
+      "provider": "opencode-go",
+      "base_url": null,
+      "script": null,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 15 * * *",
+        "display": "0 15 * * *"
+      },
+      "schedule_display": "0 15 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-08T09:10:45.988478+00:00",
+      "next_run_at": "2026-05-09T15:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "discord:1499234114694418674",
+      "origin": {
+        "platform": "discord",
+        "chat_id": "1502209682616619019",
+        "chat_name": "BotGarden / #hermes-dev / Kimi K2.6 \u30d0\u30ab\u307b\u3069\u4f7f\u3063\u3066\u308b\u3051\u3069\u3061\u3087\u3063\u3068\u5229\u7528\u91cf\u30e4\u30d0\u3052\u306b\u306a\u3063\u3066\u304d\u305f\u3002 \u4eca\u5f8c\u3001\u5358\u7d14\u306a\u30bf\u30b9\u30af\u306fdeepseek v4 flash\u306b\u30aa\u30d5\u30ed\u30fc\u30c9\u3057\u3066\u3044\u3063\u3066\u304f...",
+        "thread_id": "1502209682616619019"
+      },
+      "enabled_toolsets": [
+        "terminal"
+      ],
+      "workdir": null
     }
   ],
-  "updated_at": "2026-05-08T09:00:01.788862+00:00"
+  "updated_at": "2026-05-08T15:00:07.434939+00:00"
 }
