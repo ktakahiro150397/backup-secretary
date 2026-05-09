@@ -4,7 +4,7 @@ Hermes and house-expense run in separate Docker containers on the same server.
 §
 Obsidian vault: ktakahiro150397/obsidian_git; clone at /opt/data/obsidian/obsidian_git; writes to main branch.
 §
-Discord channels: hermes-dev 1499234022725779619, diary 1499234070897365043, notify 1499234114694418674.
+Discord channels: hermes-dev, diary, notify, webhook (IDs in config). Modifying `allowed_channels`/`free_response_channels` breaks all channel responses — verify before editing. Gateway restarts: request `/restart` from user first, self-execute only after persistent refusal.
 §
 Web extraction fallback: Scrapling (`stealthy_fetch`/`fetch`) is used as a fallback when `web_extract` fails on JS-required or bot-protected sites (e.g. X, Cloudflare). Installed at `/opt/data/scrapling-venv` with `PLAYWRIGHT_BROWSERS_PATH=/opt/data/playwright-browsers`. Do NOT use for static lightweight pages due to browser startup overhead (~seconds, +hundreds MB RAM).
 §
