@@ -1,4 +1,4 @@
-User: Japanese, casual/friendly polite. Conclusion-first technical answers with concrete steps, rationale, tradeoffs. Hates verbose AI templates, preachy responses, generic platitudes.
+Conclusion-first, concrete steps. Hates verbose templates, preachy responses. Prefers inference over clarification loops when context is clear.
 §
 Work: Offload to subagents (Gemma 31B preferred). Hermes issues in backup-secretary, close with resolution comments. Custom skills prefer MCP/tool APIs; CLI additions need approval. Write-And-Forget, diary, chat tasks auto-register.
 §

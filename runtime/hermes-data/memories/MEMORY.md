@@ -6,9 +6,11 @@ Obsidian vault: ktakahiro150397/obsidian_git; clone at /opt/data/obsidian/obsidi
 §
 Discord channels: hermes-dev, diary, notify, webhook (IDs in config). Modifying `allowed_channels`/`free_response_channels` breaks all channel responses — verify before editing. Gateway restarts: request `/restart` from user first, self-execute only after persistent refusal.
 §
-Web extraction fallback: Scrapling (`stealthy_fetch`/`fetch`) is used as a fallback when `web_extract` fails on JS-required or bot-protected sites (e.g. X, Cloudflare). Installed at `/opt/data/scrapling-venv` with `PLAYWRIGHT_BROWSERS_PATH=/opt/data/playwright-browsers`. Do NOT use for static lightweight pages due to browser startup overhead (~seconds, +hundreds MB RAM).
+Scrapling fallback venv: /opt/data/scrapling-venv, PLAYWRIGHT_BROWSERS_PATH=/opt/data/playwright-browsers. For JS/bot-protected sites only; avoid for static pages.
 §
-When user says "put in tasks" / "タスクに入れる", they mean Google Tasks. Not backlog.md, not Obsidian Tasks, not todo lists — always Google Tasks. Same correction was given before. Do not ask again.
+X/Twitter URLs: web_extract fails → load x-tweet-extractor skill FIRST. scrapling-fallback is last-resort. Check domain-specific skills first.
+§
+"put in tasks" / "タスクに入れる" = Google Tasks. Not backlog.md/Obsidian Tasks/todo lists.
 §
 User expects confirmation before installing software or running setup; dislikes unrequested installations. Values content density in creative outputs — must be self-explanatory to first-time viewers.
 §
@@ -19,3 +21,5 @@ Terminal commands require user approval in this environment. GitHub operations M
 Environment: /tmp is noexec — venvs under /opt/data. uv at /usr/local/bin/uv. Python 3.13.5, PEP 668. pip/ensurepip/python3-venv/sudo absent. Docker client present, daemon not running.
 §
 Research vault: /opt/data/obsidian/obsidian_git/research-vault/. Japanese docs preferred; dislikes katakana loanword overload. delegation model: kimi-k2.6.
+§
+YouTube動画の情報取得は、web_searchの断片に頼らず、必ずbrowser_navigateでYouTubeページを直接開いてタイトル・チャンネル名・説明文を正確に取得する。
