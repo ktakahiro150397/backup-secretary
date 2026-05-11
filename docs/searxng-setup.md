@@ -68,7 +68,7 @@ Add the following to your active Hermes config (e.g. `runtime/hermes-data/config
 ```yaml
 mcp_servers:
   searxng:
-    command: python
+    command: python3
     args: ["/opt/data/mcp-searxng-server.py"]
     env:
       SEARXNG_URL: "http://searxng:8080"
