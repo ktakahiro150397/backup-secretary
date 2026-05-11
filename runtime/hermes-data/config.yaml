@@ -503,6 +503,8 @@ mcp_servers:
   #     SEARXNG_URL: "http://searxng:8080"
 image_gen:
   provider: openai-codex
+web:
+  backend: "searxng"
 
 # ── Fallback Model ────────────────────────────────────────────────────
 # Automatic provider failover when primary is unavailable.

@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 49
+        "completed": 50
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-11T21:00:00+00:00",
-      "last_run_at": "2026-05-11T09:00:29.350933+00:00",
+      "next_run_at": "2026-05-12T03:00:00+00:00",
+      "last_run_at": "2026-05-11T15:00:50.273259+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -191,7 +191,7 @@
       "schedule_display": "0 15 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
@@ -199,7 +199,7 @@
       "paused_reason": null,
       "created_at": "2026-05-08T09:10:45.988478+00:00",
       "next_run_at": "2026-05-12T15:00:00+00:00",
-      "last_run_at": "2026-05-10T15:00:16.791490+00:00",
+      "last_run_at": "2026-05-11T15:00:50.904759+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -260,7 +260,49 @@
         "memory"
       ],
       "workdir": null
+    },
+    {
+      "id": "9cae2d9f7e87",
+      "name": "pixiv-watcher-daily",
+      "prompt": "Run the pixiv-watcher daily collection script and export to CSV.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": "scripts/collect.sh",
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 12 * * *",
+        "display": "0 12 * * *"
+      },
+      "schedule_display": "0 12 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-11T15:06:25.339227+00:00",
+      "next_run_at": "2026-05-12T12:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "discord",
+        "chat_id": "1503260052407062588",
+        "chat_name": "BotGarden / #hermes-dev / pixiv\u3063\u3066\u81ea\u5206\u306e\u30d5\u30a9\u30ed\u30ef\u30fc\u3068\u304b\u30e6\u30fc\u30b6\u30fc\u60c5\u5831\u306b\u95a2\u3059\u308b\u60c5\u5831\u3092\u53d6\u5f97\u3059\u308bAPI\u307f\u305f\u3044\u306a\u306e\u3063\u3066\u306a\u3044\uff1f",
+        "thread_id": "1503260052407062588"
+      },
+      "enabled_toolsets": null,
+      "workdir": "/opt/data/repos/pixiv-watcher"
     }
   ],
-  "updated_at": "2026-05-11T15:00:27.812267+00:00"
+  "updated_at": "2026-05-11T21:00:54.900547+00:00"
 }
