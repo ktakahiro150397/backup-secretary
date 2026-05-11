@@ -13,10 +13,10 @@
       "context_from": null,
       "schedule": {
         "kind": "cron",
-        "expr": "0 12 * * *",
-        "display": "0 12 * * *"
+        "expr": "30 11 * * *",
+        "display": "30 11 * * *"
       },
-      "schedule_display": "0 12 * * *",
+      "schedule_display": "30 11 * * *",
       "repeat": {
         "times": null,
         "completed": 15
@@ -26,7 +26,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-11T12:00:00+00:00",
+      "next_run_at": "2026-05-11T11:30:00+00:00",
       "last_run_at": "2026-05-10T12:00:59.313277+00:00",
       "last_status": "ok",
       "last_error": null,
@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 46
+        "completed": 47
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-11T03:00:00+00:00",
-      "last_run_at": "2026-05-10T15:00:15.245271+00:00",
+      "next_run_at": "2026-05-11T09:00:00+00:00",
+      "last_run_at": "2026-05-10T21:00:34.996463+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -103,15 +103,15 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 12
+        "completed": 13
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-30T02:41:51.937939+00:00",
-      "next_run_at": "2026-05-10T22:00:00+00:00",
-      "last_run_at": "2026-05-09T22:00:48.427206+00:00",
+      "next_run_at": "2026-05-11T22:00:00+00:00",
+      "last_run_at": "2026-05-10T22:00:57.916398+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -146,17 +146,17 @@
       "schedule_display": "0 22 * * *",
       "repeat": {
         "times": null,
-        "completed": 10
+        "completed": 11
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-04T22:00:34.644978+00:00",
-      "next_run_at": "2026-05-10T22:00:00+00:00",
-      "last_run_at": "2026-05-09T22:12:18.440501+00:00",
-      "last_status": "ok",
-      "last_error": null,
+      "next_run_at": "2026-05-11T22:00:00+00:00",
+      "last_run_at": "2026-05-10T22:07:35.355935+00:00",
+      "last_status": "error",
+      "last_error": "RuntimeError: HTTP 429: Weekly usage limit reached. Resets in 1hr 53min. To continue using this model now, enable usage from your available balance: https://opencode.ai/workspace/wrk_01KQGMWGR9CBFJFZN197P482X5/go",
       "last_delivery_error": null,
       "deliver": "discord:1499234114694418674",
       "origin": {
@@ -216,5 +216,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-05-10T21:00:22.006475+00:00"
+  "updated_at": "2026-05-11T03:00:39.153632+00:00"
 }
