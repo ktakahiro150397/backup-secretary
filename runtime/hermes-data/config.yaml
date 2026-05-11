@@ -496,6 +496,11 @@ mcp_servers:
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
     timeout: 60
     connect_timeout: 60
+  # searxng:
+  #   command: python3
+  #   args: ["/opt/data/mcp-searxng-server.py"]
+  #   env:
+  #     SEARXNG_URL: "http://searxng:8080"
 image_gen:
   provider: openai-codex
 

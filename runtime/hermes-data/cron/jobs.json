@@ -19,15 +19,15 @@
       "schedule_display": "30 11 * * *",
       "repeat": {
         "times": null,
-        "completed": 15
+        "completed": 16
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-11T11:30:00+00:00",
-      "last_run_at": "2026-05-10T12:00:59.313277+00:00",
+      "next_run_at": "2026-05-12T11:30:00+00:00",
+      "last_run_at": "2026-05-11T11:30:40.569217+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 48
+        "completed": 49
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-11T15:00:00+00:00",
-      "last_run_at": "2026-05-11T03:00:51.321247+00:00",
+      "next_run_at": "2026-05-11T21:00:00+00:00",
+      "last_run_at": "2026-05-11T09:00:29.350933+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -198,7 +198,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-08T09:10:45.988478+00:00",
-      "next_run_at": "2026-05-11T15:00:00+00:00",
+      "next_run_at": "2026-05-12T15:00:00+00:00",
       "last_run_at": "2026-05-10T15:00:16.791490+00:00",
       "last_status": "ok",
       "last_error": null,
@@ -235,16 +235,16 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 0
+        "completed": 1
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-11T05:07:40.707921+00:00",
-      "next_run_at": "2026-05-11T12:00:00+00:00",
-      "last_run_at": null,
-      "last_status": null,
+      "next_run_at": "2026-05-12T12:00:00+00:00",
+      "last_run_at": "2026-05-11T12:04:32.035158+00:00",
+      "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
       "deliver": "origin",
@@ -262,5 +262,5 @@
       "workdir": null
     }
   ],
-  "updated_at": "2026-05-11T09:00:15.993087+00:00"
+  "updated_at": "2026-05-11T15:00:27.812267+00:00"
 }
