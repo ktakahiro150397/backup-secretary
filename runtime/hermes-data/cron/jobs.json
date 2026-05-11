@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 47
+        "completed": 48
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-11T09:00:00+00:00",
-      "last_run_at": "2026-05-10T21:00:34.996463+00:00",
+      "next_run_at": "2026-05-11T15:00:00+00:00",
+      "last_run_at": "2026-05-11T03:00:51.321247+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -214,7 +214,53 @@
         "terminal"
       ],
       "workdir": null
+    },
+    {
+      "id": "b5def5d8374c",
+      "name": "daily-memory-compression",
+      "prompt": "Daily memory compression routine.\n\n1. Run `wc -c $HERMES_HOME/memories/MEMORY.md` and `wc -c $HERMES_HOME/memories/USER.md` via terminal.\n2. Read `$HERMES_HOME/config.yaml` and extract `memory.memory_char_limit` (default 2200) and `memory.user_char_limit` (default 2000).\n3. Calculate usage percentage for each file.\n4. If BOTH are below 80%, respond with exactly \"[SILENT]\" and nothing else.\n5. If either is 80% or above:\n   - Read the target file(s) with read_file.\n   - Identify verbose entries: long-winded phrasing, redundant words, mergeable duplicate facts. Do NOT delete factual content.\n   - Compress each entry by shortening wording while keeping all facts intact.\n   - Apply each change with `memory(action='replace', target='memory' or 'user', old_string='...', new_string='...')`.\n   - If a replace fails because old_string no longer matches, skip it and continue.\n   - Report final usage percentages and a brief summary of what was compressed.\n\nImportant: Only compress when usage is \u226580%. Preserve all environment facts, paths, and critical constraints.",
+      "skills": [],
+      "skill": null,
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "no_agent": false,
+      "context_from": null,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 12 * * *",
+        "display": "0 12 * * *"
+      },
+      "schedule_display": "0 12 * * *",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
+      "enabled": true,
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-05-11T05:07:40.707921+00:00",
+      "next_run_at": "2026-05-11T12:00:00+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "origin",
+      "origin": {
+        "platform": "discord",
+        "chat_id": "1503251719356682290",
+        "chat_name": "BotGarden / #hermes-dev / memory\u3063\u3066\u4eca\u3044\u3063\u3071\u3044\u306b\u306a\u3063\u3066\u308b\uff1f",
+        "thread_id": "1503251719356682290"
+      },
+      "enabled_toolsets": [
+        "terminal",
+        "file",
+        "memory"
+      ],
+      "workdir": null
     }
   ],
-  "updated_at": "2026-05-11T03:00:39.153632+00:00"
+  "updated_at": "2026-05-11T09:00:15.993087+00:00"
 }
