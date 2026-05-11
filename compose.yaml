@@ -116,6 +116,7 @@ services:
       HERMES_HOME: /opt/data
       HOME: /opt/data
       HERMES_EXEC_ASK: "1"
+      SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
     volumes:
       - type: bind
         source: ${HERMES_OWASHOTA_DATA_DIR:-${HOME}/repo/backup-secretary-data/owashota/hermes-data}
