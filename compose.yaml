@@ -52,6 +52,13 @@ services:
     command: gateway run
     ports:
       - "${HERMES_GATEWAY_BIND:-127.0.0.1}:${HERMES_GATEWAY_PORT:-8642}:8642"
+    environment:
+      HERMES_HOME: /opt/data
+      HOME: /opt/data
+      HERMES_EXEC_ASK: "1"
+      OPENCLI_CDP_ENDPOINT: "http://chrome:9222"
+    depends_on:
+      - chrome
     healthcheck:
       test:
         - CMD-SHELL
@@ -139,6 +146,32 @@ services:
     mem_limit: ${HERMES_OWASHOTA_MEMORY_LIMIT:-2g}
     cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
+
+  chrome:
+    build:
+      context: .
+      dockerfile: docker/chrome/Dockerfile
+    container_name: ${CHROME_CONTAINER_NAME:-backup-secretary-chrome}
+    restart: unless-stopped
+    networks:
+      - hermes-net
+    volumes:
+      - type: bind
+        source: ${CHROME_PROFILE_DIR:-./runtime/chrome-profile}
+        target: /data/chrome-profile
+    ports:
+      - "${CHROME_CDP_BIND:-127.0.0.1}:${CHROME_CDP_PORT:-9222}:9222"
+    mem_limit: ${CHROME_MEMORY_LIMIT:-2g}
+    cpus: ${CHROME_CPU_LIMIT:-1}
+    shm_size: ${CHROME_SHM_SIZE:-1g}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "curl -sf http://127.0.0.1:9222/json/version >/dev/null"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   open-llm-vtuber:
     image: ${OLLV_IMAGE:-open-llm-vtuber:latest}
