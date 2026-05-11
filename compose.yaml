@@ -14,6 +14,7 @@ x-hermes-common: &hermes-common
     HERMES_HOME: /opt/data
     HOME: /opt/data
     HERMES_EXEC_ASK: "1"
+    SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
   volumes:
     - type: bind
       source: ${HERMES_DATA_DIR:-~/repo/backup-secretary-data/main/hermes-data} # メインhermesデータディレクトリを指定
@@ -115,6 +116,7 @@ services:
       HERMES_HOME: /opt/data
       HOME: /opt/data
       HERMES_EXEC_ASK: "1"
+      SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
     volumes:
       - type: bind
         source: ${HERMES_OWASHOTA_DATA_DIR:-${HOME}/repo/backup-secretary-data/owashota/hermes-data}
@@ -158,6 +160,42 @@ services:
     environment:
       - TZ=Asia/Tokyo
 
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
+    restart: unless-stopped
+    ports:
+      - "${SEARXNG_BIND:-127.0.0.1}:${SEARXNG_PORT:-8080}:8080"
+    environment:
+      - SEARXNG_BASE_URL=http://${SEARXNG_BIND:-127.0.0.1}:${SEARXNG_PORT:-8080}/
+    volumes:
+      - type: bind
+        source: ${SEARXNG_CONFIG_DIR:-./config/searxng}
+        target: /etc/searxng
+    networks:
+      - hermes-net
+    depends_on:
+      - redis
+    mem_limit: ${SEARXNG_MEMORY_LIMIT:-512m}
+    cpus: ${SEARXNG_CPU_LIMIT:-0.5}
+
+  redis:
+    image: docker.io/valkey/valkey:8-alpine
+    container_name: searxng-redis
+    restart: unless-stopped
+    command: valkey-server --save 30 1 --loglevel warning
+    volumes:
+      - type: volume
+        source: searxng_redis_data
+        target: /data
+    networks:
+      - hermes-net
+    mem_limit: ${REDIS_MEMORY_LIMIT:-128m}
+    cpus: ${REDIS_CPU_LIMIT:-0.25}
+
 networks:
   hermes-net:
     driver: bridge
+
+volumes:
+  searxng_redis_data:
