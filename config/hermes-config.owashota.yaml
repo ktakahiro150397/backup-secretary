@@ -68,7 +68,7 @@ auxiliary:
 #
 # mcp_servers:
 #   searxng:
-#     command: python3
+#     command: python
 #     args: ["/opt/data/mcp-searxng-server.py"]
 #     env:
 #       SEARXNG_URL: "http://searxng:8080"
