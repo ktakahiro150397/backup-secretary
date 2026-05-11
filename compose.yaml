@@ -14,6 +14,7 @@ x-hermes-common: &hermes-common
     HERMES_HOME: /opt/data
     HOME: /opt/data
     HERMES_EXEC_ASK: "1"
+    SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
   volumes:
     - type: bind
       source: ${HERMES_DATA_DIR:-~/repo/backup-secretary-data/main/hermes-data} # メインhermesデータディレクトリを指定
