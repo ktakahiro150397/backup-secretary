@@ -11,6 +11,7 @@ RUN set -eux; \
   rm -rf /var/lib/apt/lists/*; \
   npm install -g @openai/codex; \
   npm install -g @anthropic-ai/claude-code; \
+  npm install -g @jackwener/opencli; \
   npm cache clean --force; \
   # Install Scrapling for web extraction fallback (stealthy_fetch / fetch for JS-required & bot-protected sites)
   . /opt/hermes/.venv/bin/activate && uv pip install --no-cache-dir "scrapling[ai]"; \
