@@ -34,3 +34,22 @@ security:
       - "*.local"
     shared_files: []
 
+# --- Self-hosted SearXNG search (optional; replaces paid providers like tably) ---
+# 1. Start services: docker compose up -d searxng redis
+# 2. On first boot SearXNG generates settings.yml in config/searxng/.
+#    Add 'json' to search.formats and restart (see config/searxng/README.md).
+# 3. Uncomment below and merge into your active config.yaml.
+#
+# mcp_servers:
+#   searxng:
+#     command: uvx
+#     args: [mcp-searxng]
+#     env:
+#       SEARXNG_BASE_URL: "http://searxng:8080"
+#   crawl4ai:
+#     command: uvx
+#     args:
+#       - "--from"
+#       - "mcp-crawl4ai"
+#       - "crawl4ai-mcp"
+
