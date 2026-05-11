@@ -42,14 +42,8 @@ security:
 #
 # mcp_servers:
 #   searxng:
-#     command: uvx
-#     args: [mcp-searxng]
+#     command: python
+#     args: ["/opt/data/mcp-searxng-server.py"]
 #     env:
-#       SEARXNG_BASE_URL: "http://searxng:8080"
-#   crawl4ai:
-#     command: uvx
-#     args:
-#       - "--from"
-#       - "mcp-crawl4ai"
-#       - "crawl4ai-mcp"
+#       SEARXNG_URL: "http://searxng:8080"
 
