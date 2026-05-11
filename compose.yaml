@@ -141,7 +141,7 @@ services:
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
   open-llm-vtuber:
-    image: ${OLLV_IMAGE:-open-llm-vtuber:latest}
+    image: ${OLLV_IMAGE:-openllmvtuber/open-llm-vtuber:latest}
     container_name: open-llm-vtuber
     restart: unless-stopped
     networks:
@@ -149,7 +149,7 @@ services:
     volumes:
       - type: bind
         source: ${OLLV_CONFIG_DIR:-./config/open-llm-vtuber}
-        target: /app/config
+        target: /app/conf
       - type: bind
         source: ${OLLV_MODELS_DIR:-./runtime/ollv-models}
         target: /app/models

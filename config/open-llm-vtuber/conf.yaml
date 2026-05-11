@@ -1,0 +1,82 @@
+# System Settings
+system_config:
+  conf_version: 'v1.2.1'
+  host: '0.0.0.0'
+  port: 12393
+  config_alts_dir: 'characters'
+  tool_prompts:
+    live2d_expression_prompt: 'live2d_expression_prompt'
+    group_conversation_prompt: 'group_conversation_prompt'
+    mcp_prompt: 'mcp_prompt'
+    proactive_speak_prompt: 'proactive_speak_prompt'
+
+# Character Configuration
+character_config:
+  conf_name: 'akari'
+  conf_uid: 'akari_001'
+  live2d_model_name: 'mao_pro'
+  character_name: 'Akari'
+  avatar: ''
+  human_name: 'Human'
+
+  persona_prompt: |
+    You are Akari, a helpful and slightly sarcastic AI assistant.
+    You are running as a VTuber avatar and interacting with the user via voice.
+    Keep responses concise and natural for spoken conversation.
+
+  agent_config:
+    conversation_agent_choice: 'basic_memory_agent'
+    agent_settings:
+      basic_memory_agent:
+        llm_provider: 'openai_compatible_llm'
+        faster_first_response: True
+        segment_method: 'pysbd'
+        use_mcpp: False
+        mcp_enabled_servers: []
+
+    llm_configs:
+      openai_compatible_llm:
+        base_url: 'http://hermes:8642/v1'
+        llm_api_key: 'vtuber-local-secret'
+        organization_id: null
+        project_id: null
+        model: 'hermes-agent'
+        temperature: 0.7
+        interrupt_method: 'user'
+
+  asr_config:
+    asr_model: 'sherpa_onnx_asr'
+    sherpa_onnx_asr:
+      model_type: 'sense_voice'
+      sense_voice: './models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/model.int8.onnx'
+      tokens: './models/sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/tokens.txt'
+      num_threads: 4
+      use_itn: True
+      provider: 'cpu'
+
+  tts_config:
+    tts_model: 'edge_tts'
+    edge_tts:
+      voice: 'ja-JP-NanamiNeural'
+
+  vad_config:
+    vad_model: null
+
+  tts_preprocessor_config:
+    remove_special_char: True
+    ignore_brackets: True
+    ignore_parentheses: True
+    ignore_asterisks: True
+    ignore_angle_brackets: True
+    translator_config:
+      translate_audio: False
+      translate_provider: 'deeplx'
+      deeplx:
+        deeplx_target_lang: 'JA'
+        deeplx_api_endpoint: 'http://localhost:1188/v2/translate'
+
+# Live Streaming Integration
+live_config:
+  bilibili_live:
+    room_ids: []
+    sessdata: ""
