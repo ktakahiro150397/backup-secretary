@@ -6,13 +6,11 @@
 
 ```
 Hermes Agent (container)
-  ↓ MCP: scripts/mcp-searxng-server.py
+  ↓ MCP: mcp-searxng
 SearXNG (container: http://searxng:8080)
   ↓ meta-search (Google, Bing, DuckDuckGo ...)
 Redis/Valkey (container: caching & rate-limiting)
 ```
-
-> **Note:** The official `mcp-searxng` PyPI package (v0.1.0) has compatibility issues with MCP SDK ≥1.2x and returns `Internal Server Error` on initialization. This setup uses a lightweight custom MCP server (`scripts/mcp-searxng-server.py`) instead.
 
 ## Quick start
 
@@ -63,20 +61,18 @@ curl "http://127.0.0.1:8080/search?q=hello&format=json"
 
 ### 4. Wire into Hermes
 
-Add the following to your active Hermes config (e.g. `runtime/hermes-data/config.yaml`):
+Uncomment the `mcp_servers` block in your active Hermes config (e.g. `runtime/hermes-data/config.yaml`), or copy from `config/hermes-config.poc.yaml`:
 
 ```yaml
 mcp_servers:
   searxng:
-    command: python
-    args: ["/opt/data/mcp-searxng-server.py"]
+    command: uvx
+    args: [mcp-searxng]
     env:
-      SEARXNG_URL: "http://searxng:8080"
+      SEARXNG_BASE_URL: "http://searxng:8080"
 ```
 
-> The custom server script is bind-mounted into the Hermes container via `HERMES_DATA_DIR`. Make sure `scripts/mcp-searxng-server.py` exists in the repo root so it is synced into `/opt/data/`.
-
-Restart Hermes to load the new MCP server:
+Restart Hermes:
 
 ```bash
 docker compose restart hermes
@@ -114,14 +110,14 @@ docker compose exec hermes bash -c "playwright install chromium"
 
 | Symptom | Fix |
 |---------|-----|
-| `Connection refused` from Hermes | Ensure `SEARXNG_URL` uses `http://searxng:8080` (Docker DNS), not `localhost`. |
+| `Connection refused` from Hermes | Ensure `SEARXNG_BASE_URL` uses `http://searxng:8080` (Docker DNS), not `localhost`. |
 | MCP returns empty results | Check `settings.yml` has `json` in `search.formats`. |
-| `Internal Server Error` from official `mcp-searxng` | Use the custom server `scripts/mcp-searxng-server.py` instead. |
 | Some engines time out | SearXNG picks engines automatically; slow ones are skipped. No action needed. |
+| `uvx` not found in Hermes container | Use absolute path: `command: /usr/local/bin/uvx` or wherever `uv` is installed. |
 
 ## Resources
 
 - [SearXNG docs](https://docs.searxng.org/)
-- [mcp-searxng (official, broken on MCP SDK ≥1.2x)](https://github.com/SecretiveShell/MCP-searxng)
+- [mcp-searxng](https://github.com/SecretiveShell/MCP-searxng)
 - [mcp-crawl4ai](https://github.com/unclecode/crawl4ai)
 - Reference article: [API代0円！SearXNG + Crawl4AI で完全無料](https://note.com/zephel01/n/n1983bb94f996)

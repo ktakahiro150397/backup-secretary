@@ -68,10 +68,16 @@ auxiliary:
 #
 # mcp_servers:
 #   searxng:
-#     command: python
-#     args: ["/opt/data/mcp-searxng-server.py"]
+#     command: uvx
+#     args: [mcp-searxng]
 #     env:
-#       SEARXNG_URL: "http://searxng:8080"
+#       SEARXNG_BASE_URL: "http://searxng:8080"
+#   crawl4ai:
+#     command: uvx
+#     args:
+#       - "--from"
+#       - "mcp-crawl4ai"
+#       - "crawl4ai-mcp"
 
 terminal:
   backend: local
