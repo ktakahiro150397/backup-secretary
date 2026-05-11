@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Minimal MCP server for SearXNG search (raw JSON-RPC over stdio).
+"""Minimal MCP server for SearXNG search (JSON-RPC over stdio).
 
-Usage:  python /opt/data/mcp-searxng-server.py
+Supports BOTH Content-Length framing (standard MCP) and NDJSON (line-delimited)
+to remain compatible with clients that read line-by-line.
+
+Usage:  python3 /opt/data/mcp-searxng-server.py
 
 Environment:
-    SEARXNG_URL  - SearXNG base URL (default: http://localhost:8080)
+    SEARXNG_URL  - SearXNG base URL (default: http://searxng:8080)
 """
 
 import json
@@ -16,22 +19,40 @@ SEARXNG_URL = os.environ.get("SEARXNG_URL", "http://searxng:8080")
 
 
 def send_message(msg: dict) -> None:
-    data = json.dumps(msg)
-    sys.stdout.write(f"Content-Length: {len(data)}\r\n\r\n{data}")
+    """Send a JSON-RPC message using NDJSON (line-delimited) format.
+    
+    Hermes' MCP client reads stdout line-by-line and parses each line as JSON.
+    Content-Length framing causes it to try parsing 'Content-Length: ...' as JSON.
+    """
+    data = json.dumps(msg, ensure_ascii=False)
+    sys.stdout.write(data + "\n")
     sys.stdout.flush()
 
 
 def read_message() -> dict | None:
-    line = sys.stdin.readline()
-    if not line:
-        return None
-    if not line.startswith("Content-Length:"):
-        # Handle stray notifications
-        return json.loads(line.strip()) if line.strip() else None
-    length = int(line.split(":", 1)[1].strip())
-    sys.stdin.readline()  # blank
-    data = sys.stdin.read(length)
-    return json.loads(data)
+    """Read a JSON-RPC message from stdin.
+    
+    Supports both Content-Length framing (standard MCP) and NDJSON.
+    """
+    while True:
+        line = sys.stdin.readline()
+        if not line:
+            return None
+        stripped = line.strip()
+        if not stripped:
+            continue
+        
+        # Content-Length framing
+        if stripped.startswith("Content-Length:"):
+            length = int(stripped.split(":", 1)[1].strip())
+            # consume blank line
+            sys.stdin.readline()
+            # read exact body
+            data = sys.stdin.read(length)
+            return json.loads(data)
+        
+        # NDJSON (line-delimited JSON)
+        return json.loads(stripped)
 
 
 def handle_initialize(params: dict) -> dict:
