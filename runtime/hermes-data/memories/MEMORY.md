@@ -28,3 +28,5 @@ YouTube: always browser_navigate directly; never rely on web_search snippets for
 CRITICAL: Discord tables must use discord-table-image skill. Raw Markdown tables break responses; user gets angry if ignored.
 §
 遊戯王OCGカード効果は記憶推論禁止。必ず /opt/data/yugioh_cards.db から正確なテキストを引用。一字一句の誤りが裁定破綻を生む。ユーザーは嘘・推論捏造を許容せず厳しく指摘する。
+§
+pixiv-watcher cron job exists at /opt/data/repos/pixiv-watcher/ (job `pixiv-watcher-daily`, schedule `0 3,9,12,15,18 * * *`). Data is stored in SQLite at /opt/data/repos/pixiv-watcher/data/pixiv_stats.db with tables `user_daily` and `illust_daily`.
