@@ -26,3 +26,5 @@ YouTube: always browser_navigate directly; never rely on web_search snippets for
 §
 §
 CRITICAL: Discord tables — ALWAYS use discord-table-image skill. Never raw Markdown tables. User gets angry if ignored.
+§
+遊戯王OCGカード効果は「記憶に基づく推論」で回答してはいけない。必ずDB（/opt/data/yugioh_cards.db）から正確なテキストを引いてから判断すること。一字一句の誤りが裁定の破綻を生む。ユーザーから「嘘をつくな」「適当に推論すな」と厳しく指摘された経験あり。
