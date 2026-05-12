@@ -4,7 +4,7 @@ Hermes and house-expense run in separate Docker containers on the same server.
 §
 Obsidian vault: ktakahiro150397/obsidian_git; clone at /opt/data/obsidian/obsidian_git; writes to main branch.
 §
-Discord: hermes-dev/diary/notify/webhook. Verify allowed_channels before editing — changes break responses. Gateway restart needs user `/restart`. Use discord-table-image skill for tables.
+Discord: hermes-dev/diary/notify/webhook. Verify allowed_channels before editing — changes break responses. Gateway restart needs `/restart`. Use discord-table-image skill.
 §
 Scrapling fallback venv: /opt/data/scrapling-venv, PLAYWRIGHT_BROWSERS_PATH=/opt/data/playwright-browsers. For JS/bot-protected sites only; avoid for static pages.
 §
@@ -25,6 +25,6 @@ Research vault: /opt/data/obsidian/obsidian_git/research-vault/. JP docs preferr
 YouTube: always browser_navigate directly; never rely on web_search snippets for title/channel/description.
 §
 §
-CRITICAL: Discord tables — ALWAYS use discord-table-image skill. Never raw Markdown tables. User gets angry if ignored.
+CRITICAL: Discord tables must use discord-table-image skill. Raw Markdown tables break responses; user gets angry if ignored.
 §
-遊戯王OCGカード効果は「記憶に基づく推論」で回答してはいけない。必ずDB（/opt/data/yugioh_cards.db）から正確なテキストを引いてから判断すること。一字一句の誤りが裁定の破綻を生む。ユーザーから「嘘をつくな」「適当に推論すな」と厳しく指摘された経験あり。
+遊戯王OCGカード効果は記憶推論禁止。必ず /opt/data/yugioh_cards.db から正確なテキストを引用。一字一句の誤りが裁定破綻を生む。ユーザーは嘘・推論捏造を許容せず厳しく指摘する。
