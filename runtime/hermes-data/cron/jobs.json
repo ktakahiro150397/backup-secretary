@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 57
+        "completed": 58
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-13T21:00:00+00:00",
-      "last_run_at": "2026-05-13T09:03:03.058663+00:00",
+      "next_run_at": "2026-05-14T03:00:00+00:00",
+      "last_run_at": "2026-05-13T15:02:20.153399+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -191,7 +191,7 @@
       "schedule_display": "0 15 * * *",
       "repeat": {
         "times": null,
-        "completed": 5
+        "completed": 6
       },
       "enabled": true,
       "state": "scheduled",
@@ -199,7 +199,7 @@
       "paused_reason": null,
       "created_at": "2026-05-08T09:10:45.988478+00:00",
       "next_run_at": "2026-05-14T15:00:00+00:00",
-      "last_run_at": "2026-05-12T15:01:05.922888+00:00",
+      "last_run_at": "2026-05-13T15:02:23.391280+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -270,7 +270,7 @@
       "model": null,
       "provider": null,
       "base_url": null,
-      "script": "scripts/collect.sh",
+      "script": "collect.sh",
       "no_agent": false,
       "context_from": null,
       "schedule": {
@@ -281,15 +281,15 @@
       "schedule_display": "0 3,9,12,15,18 * * *",
       "repeat": {
         "times": null,
-        "completed": 9
+        "completed": 10
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-11T15:06:25.339227+00:00",
-      "next_run_at": "2026-05-13T18:00:00+00:00",
-      "last_run_at": "2026-05-13T15:02:06.379300+00:00",
+      "next_run_at": "2026-05-14T03:00:00+00:00",
+      "last_run_at": "2026-05-13T18:03:15.993799+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -304,5 +304,5 @@
       "workdir": "/opt/data/repos/pixiv-watcher"
     }
   ],
-  "updated_at": "2026-05-13T15:02:06.381439+00:00"
+  "updated_at": "2026-05-13T21:00:18.604825+00:00"
 }
