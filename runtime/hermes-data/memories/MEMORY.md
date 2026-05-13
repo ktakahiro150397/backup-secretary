@@ -8,8 +8,6 @@ Discord: hermes-dev/diary/notify/webhook. Verify allowed_channels before editing
 §
 Scrapling fallback venv: /opt/data/scrapling-venv, PLAYWRIGHT_BROWSERS_PATH=/opt/data/playwright-browsers. For JS/bot-protected sites only; avoid for static pages.
 §
-X/Twitter: x-tweet-extractor first, scrapling-fallback last. Pixiv `illust_detail` has views/bookmarks/comments; `user_detail` has follow count. Pixiv lacks follower count and follow date.
-§
 "put in tasks" / "タスクに入れる" = Google Tasks. Not backlog.md/Obsidian Tasks/todo lists.
 §
 Confirm before installing. Creative outputs must be clear to first-time viewers.
@@ -29,4 +27,4 @@ CRITICAL: Discord tables must use discord-table-image skill. Raw Markdown tables
 §
 遊戯王OCGカード効果は記憶推論禁止。必ず /opt/data/yugioh_cards.db から正確なテキストを引用。一字一句の誤りが裁定破綻を生む。ユーザーは嘘・推論捏造を許容せず厳しく指摘する。
 §
-pixiv-watcher cron job exists at /opt/data/repos/pixiv-watcher/ (job `pixiv-watcher-daily`, schedule `0 3,9,12,15,18 * * *`). Data is stored in SQLite at /opt/data/repos/pixiv-watcher/data/pixiv_stats.db with tables `user_daily` and `illust_daily`.
+pixiv-watcher at /opt/data/repos/pixiv-watcher/ (cron 5x/day). Tag/bookmark rate analysis. Local ComfyUI (RTX 4070, waiillustrious SDXL, Latent Upscale). Same LAN as Hermes; needs `--listen 0.0.0.0`. Eagle MCP on local PC. Booth package covers: HTML/CSS+Playwright templates (grid blur, novel gradient text). Project notes in 10_Projects.

@@ -25,3 +25,5 @@ Unity AI agent delegation: prefers UniCli (yucchiy/UniCli) over UnityAgentClient
 Yu-Gi-Oh! OCG player — card text accuracy non-negotiable; never fabricate or guess effects. Always verify from official DB before quoting.
 §
 遊戯王OCGプレイヤー。カードテキスト正確性を最重視し、LLMの推論補完・捏造を許容しない。確認不可なら「わからない」と素直に言う。間違いは遠回し謝罪より潔く認め訂正。遊戯王盤面問題をLLM論理推論・ルール処理能力のテストとして使う。
+§
+Pixiv R-18 creator. Pipeline: ComfyUI (SDXL/waiillustrious, RTX 4070) → Eagle → Pixiv/Booth. Wants to automate plan→prompt→test→batch. Data-driven, finds planning tedious.
