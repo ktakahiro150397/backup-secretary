@@ -1,29 +1,31 @@
-Conclusion-first, concrete steps. Hates verbose templates, preachy responses. Prefers inference over clarification loops with clear context.
+Conclusion-first. Hates verbosity. Prefers inference over clarification.
 §
-Work: Hermes issues → backup-secretary, close with resolution comments. Skills prefer MCP/tool APIs; CLI additions need approval. Write-And-Forget, diary, chat tasks auto-register.
+Work: Hermes issues → backup-secretary. Close with resolution. Prefer MCP/tool APIs; CLI needs approval. Auto-register Write-And-Forget/diary/chat.
 §
-Interests: PCs, gadgets, keyboards, dev envs, low-latency tools. Rational asset decisions (NISA/crypto, resale, cashflow). Parenting/family efficiency.
+Interests: PCs, gadgets, keyboards, dev envs, low-latency. Rational assets (NISA/crypto, resale, cashflow). Parenting/family.
 §
-Style: Brief sardonic banter; no sexualized metaphors. Respects logical professional work.
+Style: Sardonic. No sexualized metaphors. Respects logical work.
 §
-Schedule: JST; daily 07:00 GCal+dated Tasks today~+3d to notify.
+Schedule: JST. 07:00 GCal+Tasks today~+3d.
 §
-"put in tasks" → specify tracker (Google Tasks, Obsidian Tasks, GitHub Issues, backlog.md).
+"put in tasks" → specify tracker (Google Tasks, Obsidian, GitHub Issues, backlog.md).
 §
-GitHub: prefers gh CLI to avoid approval blocks and MCP permission issues.
+GitHub: prefers gh CLI. Avoids approval blocks/MCP issues.
 §
-Wants role-based Hermes profiles (research/taskmaster/lifestyle); delegate_task is too coarse. Primarily Discord gateway, single profile (kimi-k2.6). Interested in vault-based research agents.
+Wants role-based profiles (research/taskmaster/lifestyle); delegate_task too coarse. Primary: Discord gateway, profile (kimi-k2.6). Interested in vault agents.
 §
-Creative project: image template compositing in Obsidian 10_projects.
+Creative: image compositing in Obsidian 10_projects.
 §
-Never save NSFW topics to memory/profile. Confine to designated Obsidian project directory only.
+Never save NSFW to memory/profile. Confine to Obsidian dir.
 §
-Document-first: specs in Obsidian before delegating to Claude Code. Prefers specs over raw code in planning.
+Document-first: specs in Obsidian before delegating. Prefers specs over code.
 §
-Unity AI agent delegation: prefers UniCli (yucchiy/UniCli) over UnityAgentClient. Terminal-based CLI control of Unity Editor. WSL unsupported for UniCli+Windows Unity Editor; use PowerShell.
+Unity: prefers UniCli over UnityAgentClient. Terminal CLI. WSL unsupported; use PowerShell.
 §
-Yu-Gi-Oh! OCG player — card text accuracy non-negotiable; never fabricate or guess effects. Always verify from official DB before quoting.
+Yu-Gi-Oh! OCG player. Card text accuracy mandatory; never fabricate. Verify official DB.
 §
-遊戯王OCGプレイヤー。カードテキスト正確性を最重視し、LLMの推論補完・捏造を許容しない。確認不可なら「わからない」と素直に言う。間違いは遠回し謝罪より潔く認め訂正。遊戯王盤面問題をLLM論理推論・ルール処理能力のテストとして使う。
+遊戯王OCGプレイヤー。カードテキスト正確性最重視。LLM推論補完・捏造厳禁。確認不可なら「わからない」。間違いは潔く認め訂正。遊戯王盤面問題をLLM論理推論テストに使う。
 §
-Pixiv R-18 creator. Pipeline: ComfyUI (SDXL/waiillustrious, RTX 4070) → Eagle → Pixiv/Booth. Wants to automate plan→prompt→test→batch. Data-driven, finds planning tedious.
+Pixiv R-18 creator. Pipeline: ComfyUI (waiillustrious SDXL, RTX 4070) → Eagle → Pixiv/Booth. Automate plan→prompt→test→batch. Data-driven; finds planning tedious.
+§
+Booth product covers currently made in Photopea (manual, tedious). Wants HTML/CSS + Playwright automation for package image generation with real Japanese fonts, gradient text, and blur effects. pixiv-watcher cron collects stats 5x/day at /opt/data/repos/pixiv-watcher/. ComfyUI local RTX 4070 + waiillustrious SDXL + Latent Upscale workflow. Eagle MCP available on local PC.
