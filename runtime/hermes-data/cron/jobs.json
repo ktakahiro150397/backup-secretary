@@ -19,15 +19,15 @@
       "schedule_display": "30 11 * * *",
       "repeat": {
         "times": null,
-        "completed": 18
+        "completed": 19
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-27T09:40:31.775626+00:00",
-      "next_run_at": "2026-05-14T11:30:00+00:00",
-      "last_run_at": "2026-05-13T11:30:10.874793+00:00",
+      "next_run_at": "2026-05-15T11:30:00+00:00",
+      "last_run_at": "2026-05-14T11:30:35.723091+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 60
+        "completed": 61
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-14T15:00:00+00:00",
-      "last_run_at": "2026-05-14T03:01:33.642223+00:00",
+      "next_run_at": "2026-05-14T21:00:00+00:00",
+      "last_run_at": "2026-05-14T09:07:24.520505+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -198,7 +198,7 @@
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-08T09:10:45.988478+00:00",
-      "next_run_at": "2026-05-14T15:00:00+00:00",
+      "next_run_at": "2026-05-15T15:00:00+00:00",
       "last_run_at": "2026-05-13T15:02:23.391280+00:00",
       "last_status": "ok",
       "last_error": null,
@@ -235,15 +235,15 @@
       "schedule_display": "0 12 * * *",
       "repeat": {
         "times": null,
-        "completed": 3
+        "completed": 4
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-11T05:07:40.707921+00:00",
-      "next_run_at": "2026-05-14T12:00:00+00:00",
-      "last_run_at": "2026-05-13T12:19:23.467071+00:00",
+      "next_run_at": "2026-05-15T12:00:00+00:00",
+      "last_run_at": "2026-05-14T12:16:09.730178+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -281,15 +281,15 @@
       "schedule_display": "0 3,9,12,15,18 * * *",
       "repeat": {
         "times": null,
-        "completed": 12
+        "completed": 14
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-11T15:06:25.339227+00:00",
-      "next_run_at": "2026-05-14T12:00:00+00:00",
-      "last_run_at": "2026-05-14T09:07:07.509019+00:00",
+      "next_run_at": "2026-05-14T18:00:00+00:00",
+      "last_run_at": "2026-05-14T15:02:21.612620+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -304,5 +304,5 @@
       "workdir": "/opt/data/repos/pixiv-watcher"
     }
   ],
-  "updated_at": "2026-05-14T09:07:07.511060+00:00"
+  "updated_at": "2026-05-14T15:02:21.613241+00:00"
 }
