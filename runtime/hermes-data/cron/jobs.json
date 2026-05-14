@@ -60,15 +60,15 @@
       "schedule_display": "0 15,21,3,9 * * *",
       "repeat": {
         "times": null,
-        "completed": 59
+        "completed": 60
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-04-29T04:40:45.714381+00:00",
-      "next_run_at": "2026-05-14T09:00:00+00:00",
-      "last_run_at": "2026-05-13T21:00:29.380256+00:00",
+      "next_run_at": "2026-05-14T15:00:00+00:00",
+      "last_run_at": "2026-05-14T03:01:33.642223+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -281,15 +281,15 @@
       "schedule_display": "0 3,9,12,15,18 * * *",
       "repeat": {
         "times": null,
-        "completed": 11
+        "completed": 12
       },
       "enabled": true,
       "state": "scheduled",
       "paused_at": null,
       "paused_reason": null,
       "created_at": "2026-05-11T15:06:25.339227+00:00",
-      "next_run_at": "2026-05-14T09:00:00+00:00",
-      "last_run_at": "2026-05-14T03:01:23.132410+00:00",
+      "next_run_at": "2026-05-14T12:00:00+00:00",
+      "last_run_at": "2026-05-14T09:07:07.509019+00:00",
       "last_status": "ok",
       "last_error": null,
       "last_delivery_error": null,
@@ -304,5 +304,5 @@
       "workdir": "/opt/data/repos/pixiv-watcher"
     }
   ],
-  "updated_at": "2026-05-14T03:01:23.134546+00:00"
+  "updated_at": "2026-05-14T09:07:07.511060+00:00"
 }
