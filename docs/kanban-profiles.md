@@ -80,6 +80,30 @@ docker compose up -d --force-recreate hermes
 2. **Cron 移行（任意）**：長期・複数ステップの cron job（例：`research-vault-daily-refresh`）を Kanban タスク化して追跡性を上げる。
 3. **Dashboard 確認**：`docker compose --profile dashboard up -d` で Kanban ボードを見ながらタスクの流れを確認する。
 
+## Coordinator の振り分け判断基準
+
+Coordinator は以下のルールで「その場で返答」か「Kanban タスク化」かを判断する：
+
+| 類型 | 動作 | 例 |
+|------|------|-----|
+| **雑談・軽い相談・知ってる情報の返答** | その場で返答 | 「今日の天気どう？」「そのキーボードどう思う？」「ちょっと慶して」 |
+| **調査・コード書き・ドキュメント作成・分析** | `kanban_create` で Worker へ | 「この URL を調べて」「その関数を修正して」「レポート書いて」 |
+| **迷ったら** | ユーザーに確認 | 「これちょっと調べる？」と聞く |
+
+これは `coordinator` プロファイルの `SOUL.md` に書かれており、スクリプト実行時に自動生成される。
+
+### channel_prompts は必見？
+
+**必見ではない。あった方が堅牢。**
+
+Coordinator の `SOUL.md` がメインの振り分けルールである。しかし、チャンネルごとに用途が固定されているなら `channel_prompts` で補強すると迷いが減る：
+
+- `#ask-hermes` → 「軽い雑談がメイン。作業依頼は kanban_create せず、その場で答えてから hermes-dev に導く」
+- `#hermes-dev` → 「技術調査・コード作成は kanban_create する。純粋な質問はその場で」
+- `#inbox-from-chrome` → 「URL が飛んでくる。概要だけ詰めて必要なら kanban_create する」
+
+これらは `runtime/hermes-data/config.yaml` の `discord.channel_prompts` に手動で追記する。（init スクリプトでは変更しない）
+
 ## 注意
 
 - `hermes-owashota` は変更しない。別 Bot として独立して運用する。

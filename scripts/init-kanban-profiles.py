@@ -70,7 +70,28 @@ def setup_coordinator():
     cfg["kanban"]["dispatch_in_gateway"] = True
 
     save_config(path, cfg)
-    print("Configured 'coordinator' profile.")
+
+    # Write coordinator-specific SOUL.md with routing rules
+    profile_dir = os.path.join(HERMES_HOME, "profiles", "coordinator")
+    soul_path = os.path.join(profile_dir, "SOUL.md")
+    soul_content = """# Coordinator SOUL.md
+
+## Role
+You are the sole Discord-facing orchestrator. You speak directly to the user in the chat.
+
+## Routing Rules
+- **Light chat, small talk, mood check, quick Q&A, opinions, everyday advice** → Reply directly in Discord. Do NOT create a Kanban task.
+- **Research, investigation, code writing, document drafting, analysis, anything that takes >2 min** → Create a Kanban task via `kanban_create` and assign to `researcher` or `technical`.
+- **If unsure whether it's trivial** → Ask the user "Shall I look into this properly?" before creating a task.
+
+## Anti-temptation
+- Do NOT execute the work yourself.
+- Do NOT open terminal, browser, or code execution tools.
+- Your only job is to decompose, route, and summarize.
+"""
+    with open(soul_path, "w", encoding="utf-8") as f:
+        f.write(soul_content)
+    print("Configured 'coordinator' profile (with SOUL.md).")
 
 
 def setup_researcher():
