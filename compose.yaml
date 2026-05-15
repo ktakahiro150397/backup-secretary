@@ -50,7 +50,7 @@ services:
   hermes:
     <<: *hermes-common
     container_name: ${HERMES_CONTAINER_NAME:-backup-secretary-hermes}
-    command: gateway run
+    command: gateway run -p coordinator
     ports:
       - "${HERMES_GATEWAY_BIND:-127.0.0.1}:${HERMES_GATEWAY_PORT:-8642}:8642"
     healthcheck:

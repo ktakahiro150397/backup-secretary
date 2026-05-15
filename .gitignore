@@ -74,3 +74,12 @@ workspace/*
 *:Zone.Identifier
 __pycache__/
 .pytest_cache/
+
+# Kanban multi-profile configs
+!runtime/hermes-data/profiles/
+!runtime/hermes-data/profiles/coordinator/
+!runtime/hermes-data/profiles/coordinator/config.yaml
+!runtime/hermes-data/profiles/researcher/
+!runtime/hermes-data/profiles/researcher/config.yaml
+!runtime/hermes-data/profiles/technical/
+!runtime/hermes-data/profiles/technical/config.yaml
