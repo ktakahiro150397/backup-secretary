@@ -81,7 +81,9 @@ You are the sole Discord-facing orchestrator. You speak directly to the user in 
 
 ## Routing Rules
 - **Light chat, small talk, mood check, quick Q&A, opinions, everyday advice** → Reply directly in Discord. Do NOT create a Kanban task.
-- **Research, investigation, code writing, document drafting, analysis, anything that takes >2 min** → Create a Kanban task via `kanban_create` and assign to `researcher` or `technical`.
+- **Research, investigation, document drafting, analysis** → Assign to `researcher` via `kanban_create`.
+- **Code writing, system operations, bug fixes** → Assign to `technical` via `kanban_create`.
+- **Code review, PR review, security check, lint/static analysis** → Assign to `reviewer` via `kanban_create`.
 - **If unsure whether it's trivial** → Ask the user "Shall I look into this properly?" before creating a task.
 
 ## Anti-temptation
@@ -98,10 +100,10 @@ def setup_researcher():
     path = ensure_profile("researcher")
     cfg = load_config(path)
 
-    # Cheap model for research tasks
-    cfg["model"]["default"] = "gemma-4-31b-it"
-    cfg["model"]["provider"] = "openrouter"
-    cfg["model"]["base_url"] = "https://openrouter.ai/api/v1"
+    # Fast/cheap model for research tasks
+    cfg["model"]["default"] = "deepseek-v4-flash"
+    cfg["model"]["provider"] = "opencode-go"
+    cfg["model"]["base_url"] = "https://opencode.ai/zen/go/v1"
 
     # Worker does not connect to Discord directly
     cfg["discord"] = {}
@@ -112,9 +114,6 @@ def setup_researcher():
 
     save_config(path, cfg)
     print("Configured 'researcher' profile.")
-
-    if not os.environ.get("OPENROUTER_API_KEY"):
-        print("  WARNING: OPENROUTER_API_KEY not set. Researcher profile needs it.")
 
 
 def setup_technical():
@@ -140,6 +139,32 @@ def setup_technical():
         print("  WARNING: OPENCODE_GO_API_KEY not set. Technical profile needs it.")
 
 
+def setup_reviewer():
+    path = ensure_profile("reviewer")
+    cfg = load_config(path)
+
+    # Fast/cheap model for code review (same provider as technical, different perspective)
+    cfg["model"]["default"] = "deepseek-v4-flash"
+    cfg["model"]["provider"] = "opencode-go"
+    cfg["model"]["base_url"] = "https://opencode.ai/zen/go/v1"
+
+    # Worker does not connect to Discord directly
+    cfg["discord"] = {}
+
+    # Enable GitHub and terminal for lint/security scans
+    cfg["agent"]["disabled_toolsets"] = ["discord", "kanban", "send_message", "browser"]
+
+    # Ensure kanban dispatch
+    cfg.setdefault("kanban", {})
+    cfg["kanban"]["dispatch_in_gateway"] = True
+
+    save_config(path, cfg)
+    print("Configured 'reviewer' profile.")
+
+    if not os.environ.get("OPENCODE_GO_API_KEY"):
+        print("  WARNING: OPENCODE_GO_API_KEY not set. Reviewer profile needs it.")
+
+
 def main():
     print("Initializing Kanban multi-profile setup...")
     print(f"HERMES_HOME: {HERMES_HOME}\n")
@@ -147,6 +172,7 @@ def main():
     setup_coordinator()
     setup_researcher()
     setup_technical()
+    setup_reviewer()
 
     print("\nDone.")
     print("Restart the gateway with: docker compose up -d --force-recreate hermes")
