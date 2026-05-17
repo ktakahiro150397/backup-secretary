@@ -35,3 +35,9 @@ RUN set -eux; \
   chown -R hermes:hermes /opt/hermes/.venv; \
   mkdir -p /opt/data; \
   chown -R hermes:hermes /opt/data
+
+# Temporary monkey-patch for free_response + auto_thread (PR #26074)
+# Remove this section once the official fix is in the base image.
+COPY patches/discord_free_response_thread.py /opt/hermes/patches/
+ENV PYTHONPATH="/opt/hermes/patches:${PYTHONPATH}"
+RUN . /opt/hermes/.venv/bin/activate && python -c "import discord_free_response_thread" || true
