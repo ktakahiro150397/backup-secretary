@@ -12,38 +12,46 @@ skip_thread の計算から is_free_channel を除去する。
 次回 Hermes アプデで公式修正が入ったら、このファイルごと削除。
 """
 import os
-import re
+import textwrap
+import inspect
+import sys
 
 if os.getenv("DISABLE_DISCORD_FREE_RESPONSE_PATCH", "").lower() in {"1", "true", "yes"}:
-    # パッチ無効
     raise ImportError("patch disabled via env")
 
 import gateway.platforms.discord as discord_mod
 
-# --- 方法: ソースファイルを直接書き換える ---
-filepath = discord_mod.__file__
-with open(filepath, encoding="utf-8") as f:
-    source = f.read()
+# ── ランタイムモンキーパッチ ──
+# ファイル書き込み権限がない環境でも動くよう、in-memory でメソッドを差し替える
+
+original = discord_mod.DiscordPlatform._handle_message
+source = inspect.getsource(original)
+source = textwrap.dedent(source)
 
 old_line = "skip_thread = bool(channel_ids & no_thread_channels) or is_free_channel"
 new_line = "skip_thread = bool(channel_ids & no_thread_channels)"
 
 if old_line not in source:
-    # 既にパッチ済みか、コード構造が変わっている
     if new_line in source:
         print("[patch] discord_free_response_thread: already patched, skipping")
     else:
-        print("[patch] discord_free_response_thread: WARNING — target line not found, upstream may have changed")
+        print("[patch] discord_free_response_thread: WARNING — target line not found, upstream may have changed. source snippet:")
+        for i, line in enumerate(source.split("\n")[40:50]):
+            print(f"  {i+41}| {line}")
     raise ImportError("already patched or target changed")
 
 source = source.replace(old_line, new_line, 1)
 
-# 念のためモジュールを再読み込みして新しいコードを反映
-# （filepath の内容が変わるので次回 import からは新しいコードになる）
-with open(filepath, "w", encoding="utf-8") as f:
-    f.write(source)
+# exec して新しい関数を取得
+# （関数内で参照しているモジュールレベルの名前は discord_mod の __dict__ から拾う）
+namespace = dict(discord_mod.__dict__)
+exec(source, namespace)
+patched = namespace["_handle_message"]
 
-# 既にロード済みのクラスメソッドを新しいコードで置き換える
-import importlib
-importlib.reload(discord_mod)
+# 元の関数の属性（__module__ など）を引き継ぐ
+patched.__module__ = original.__module__
+patched.__qualname__ = original.__qualname__
+
+# 差し替え
+discord_mod.DiscordPlatform._handle_message = patched
 print("[patch] discord_free_response_thread: applied — skip_thread no longer includes is_free_channel")
