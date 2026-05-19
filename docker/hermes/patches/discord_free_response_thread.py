@@ -24,7 +24,7 @@ import gateway.platforms.discord as discord_mod
 # ── ランタイムモンキーパッチ ──
 # ファイル書き込み権限がない環境でも動くよう、in-memory でメソッドを差し替える
 
-original = discord_mod.DiscordPlatform._handle_message
+original = discord_mod.DiscordAdapter._handle_message
 source = inspect.getsource(original)
 source = textwrap.dedent(source)
 
@@ -53,5 +53,5 @@ patched.__module__ = original.__module__
 patched.__qualname__ = original.__qualname__
 
 # 差し替え
-discord_mod.DiscordPlatform._handle_message = patched
+discord_mod.DiscordAdapter._handle_message = patched
 print("[patch] discord_free_response_thread: applied — skip_thread no longer includes is_free_channel")
