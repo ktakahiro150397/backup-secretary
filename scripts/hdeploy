@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo="${BACKUP_SECRETARY_REPO:-$HOME/repo/backup-secretary}"
+cd "$repo"
+
+git pull --ff-only
+
+docker compose build --pull
+docker compose up -d --remove-orphans hermes-main hermes-owashota openviking searxng redis
+docker compose --profile skills-sync run --rm --build skills-sync-main
+docker compose --profile skills-sync run --rm --build skills-sync-owashota
+docker compose restart hermes-main hermes-owashota
