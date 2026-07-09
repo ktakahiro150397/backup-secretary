@@ -1,31 +1,22 @@
-name: backup-secretary-hermes
+name: backup-secretary
+
+x-hermes-build: &hermes-build
+  context: .
+  dockerfile: docker/hermes/Dockerfile
+  args:
+    HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent:latest}
+    HERMES_UID: ${HERMES_UID:-1000}
+    HERMES_GID: ${HERMES_GID:-1000}
 
 x-hermes-common: &hermes-common
   image: ${HERMES_IMAGE:-backup-secretary/hermes-agent:local}
-  build:
-    context: .
-    dockerfile: docker/hermes/Dockerfile
-    args:
-      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent:latest}
-      HERMES_UID: ${HERMES_UID:-1000}
-      HERMES_GID: ${HERMES_GID:-1000}
+  build: *hermes-build
   restart: unless-stopped
   environment:
     HERMES_HOME: /opt/data
     HOME: /opt/data
     HERMES_EXEC_ASK: "1"
     SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
-  volumes:
-    - type: bind
-      source: ${HERMES_DATA_DIR:-~/repo/backup-secretary-data/main/hermes-data} # メインhermesデータディレクトリを指定
-      target: /opt/data
-    - type: bind
-      source: ${HERMES_WORKSPACE_DIR:-./workspace}
-      target: /workspace
-    - type: bind
-      source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
-      target: /managed-skills
-      read_only: true
   networks:
     - hermes-net
   read_only: ${HERMES_READ_ONLY:-false}
@@ -42,84 +33,54 @@ x-hermes-common: &hermes-common
   security_opt:
     - no-new-privileges:true
   pids_limit: 256
-  mem_limit: ${HERMES_MEMORY_LIMIT:-4g}
-  cpus: ${HERMES_CPU_LIMIT:-2}
-  shm_size: ${HERMES_SHM_SIZE:-1g}
 
 services:
-  hermes:
+  hermes-main:
     <<: *hermes-common
-    container_name: ${HERMES_CONTAINER_NAME:-backup-secretary-hermes}
-    command: gateway run
-    ports:
-      - "${HERMES_GATEWAY_BIND:-127.0.0.1}:${HERMES_GATEWAY_PORT:-8642}:8642"
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - "pgrep -f 'hermes gateway run' >/dev/null"
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  dashboard:
-    <<: *hermes-common
-    container_name: ${HERMES_DASHBOARD_CONTAINER_NAME:-backup-secretary-hermes-dashboard}
-    command: dashboard --host 0.0.0.0 --insecure
-    profiles:
-      - dashboard
-    ports:
-      - "${HERMES_DASHBOARD_BIND:-127.0.0.1}:${HERMES_DASHBOARD_PORT:-9119}:9119"
-    environment:
-      HERMES_HOME: /opt/data
-      HOME: /opt/data
-      GATEWAY_HEALTH_URL: http://hermes:8642
-      GATEWAY_HEALTH_TIMEOUT: ${GATEWAY_HEALTH_TIMEOUT:-3}
-    depends_on:
-      - hermes
-    mem_limit: ${HERMES_DASHBOARD_MEMORY_LIMIT:-512m}
-    cpus: ${HERMES_DASHBOARD_CPU_LIMIT:-0.5}
-
-  setup:
-    <<: *hermes-common
-    container_name: ${HERMES_SETUP_CONTAINER_NAME:-backup-secretary-hermes-setup}
-    command: setup
-    profiles:
-      - setup
-    restart: "no"
-    stdin_open: true
-    tty: true
-
-  skills-sync:
-    <<: *hermes-common
-    container_name: ${HERMES_SKILLS_SYNC_CONTAINER_NAME:-backup-secretary-hermes-skills-sync}
-    command: bash -lc "mkdir -p /opt/data/skills && rsync -a /managed-skills/ /opt/data/skills/"
-    profiles:
-      - skills-sync
-    restart: "no"
-
-  cli:
-    <<: *hermes-common
-    container_name: ${HERMES_CLI_CONTAINER_NAME:-backup-secretary-hermes-cli}
-    command: bash
-    profiles:
-      - cli
-    restart: "no"
-    stdin_open: true
-    tty: true
-
-  hermes-owashota:
-    <<: *hermes-common
-    container_name: ${HERMES_OWASHOTA_CONTAINER_NAME:-backup-secretary-hermes-owashota}
+    container_name: backup-secretary-hermes-main
     command: gateway run
     environment:
       HERMES_HOME: /opt/data
       HOME: /opt/data
       HERMES_EXEC_ASK: "1"
       SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
+      OPENVIKING_ENDPOINT: http://openviking:1933
+      OPENVIKING_ACCOUNT: ${OPENVIKING_ACCOUNT:-personal}
+      OPENVIKING_USER: ${OPENVIKING_USER:-yanelmo}
+      OPENVIKING_AGENT: ${OPENVIKING_MAIN_AGENT:-hermes-main}
+      OPENVIKING_API_KEY: ${OPENVIKING_API_KEY:-}
     volumes:
       - type: bind
-        source: ${HERMES_OWASHOTA_DATA_DIR:-${HOME}/repo/backup-secretary-data/owashota/hermes-data}
+        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+    ports:
+      - "${HERMES_MAIN_GATEWAY_BIND:-127.0.0.1}:${HERMES_MAIN_GATEWAY_PORT:-8642}:8642"
+    depends_on:
+      - openviking
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'hermes gateway run' >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: ${HERMES_MAIN_MEMORY_LIMIT:-4g}
+    cpus: ${HERMES_MAIN_CPU_LIMIT:-2}
+    shm_size: ${HERMES_MAIN_SHM_SIZE:-1g}
+
+  hermes-owashota:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-owashota
+    command: gateway run
+    volumes:
+      - type: bind
+        source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
         target: /opt/data
       - type: bind
         source: ${HERMES_WORKSPACE_DIR:-./workspace}
@@ -131,9 +92,7 @@ services:
     ports:
       - "${HERMES_OWASHOTA_GATEWAY_BIND:-127.0.0.1}:${HERMES_OWASHOTA_GATEWAY_PORT:-8643}:8642"
     healthcheck:
-      test:
-        - CMD-SHELL
-        - "pgrep -f 'hermes gateway run' >/dev/null"
+      test: ["CMD-SHELL", "pgrep -f 'hermes gateway run' >/dev/null"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -142,27 +101,152 @@ services:
     cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
-  open-llm-vtuber:
-    image: ${OLLV_IMAGE:-openllmvtuber/open-llm-vtuber:latest}
-    container_name: open-llm-vtuber
+  openviking:
+    build:
+      context: ${OPENVIKING_BUILD_CONTEXT:-https://github.com/volcengine/OpenViking.git#main}
+      dockerfile: Dockerfile
+    container_name: backup-secretary-openviking
     restart: unless-stopped
-    networks:
-      - hermes-net
+    environment:
+      OPENVIKING_WITH_BOT: ${OPENVIKING_WITH_BOT:-0}
     volumes:
       - type: bind
-        source: ${OLLV_CONFIG_DIR:-./config/open-llm-vtuber}
-        target: /app/conf
-      - type: bind
-        source: ${OLLV_MODELS_DIR:-./runtime/ollv-models}
-        target: /app/models
+        source: ${OPENVIKING_DATA_DIR:-./runtime/openviking}
+        target: /app/.openviking
     ports:
-      - "${OLLV_PORT:-12393}:12393"
+      - "${OPENVIKING_BIND:-127.0.0.1}:${OPENVIKING_PORT:-1933}:1933"
+    networks:
+      - hermes-net
+    mem_limit: ${OPENVIKING_MEMORY_LIMIT:-2g}
+    cpus: ${OPENVIKING_CPU_LIMIT:-1}
+
+  dashboard-main:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-dashboard-main
+    command: dashboard --host 0.0.0.0 --insecure
+    profiles:
+      - dashboard
+    volumes:
+      - type: bind
+        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+    ports:
+      - "${HERMES_DASHBOARD_BIND:-127.0.0.1}:${HERMES_DASHBOARD_PORT:-9119}:9119"
     environment:
-      - TZ=Asia/Tokyo
+      HERMES_HOME: /opt/data
+      HOME: /opt/data
+      GATEWAY_HEALTH_URL: http://hermes-main:8642
+      GATEWAY_HEALTH_TIMEOUT: ${GATEWAY_HEALTH_TIMEOUT:-3}
+    depends_on:
+      - hermes-main
+    mem_limit: ${HERMES_DASHBOARD_MEMORY_LIMIT:-512m}
+    cpus: ${HERMES_DASHBOARD_CPU_LIMIT:-0.5}
+
+  setup-main:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-setup-main
+    command: setup
+    profiles:
+      - setup
+    restart: "no"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+
+  setup-owashota:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-setup-owashota
+    command: setup
+    profiles:
+      - setup
+    restart: "no"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+
+  skills-sync-main:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-skills-sync-main
+    command: bash -lc "mkdir -p /opt/data/skills && rsync -a /managed-skills/ /opt/data/skills/"
+    profiles:
+      - skills-sync
+    restart: "no"
+    volumes:
+      - type: bind
+        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+
+  skills-sync-owashota:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-skills-sync-owashota
+    command: bash -lc "mkdir -p /opt/data/skills && rsync -a /managed-skills/ /opt/data/skills/"
+    profiles:
+      - skills-sync
+    restart: "no"
+    volumes:
+      - type: bind
+        source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
+
+  cli-main:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-cli-main
+    command: bash
+    profiles:
+      - cli
+    restart: "no"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
+        target: /managed-skills
+        read_only: true
 
   searxng:
     image: docker.io/searxng/searxng:latest
-    container_name: searxng
+    container_name: backup-secretary-searxng
     restart: unless-stopped
     ports:
       - "${SEARXNG_BIND:-127.0.0.1}:${SEARXNG_PORT:-8080}:8080"
@@ -182,7 +266,7 @@ services:
 
   redis:
     image: docker.io/valkey/valkey:8-alpine
-    container_name: searxng-redis
+    container_name: backup-secretary-searxng-redis
     restart: unless-stopped
     command: valkey-server --save 30 1 --loglevel warning
     volumes:
