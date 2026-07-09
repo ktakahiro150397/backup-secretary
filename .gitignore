@@ -1,76 +1,71 @@
-# Hide runtime noise by default
-runtime/*
-!runtime/owashota/  # directory itself allowed if needed, contents ignored by wildcard below
+# Local env / secrets
+.env
+*.env
+.env.*
+!.env.example
 
-# Allow whitelist traversal
-!runtime/
-!runtime/hermes-data/
-!runtime/owashota/  # allow the directory to be created, but ignore contents
-
-# Ignore everything inside Hermes runtime unless explicitly whitelisted below.
-# Important: files already tracked must also be removed with `git rm --cached`.
-runtime/hermes-data/**
-runtime/owashota/**
-
-# Track portable Hermes config/state only
-!runtime/hermes-data/config.yaml
-!runtime/hermes-data/SOUL.md
-!runtime/hermes-data/memories/
-!runtime/hermes-data/memories/USER.md
-!runtime/hermes-data/memories/MEMORY.md
-!runtime/hermes-data/cron/
-!runtime/hermes-data/cron/jobs.json
-!runtime/hermes-data/plans/
-!runtime/hermes-data/plans/*.md
-!runtime/hermes-data/plans/**/*.md
-
-# Optional user-managed customization
-!runtime/hermes-data/hooks/
-!runtime/hermes-data/hooks/**
-!runtime/hermes-data/skins/
-!runtime/hermes-data/skins/**
-!runtime/hermes-data/platforms/
-!runtime/hermes-data/platforms/**/*.yaml
-
-# Never track secrets/runtime noise
-runtime/hermes-data/.env
-runtime/hermes-data/auth.json
-runtime/hermes-data/auth.lock
-runtime/hermes-data/state.db*
-runtime/hermes-data/sessions/**
-runtime/hermes-data/logs/**
-runtime/hermes-data/cache/**
-runtime/hermes-data/home/**
-runtime/hermes-data/.local/**
-runtime/hermes-data/cron/output/**
-runtime/hermes-data/*.pid
-runtime/hermes-data/*.lock
-runtime/hermes-data/gateway_state.json
-runtime/hermes-data/channel_directory.json
-runtime/hermes-data/models_dev_cache.json
-runtime/hermes-data/.skills_prompt_snapshot.json
-runtime/hermes-data/context_length_cache.yaml
-runtime/hermes-data/google_token.json
-runtime/hermes-data/google_client_secret.json
-runtime/hermes-data/sandboxes/**
-runtime/hermes-data/waf/**
-runtime/hermes-data/.pytest_cache/**
-runtime/hermes-data/.restart_last_processed.json
-runtime/hermes-data/tweet_samples.txt
-runtime/hermes-data/analyze_tweets.py
-runtime/hermes-data/_twitter_data/**
-runtime/hermes-data/.bash_history
-runtime/hermes-data/bin/**
-runtime/hermes-data/.config/**
-runtime/hermes-data/.gitconfig
-runtime/hermes-data/.npm/**
-runtime/hermes-data/.codex/**
-runtime/hermes-data/workspace/**
-
-# Existing rules
+# Workspaces are scratch areas.
 workspace/*
 !workspace/.gitkeep
-.env
+
+# Runtime data is ignored by default.
+runtime/**
+
+# Keep the runtime layout and stable Hermes files under version control.
+!runtime/
+!runtime/main/
+!runtime/main/hermes-data/
+!runtime/main/hermes-data/SOUL.md
+!runtime/main/hermes-data/config.yaml
+!runtime/main/hermes-data/cron/
+!runtime/main/hermes-data/cron/jobs.json
+
+!runtime/owashota/
+!runtime/owashota/hermes-data/
+!runtime/owashota/hermes-data/SOUL.md
+!runtime/owashota/hermes-data/config.yaml
+!runtime/owashota/hermes-data/cron/
+!runtime/owashota/hermes-data/cron/jobs.json
+
+!runtime/openviking/
+!runtime/openviking/.gitkeep
+
+# Never track generated/private Hermes runtime data.
+runtime/**/.env
+runtime/**/auth.json
+runtime/**/auth.lock
+runtime/**/state.db*
+runtime/**/sessions/**
+runtime/**/logs/**
+runtime/**/cache/**
+runtime/**/home/**
+runtime/**/.local/**
+runtime/**/memories/**
+runtime/**/gateway_state.json
+runtime/**/channel_directory.json
+runtime/**/models_dev_cache.json
+runtime/**/.skills_prompt_snapshot.json
+runtime/**/context_length_cache.yaml
+runtime/**/google_token.json
+runtime/**/google_client_secret.json
+runtime/**/sandboxes/**
+runtime/**/waf/**
+runtime/**/.pytest_cache/**
+runtime/**/.restart_last_processed.json
+runtime/**/.bash_history
+runtime/**/bin/**
+runtime/**/.config/**
+runtime/**/.gitconfig
+runtime/**/.npm/**
+runtime/**/.codex/**
+runtime/**/workspace/**
+
+# OpenViking runtime data stays local.
+runtime/openviking/**
+!runtime/openviking/
+!runtime/openviking/.gitkeep
+
+# General
 *:Zone.Identifier
 __pycache__/
 .pytest_cache/
