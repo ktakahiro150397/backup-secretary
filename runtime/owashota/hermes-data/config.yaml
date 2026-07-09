@@ -1,0 +1,45 @@
+model:
+  model: moonshotai/kimi-k2.6
+  base_url: https://opencode.ai/zen/go/v1
+  default: kimi-k2.6
+  provider: opencode-go
+  api_mode: chat_completions
+
+toolsets:
+  - hermes-cli
+
+agent:
+  max_turns: 60
+  gateway_timeout: 1800
+  api_max_retries: 3
+  reasoning_effort: medium
+
+terminal:
+  backend: local
+  cwd: /workspace
+  timeout: 180
+  env_passthrough: []
+  persistent_shell: true
+
+approvals:
+  mode: manual
+  timeout: 60
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  # Do not connect this instance to the personal OpenViking memory by default.
+  provider: null
+
+tool_output:
+  max_bytes: 50000
+  max_lines: 2000
+  max_line_length: 2000
+
+display:
+  compact: true
+  personality: concise
+  streaming: true
+  interim_assistant_messages: true
+  final_response_markdown: strip
+  show_cost: false
