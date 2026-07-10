@@ -13,6 +13,7 @@ This branch splits runtime data by instance and introduces OpenViking as the sha
 - `knowledge/`: Git-managed stable knowledge
 
 See [`docs/rework-runtime-openviking.md`](docs/rework-runtime-openviking.md) for setup and operation.
+See [`docs/architecture.md`](docs/architecture.md) for Mermaid architecture diagrams.
 
 ## Quick commands
 
