@@ -1,16 +1,14 @@
 name: backup-secretary
 
+x-hermes-environment: &hermes-environment
+  HERMES_HOME: /opt/data
+  HOME: /opt/data
+  HERMES_UID: ${HERMES_UID:-1000}
+  HERMES_GID: ${HERMES_GID:-1000}
+
 x-hermes-common: &hermes-common
   image: ${HERMES_IMAGE:-nousresearch/hermes-agent:latest}
-  user: "${HERMES_UID:-1000}:${HERMES_GID:-1000}"
   restart: unless-stopped
-  environment:
-    HERMES_HOME: /opt/data
-    HOME: /opt/data
-  volumes:
-    - type: bind
-      source: ${HERMES_WORKSPACE_DIR:-./workspace}
-      target: /workspace
   networks:
     - hermes-net
 
@@ -22,8 +20,7 @@ services:
     env_file:
       - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
     environment:
-      HERMES_HOME: /opt/data
-      HOME: /opt/data
+      <<: *hermes-environment
       OPENVIKING_ENDPOINT: http://openviking:1933
     volumes:
       - type: bind
@@ -44,8 +41,7 @@ services:
     env_file:
       - ${HERMES_OWASHOTA_ENV_FILE:-./runtime/owashota/hermes-data/.env}
     environment:
-      HERMES_HOME: /opt/data
-      HOME: /opt/data
+      <<: *hermes-environment
       OPENVIKING_ENDPOINT: http://openviking:1933
     volumes:
       - type: bind
@@ -85,6 +81,9 @@ services:
     tty: true
     env_file:
       - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
+    environment:
+      <<: *hermes-environment
+      OPENVIKING_ENDPOINT: http://openviking:1933
     volumes:
       - type: bind
         source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
@@ -104,6 +103,9 @@ services:
     tty: true
     env_file:
       - ${HERMES_OWASHOTA_ENV_FILE:-./runtime/owashota/hermes-data/.env}
+    environment:
+      <<: *hermes-environment
+      OPENVIKING_ENDPOINT: http://openviking:1933
     volumes:
       - type: bind
         source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
