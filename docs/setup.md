@@ -27,28 +27,52 @@ Discord token、LLM API key、OpenViking API key、OpenViking namespace は各He
 
 ## 初期化
 
+runtimeを作り直す場合は、先に既存containerを停止します。
+
 ```bash
+docker compose down
+rm -rf runtime workspace
+```
+
+その後、必要なdirectoryとenvを作成します。
+
+```bash
+mkdir -p runtime/main/hermes-data runtime/owashota/hermes-data runtime/openviking workspace
 cp .env.example .env
 cp runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
 cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
-mkdir -p runtime/openviking workspace
 ```
 
-Linux / WSLでは、root `.env` のUID/GIDをホストユーザーに合わせます。
+> `runtime` を削除すると認証情報、session、Hermes設定、OpenViking dataも消えます。
+
+## UID/GID
+
+Hermes containerは、Composeの `user:` 指定によりホストユーザーと同じUID/GIDで実行します。カスタムDockerfileやimage内の `usermod`、再帰的な `chown` は使いません。
+
+Linux / WSL / macOSでは、root `.env` を現在のユーザーに合わせます。
 
 ```bash
 sed -i "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
 sed -i "s/^HERMES_GID=.*/HERMES_GID=$(id -g)/" .env
 ```
 
-Hermesは公式imageをベースに薄いローカルimageをbuildし、container内の `hermes` ユーザーをこのUID/GIDへ合わせます。
-
-過去のcontainerが `runtime/*/hermes-data` をUID 10000所有にしている場合は、一度だけ所有権を戻します。
+macOSでBSD版 `sed` を使う場合:
 
 ```bash
-sudo chown -R "$(id -u):$(id -g)" runtime/main/hermes-data
-sudo chown -R "$(id -u):$(id -g)" runtime/owashota/hermes-data
+sed -i '' "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
+sed -i '' "s/^HERMES_GID=.*/HERMES_GID=$(id -g)/" .env
 ```
+
+この方式により、bind mountされた `runtime/*/hermes-data` にcontainerが作成するファイルは、原則としてホストユーザーからそのまま読み書きできます。
+
+### 対応環境
+
+- Linux: 対応
+- WSL2 + Docker Desktop: 対応
+- macOS + Docker Desktop: 対応
+- Windows PowerShellからDocker Desktopを直接使う構成: 動作可能だが、Linux UID/GIDの概念がホスト側と一致しないため、このrepositoryではWSL2経由を推奨
+
+公式Hermes imageが任意UIDで `/opt/hermes` 配下への書き込みを要求する機能を使う場合は、別途権限対応が必要になる可能性があります。このreworkでは永続的な書き込み先を `/opt/data` に限定する前提です。
 
 その後、以下を編集します。
 
@@ -95,7 +119,7 @@ Docker版OpenVikingはコンテナ内で `0.0.0.0:1933` をbindするため、Op
 Hermesは2つの別コンテナとして起動します。
 
 ```bash
-make build
+make pull
 make up
 ```
 
