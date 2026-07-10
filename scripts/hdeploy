@@ -6,7 +6,8 @@ cd "$repo"
 
 git pull --ff-only
 
-docker compose build --pull
+docker compose pull openviking searxng redis
+docker compose build --pull hermes-main hermes-owashota
 docker compose up -d --remove-orphans hermes-main hermes-owashota openviking searxng redis
 docker compose --profile skills-sync run --rm --build skills-sync-main
 docker compose --profile skills-sync run --rm --build skills-sync-owashota
