@@ -102,9 +102,7 @@ services:
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
   openviking:
-    build:
-      context: ${OPENVIKING_BUILD_CONTEXT:-https://github.com/volcengine/OpenViking.git#main}
-      dockerfile: Dockerfile
+    image: ${OPENVIKING_IMAGE:-ghcr.io/volcengine/openviking:latest}
     container_name: backup-secretary-openviking
     restart: unless-stopped
     environment:
