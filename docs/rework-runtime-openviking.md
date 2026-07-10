@@ -37,6 +37,14 @@ OpenViking is for shared long-term context:
 
 `hermes-main` connects to OpenViking by default. `hermes-owashota` does not.
 
+This Compose stack uses the official prebuilt OpenViking image from GitHub Container Registry:
+
+```text
+ghcr.io/volcengine/openviking:latest
+```
+
+OpenViking persistent state is mounted at `/app/.openviking` inside the container.
+
 ### Not synchronized
 
 Do not synchronize these:
@@ -91,6 +99,8 @@ docker compose exec openviking openviking-server doctor
 curl http://127.0.0.1:1933/health
 ```
 
+The official image starts the HTTP server on port `1933` and also includes Web Studio at `/studio`. `OPENVIKING_WITH_BOT=0` disables the bundled `vikingbot` gateway for this stack.
+
 Then start the stack:
 
 ```bash
@@ -109,7 +119,7 @@ scripts/hupdate
 
 Use this for `skills/` and `knowledge/` changes.
 
-Deploy with rebuild/restart:
+Deploy with image pull, Hermes rebuild, and restart:
 
 ```bash
 make deploy
