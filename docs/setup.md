@@ -32,9 +32,10 @@ runtimeを作り直す場合は、先に既存containerを停止します。
 ```bash
 docker compose down
 rm -rf runtime workspace
+git restore runtime workspace
 ```
 
-その後、必要なdirectoryとenvを作成します。
+`git restore` でGit管理中の `config.yaml`、`SOUL.md`、`.env.example`、`.gitkeep` を戻します。その後、実際のenvを作成します。
 
 ```bash
 mkdir -p runtime/main/hermes-data runtime/owashota/hermes-data runtime/openviking workspace
@@ -43,7 +44,7 @@ cp runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
 cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
 ```
 
-> `runtime` を削除すると認証情報、session、Hermes設定、OpenViking dataも消えます。
+> `runtime` を削除すると認証情報、session、実行時に生成されたHermes設定、OpenViking dataも消えます。
 
 ## UID/GID
 
