@@ -1,6 +1,6 @@
 COMPOSE ?= docker compose
 
-.PHONY: up down logs ps build update deploy restart-main restart-owashota restart-all skills-sync openviking-init openviking-doctor cli-main
+.PHONY: up down logs ps build pull update deploy restart-main restart-owashota restart-all skills-sync openviking-init openviking-doctor cli-main
 
 up:
 	$(COMPOSE) up -d hermes-main hermes-owashota openviking searxng redis
@@ -17,6 +17,9 @@ ps:
 build:
 	$(COMPOSE) build --pull hermes-main hermes-owashota
 
+pull:
+	$(COMPOSE) pull openviking searxng redis
+
 update:
 	git pull --ff-only
 	$(COMPOSE) --profile skills-sync run --rm --build skills-sync-main
@@ -25,7 +28,8 @@ update:
 # Use this after config.yaml, SOUL.md, Dockerfile, compose.yaml, or .env changes.
 deploy:
 	git pull --ff-only
-	$(COMPOSE) build --pull
+	$(COMPOSE) pull openviking searxng redis
+	$(COMPOSE) build --pull hermes-main hermes-owashota
 	$(COMPOSE) up -d --remove-orphans hermes-main hermes-owashota openviking searxng redis
 	$(COMPOSE) --profile skills-sync run --rm --build skills-sync-main
 	$(COMPOSE) --profile skills-sync run --rm --build skills-sync-owashota
