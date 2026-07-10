@@ -48,9 +48,11 @@ cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
 
 ## UID/GID
 
-Hermes containerは、Composeの `user:` 指定によりホストユーザーと同じUID/GIDで実行します。カスタムDockerfileやimage内の `usermod`、再帰的な `chown` は使いません。
+Hermes公式imageは、rootで起動したあと、`HERMES_UID` / `HERMES_GID` を使ってcontainer内の `hermes` ユーザーをホスト側のUID/GIDへ自動的に合わせます。
 
-Linux / WSL / macOSでは、root `.env` を現在のユーザーに合わせます。
+Composeの `user:` は指定しません。s6-overlayの初期化処理が必要なため、`user:` を指定すると起動に失敗します。
+
+Linux / WSLでは、root `.env` を現在のユーザーに合わせます。
 
 ```bash
 sed -i "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
@@ -64,18 +66,18 @@ sed -i '' "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
 sed -i '' "s/^HERMES_GID=.*/HERMES_GID=$(id -g)/" .env
 ```
 
-この方式により、bind mountされた `runtime/*/hermes-data` にcontainerが作成するファイルは、原則としてホストユーザーからそのまま読み書きできます。
+この方式により、Hermes自身の初期化処理を壊さずに、bind mountされた `runtime/*/hermes-data` の所有者をホストユーザーへ合わせられます。
 
 ### 対応環境
 
 - Linux: 対応
 - WSL2 + Docker Desktop: 対応
 - macOS + Docker Desktop: 対応
-- Windows PowerShellからDocker Desktopを直接使う構成: 動作可能だが、Linux UID/GIDの概念がホスト側と一致しないため、このrepositoryではWSL2経由を推奨
+- Windows PowerShellからDocker Desktopを直接使う構成: WSL2経由を推奨
 
-公式Hermes imageが任意UIDで `/opt/hermes` 配下への書き込みを要求する機能を使う場合は、別途権限対応が必要になる可能性があります。このreworkでは永続的な書き込み先を `/opt/data` に限定する前提です。
+## 設定編集
 
-その後、以下を編集します。
+以下を編集します。
 
 ```text
 .env
@@ -83,7 +85,7 @@ runtime/main/hermes-data/.env
 runtime/owashota/hermes-data/.env
 ```
 
-最低限、`runtime/main/hermes-data/.env` と `runtime/owashota/hermes-data/.env` で以下を別値にしてください。
+最低限、2つのインスタンス用 `.env` で以下を別値にしてください。
 
 ```text
 OPENVIKING_ACCOUNT
