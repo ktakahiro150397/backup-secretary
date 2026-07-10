@@ -1,24 +1,34 @@
+# Root Compose env. Real .env is local-only; .env.example is tracked.
 .env
 *.env
 .env.*
 !.env.example
 
+# Workspace is scratch.
 workspace/*
 !workspace/.gitkeep
 
+# Runtime data is local by default.
 runtime/**
+
+# Track only stable Hermes config and env examples.
 !runtime/
 !runtime/main/
 !runtime/main/hermes-data/
 !runtime/main/hermes-data/SOUL.md
 !runtime/main/hermes-data/config.yaml
+!runtime/main/hermes-data/.env.example
+
 !runtime/owashota/
 !runtime/owashota/hermes-data/
 !runtime/owashota/hermes-data/SOUL.md
 !runtime/owashota/hermes-data/config.yaml
+!runtime/owashota/hermes-data/.env.example
+
 !runtime/openviking/
 !runtime/openviking/.gitkeep
 
+# Never track real runtime secrets or generated state.
 runtime/**/.env
 runtime/**/auth.json
 runtime/**/auth.lock
