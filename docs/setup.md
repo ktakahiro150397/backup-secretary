@@ -34,6 +34,22 @@ cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
 mkdir -p runtime/openviking workspace
 ```
 
+Linux / WSLでは、root `.env` のUID/GIDをホストユーザーに合わせます。
+
+```bash
+sed -i "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
+sed -i "s/^HERMES_GID=.*/HERMES_GID=$(id -g)/" .env
+```
+
+Hermesは公式imageをベースに薄いローカルimageをbuildし、container内の `hermes` ユーザーをこのUID/GIDへ合わせます。
+
+過去のcontainerが `runtime/*/hermes-data` をUID 10000所有にしている場合は、一度だけ所有権を戻します。
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" runtime/main/hermes-data
+sudo chown -R "$(id -u):$(id -g)" runtime/owashota/hermes-data
+```
+
 その後、以下を編集します。
 
 ```text
@@ -79,6 +95,7 @@ Docker版OpenVikingはコンテナ内で `0.0.0.0:1933` をbindするため、Op
 Hermesは2つの別コンテナとして起動します。
 
 ```bash
+make build
 make up
 ```
 
