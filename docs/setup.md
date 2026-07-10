@@ -10,18 +10,45 @@
 
 SearXNG、Redis、skills、knowledge、既存memory移行、Obsidian連携はこのreworkのスコープ外です。
 
+## envファイルの考え方
+
+このブランチでは `.env` を2種類に分けます。
+
+```text
+.env                                  # Docker Compose用。repo rootに置く。
+runtime/main/hermes-data/.env          # hermes-main用。Git管理しない。
+runtime/owashota/hermes-data/.env      # hermes-owashota用。Git管理しない。
+```
+
+root `.env` には秘密情報を置きません。  
+Discord token、LLM API key、OpenViking API key、OpenViking namespace は各Hermesインスタンス直下の `.env` に置きます。
+
+詳細は `docs/env.md` を参照してください。
+
 ## 初期化
 
 ```bash
 cp .env.example .env
-mkdir -p runtime/main/hermes-data runtime/owashota/hermes-data runtime/openviking workspace
+cp runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
+cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
+mkdir -p runtime/openviking workspace
 ```
 
-Linux / WSL では `.env` の UID/GID をホストユーザーに合わせます。
+その後、以下を編集します。
 
-```bash
-sed -i "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
-sed -i "s/^HERMES_GID=.*/HERMES_GID=$(id -g)/" .env
+```text
+.env
+runtime/main/hermes-data/.env
+runtime/owashota/hermes-data/.env
+```
+
+最低限、`runtime/main/hermes-data/.env` と `runtime/owashota/hermes-data/.env` で以下を別値にしてください。
+
+```text
+OPENVIKING_ACCOUNT
+OPENVIKING_USER
+OPENVIKING_AGENT
+OPENVIKING_API_KEY
 ```
 
 ## OpenViking
@@ -71,21 +98,23 @@ runtime/owashota/hermes-data/.env
 
 ## memory分離
 
-OpenViking接続情報は `.env` で分けます。
+OpenViking接続情報は、各インスタンス直下の `.env` で分けます。
 
 ```text
-OPENVIKING_MAIN_ACCOUNT
-OPENVIKING_MAIN_USER
-OPENVIKING_MAIN_AGENT
-OPENVIKING_MAIN_API_KEY
+runtime/main/hermes-data/.env
+  OPENVIKING_ACCOUNT=personal
+  OPENVIKING_USER=yanelmo
+  OPENVIKING_AGENT=hermes-main
+  OPENVIKING_API_KEY=...
 
-OPENVIKING_OWASHOTA_ACCOUNT
-OPENVIKING_OWASHOTA_USER
-OPENVIKING_OWASHOTA_AGENT
-OPENVIKING_OWASHOTA_API_KEY
+runtime/owashota/hermes-data/.env
+  OPENVIKING_ACCOUNT=owashota
+  OPENVIKING_USER=owashota
+  OPENVIKING_AGENT=hermes-owashota
+  OPENVIKING_API_KEY=...
 ```
 
-最低限、`account` / `user` / `agent` はインスタンスごとに分けます。
+最低限、`account` / `user` / `agent` はインスタンスごとに分けます。  
 API keyも別にできる場合は必ず別にします。
 
 このブランチでは「記憶が混ざらないこと」の検証を優先し、既存memoryやskillsの初期投入は行いません。
