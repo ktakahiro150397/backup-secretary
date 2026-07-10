@@ -1,0 +1,41 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 1933,
+    "root_api_key": "<your-root-api-key>",
+    "cors_origins": ["*"]
+  },
+  "storage": {
+    "workspace": "/app/.openviking/workspace"
+  },
+  "embedding": {
+    "dense": {
+      "model": "<your-embedding-model>",
+      "api_key": "<your-embedding-api-key>",
+      "api_base": "<your-embedding-api-base>",
+      "dimension": 1024,
+      "provider": "<your-embedding-provider>",
+      "input": "text"
+    }
+  },
+  "vlm": {
+    "model": "<your-vlm-model>",
+    "api_key": "<your-vlm-api-key>",
+    "api_base": "<your-vlm-api-base>",
+    "temperature": 0.0,
+    "max_retries": 3,
+    "provider": "<your-vlm-provider>"
+  },
+  "auto_generate_l0": true,
+  "auto_generate_l1": true,
+  "default_search_mode": "thinking",
+  "default_search_limit": 3,
+  "enable_memory_decay": true,
+  "memory_decay_check_interval": 3600,
+  "log": {
+    "level": "WARN",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "output": "stdout",
+    "rotation": false
+  }
+}
