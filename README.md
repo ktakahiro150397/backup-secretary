@@ -16,10 +16,24 @@ Hermes Agent と OpenViking だけで構成する、最小スコープの rework
 2. 2つのHermesがOpenVikingへ接続できること。
 3. OpenViking上で account / user / agent / API key を分け、インスタンス間で記憶が混ざらない構成にすること。
 
+## envファイル
+
+このブランチでは `.env` を2種類に分けます。
+
+```text
+.env                                  # Docker Compose用。秘密情報は置かない。
+runtime/main/hermes-data/.env          # hermes-main用。Git管理しない。
+runtime/owashota/hermes-data/.env      # hermes-owashota用。Git管理しない。
+```
+
+詳細は `docs/env.md` を参照してください。
+
 ## 使い方
 
 ```bash
 cp .env.example .env
+cp runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
+cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
 make up
 ```
 
@@ -36,4 +50,4 @@ make ov-doctor
 make restart
 ```
 
-詳細は `docs/setup.md` と `docs/architecture.md` を参照してください。
+詳細は `docs/setup.md`、`docs/env.md`、`docs/architecture.md` を参照してください。
