@@ -1,16 +1,8 @@
 name: backup-secretary
 
-x-hermes-build: &hermes-build
-  context: .
-  dockerfile: docker/hermes/Dockerfile
-  args:
-    HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent:latest}
-    HERMES_UID: ${HERMES_UID:-1000}
-    HERMES_GID: ${HERMES_GID:-1000}
-
 x-hermes-common: &hermes-common
-  image: ${HERMES_IMAGE:-backup-secretary/hermes-agent:local}
-  build: *hermes-build
+  image: ${HERMES_IMAGE:-nousresearch/hermes-agent:latest}
+  user: "${HERMES_UID:-1000}:${HERMES_GID:-1000}"
   restart: unless-stopped
   environment:
     HERMES_HOME: /opt/data
