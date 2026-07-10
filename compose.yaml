@@ -18,14 +18,12 @@ services:
     <<: *hermes-common
     container_name: backup-secretary-hermes-main
     command: gateway run
+    env_file:
+      - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
     environment:
       HERMES_HOME: /opt/data
       HOME: /opt/data
       OPENVIKING_ENDPOINT: http://openviking:1933
-      OPENVIKING_ACCOUNT: ${OPENVIKING_MAIN_ACCOUNT:-personal}
-      OPENVIKING_USER: ${OPENVIKING_MAIN_USER:-yanelmo}
-      OPENVIKING_AGENT: ${OPENVIKING_MAIN_AGENT:-hermes-main}
-      OPENVIKING_API_KEY: ${OPENVIKING_MAIN_API_KEY:-}
     volumes:
       - type: bind
         source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
@@ -42,14 +40,12 @@ services:
     <<: *hermes-common
     container_name: backup-secretary-hermes-owashota
     command: gateway run
+    env_file:
+      - ${HERMES_OWASHOTA_ENV_FILE:-./runtime/owashota/hermes-data/.env}
     environment:
       HERMES_HOME: /opt/data
       HOME: /opt/data
       OPENVIKING_ENDPOINT: http://openviking:1933
-      OPENVIKING_ACCOUNT: ${OPENVIKING_OWASHOTA_ACCOUNT:-owashota}
-      OPENVIKING_USER: ${OPENVIKING_OWASHOTA_USER:-owashota}
-      OPENVIKING_AGENT: ${OPENVIKING_OWASHOTA_AGENT:-hermes-owashota}
-      OPENVIKING_API_KEY: ${OPENVIKING_OWASHOTA_API_KEY:-}
     volumes:
       - type: bind
         source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
@@ -86,6 +82,8 @@ services:
     restart: "no"
     stdin_open: true
     tty: true
+    env_file:
+      - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
     volumes:
       - type: bind
         source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
@@ -103,6 +101,8 @@ services:
     restart: "no"
     stdin_open: true
     tty: true
+    env_file:
+      - ${HERMES_OWASHOTA_ENV_FILE:-./runtime/owashota/hermes-data/.env}
     volumes:
       - type: bind
         source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
