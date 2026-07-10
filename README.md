@@ -1,27 +1,39 @@
 # backup-secretary
 
-Hermes Agent runtime for personal and family/friends Discord assistants.
+Hermes Agent と OpenViking だけで構成する、最小スコープの rework ブランチです。
 
-## Current rework branch
+## スコープ
 
-This branch splits runtime data by instance and introduces OpenViking as the shared long-term memory provider for personal Hermes.
+- `hermes-main`: 個人用 Hermes インスタンス
+- `hermes-owashota`: 身内向け Hermes インスタンス
+- `openviking`: Hermes から参照する長期 memory サーバー
 
-- `hermes-main`: personal always-on Discord gateway
-- `hermes-owashota`: family/friends Discord gateway
-- `openviking`: shared long-term memory provider for personal Hermes
-- `skills/`: Git-managed Hermes skills
-- `knowledge/`: Git-managed stable knowledge
+このブランチでは、SearXNG、Redis、skills、knowledge、既存 memory、Obsidian 連携などは扱いません。
 
-See [`docs/rework-runtime-openviking.md`](docs/rework-runtime-openviking.md) for setup and operation.
-See [`docs/architecture.md`](docs/architecture.md) for Mermaid architecture diagrams.
+## 目的
 
-## Quick commands
+1. Hermes の2インスタンスが、別々の runtime data dir で分離して動くこと。
+2. 2つのHermesがOpenVikingへ接続できること。
+3. OpenViking上で account / user / agent / API key を分け、インスタンス間で記憶が混ざらない構成にすること。
+
+## 使い方
 
 ```bash
 cp .env.example .env
 make up
-make update
-make deploy
 ```
 
-Do not commit secrets or generated runtime data.
+OpenVikingの初期化は以下です。
+
+```bash
+make ov-init
+make ov-doctor
+```
+
+設定変更後の反映は以下です。
+
+```bash
+make restart
+```
+
+詳細は `docs/setup.md` と `docs/architecture.md` を参照してください。

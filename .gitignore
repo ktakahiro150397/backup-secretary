@@ -1,36 +1,24 @@
-# Local env / secrets
 .env
 *.env
 .env.*
 !.env.example
 
-# Workspaces are scratch areas.
 workspace/*
 !workspace/.gitkeep
 
-# Runtime data is ignored by default.
 runtime/**
-
-# Keep the runtime layout and stable Hermes files under version control.
 !runtime/
 !runtime/main/
 !runtime/main/hermes-data/
 !runtime/main/hermes-data/SOUL.md
 !runtime/main/hermes-data/config.yaml
-!runtime/main/hermes-data/cron/
-!runtime/main/hermes-data/cron/jobs.json
-
 !runtime/owashota/
 !runtime/owashota/hermes-data/
 !runtime/owashota/hermes-data/SOUL.md
 !runtime/owashota/hermes-data/config.yaml
-!runtime/owashota/hermes-data/cron/
-!runtime/owashota/hermes-data/cron/jobs.json
-
 !runtime/openviking/
 !runtime/openviking/.gitkeep
 
-# Never track generated/private Hermes runtime data.
 runtime/**/.env
 runtime/**/auth.json
 runtime/**/auth.lock
@@ -43,29 +31,11 @@ runtime/**/.local/**
 runtime/**/memories/**
 runtime/**/gateway_state.json
 runtime/**/channel_directory.json
-runtime/**/models_dev_cache.json
-runtime/**/.skills_prompt_snapshot.json
-runtime/**/context_length_cache.yaml
-runtime/**/google_token.json
-runtime/**/google_client_secret.json
-runtime/**/sandboxes/**
-runtime/**/waf/**
-runtime/**/.pytest_cache/**
-runtime/**/.restart_last_processed.json
 runtime/**/.bash_history
-runtime/**/bin/**
 runtime/**/.config/**
-runtime/**/.gitconfig
 runtime/**/.npm/**
 runtime/**/.codex/**
-runtime/**/workspace/**
 
-# OpenViking runtime data stays local.
-runtime/openviking/**
-!runtime/openviking/
-!runtime/openviking/.gitkeep
-
-# General
 *:Zone.Identifier
 __pycache__/
 .pytest_cache/
