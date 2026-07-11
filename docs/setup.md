@@ -208,6 +208,18 @@ make hermes-owashota
 
 一時コンテナは終了時に削除されますが、設定とsessionは各 `runtime/<instance>/hermes-data` に残ります。
 
+### サブエージェントprofile
+
+各Hermesの `profiles/<name>` では、サブエージェントの安定した定義だけをGit管理します。
+
+```text
+runtime/<instance>/hermes-data/profiles/<name>/SOUL.md
+runtime/<instance>/hermes-data/profiles/<name>/config.yaml
+runtime/<instance>/hermes-data/profiles/<name>/.env.example
+```
+
+実際の `.env`、認証情報、session、memory、DB、ログ、キャッシュ、同梱skills、実行バイナリはruntimeデータとしてGit管理しません。新しいサブエージェントを追加した場合は、最低限 `SOUL.md` と `config.yaml` を作成します。
+
 各インスタンスの秘密情報は、Git管理しないruntime側に置きます。
 
 ```text

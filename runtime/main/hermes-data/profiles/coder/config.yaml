@@ -1,0 +1,69 @@
+model:
+  provider: opencode-go
+  base_url: https://opencode.ai/zen/go/v1
+  api_mode: chat_completions
+  default: deepseek-v4-flash
+toolsets:
+  - hermes-cli
+agent:
+  max_turns: 150
+  gateway_timeout: 1800
+  api_max_retries: 3
+  verify_on_stop: false
+  reasoning_effort: medium
+terminal:
+  backend: local
+  cwd: /workspace
+  timeout: 180
+  env_passthrough: []
+web:
+  backend: ddgs
+  use_gateway: false
+browser:
+  cloud_provider: local
+  use_gateway: false
+tool_output:
+  max_bytes: 50000
+  max_lines: 2000
+  max_line_length: 2000
+display:
+  tool_progress: all
+tts:
+  use_gateway: false
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  provider: openviking
+approvals:
+  mode: manual
+  timeout: 60
+_config_version: 33
+plugins:
+  enabled: []
+session_reset:
+  mode: none
+image_gen:
+  provider: openai-codex
+  use_gateway: false
+  model: gpt-image-2-medium
+platform_toolsets:
+  cli:
+    - browser
+    - clarify
+    - code_execution
+    - computer_use
+    - cronjob
+    - delegation
+    - file
+    - image_gen
+    - memory
+    - session_search
+    - skills
+    - terminal
+    - todo
+    - tts
+    - vision
+    - web
+known_plugin_toolsets:
+  cli:
+    - spotify

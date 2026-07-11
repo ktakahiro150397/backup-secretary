@@ -18,12 +18,22 @@ runtime/**
 !runtime/main/hermes-data/SOUL.md
 !runtime/main/hermes-data/config.yaml
 !runtime/main/hermes-data/.env.example
+!runtime/main/hermes-data/profiles/
+!runtime/main/hermes-data/profiles/*/
+!runtime/main/hermes-data/profiles/*/SOUL.md
+!runtime/main/hermes-data/profiles/*/config.yaml
+!runtime/main/hermes-data/profiles/*/.env.example
 
 !runtime/owashota/
 !runtime/owashota/hermes-data/
 !runtime/owashota/hermes-data/SOUL.md
 !runtime/owashota/hermes-data/config.yaml
 !runtime/owashota/hermes-data/.env.example
+!runtime/owashota/hermes-data/profiles/
+!runtime/owashota/hermes-data/profiles/*/
+!runtime/owashota/hermes-data/profiles/*/SOUL.md
+!runtime/owashota/hermes-data/profiles/*/config.yaml
+!runtime/owashota/hermes-data/profiles/*/.env.example
 
 !runtime/openviking/
 !runtime/openviking/.gitkeep
