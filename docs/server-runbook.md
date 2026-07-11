@@ -4,6 +4,8 @@ mainブランチでHermes 2インスタンスとOpenVikingを構築・更新す�
 
 ## 0. 前提
 
+このランブックのコマンド例は Bash 前提です。サーバー上では Linux / WSL のシェルで実行します。
+
 ```bash
 cd ~/repo/backup-secretary
 git status --short
@@ -145,10 +147,29 @@ make ov ARGS="admin list-users hermes-main --sudo"
 
 ## 6. user別CLI config
 
-root configでuser memoryを扱わず、対象userのconfigを作ります。キーを履歴へ残さないよう対話入力します。
+root configでuser memoryを扱わず、対象userごとのconfigを作ります。API keyをシェル履歴へ残さないよう、Bash の対話入力で進めます。
+
+`hermes-main` user:
 
 ```bash
-read -rsp "OpenViking user API key: " OV_USER_KEY
+read -rsp "OpenViking API key for hermes-main: " OV_USER_KEY
+echo
+printf '%s' "$OV_USER_KEY" | docker compose exec -T openviking \
+  /app/.venv/bin/ov config add custom \
+  --name hermes-main \
+  --url http://127.0.0.1:1933 \
+  --api-key-stdin \
+  --account hermes-main \
+  --user hermes-main \
+  --activate --force
+unset OV_USER_KEY
+make ov ARGS="config validate"
+```
+
+`hermes-main` account内の `coder` user:
+
+```bash
+read -rsp "OpenViking API key for hermes-main/coder: " OV_USER_KEY
 echo
 printf '%s' "$OV_USER_KEY" | docker compose exec -T openviking \
   /app/.venv/bin/ov config add custom \
@@ -162,11 +183,29 @@ unset OV_USER_KEY
 make ov ARGS="config validate"
 ```
 
-同様に `hermes-main` と `hermes-owashota` のconfigも作ります。config名、account、user、キーを対象に合わせます。
+`hermes-owashota` user:
+
+```bash
+read -rsp "OpenViking API key for hermes-owashota: " OV_USER_KEY
+echo
+printf '%s' "$OV_USER_KEY" | docker compose exec -T openviking \
+  /app/.venv/bin/ov config add custom \
+  --name hermes-owashota \
+  --url http://127.0.0.1:1933 \
+  --api-key-stdin \
+  --account hermes-owashota \
+  --user hermes-owashota \
+  --activate --force
+unset OV_USER_KEY
+make ov ARGS="config validate"
+```
+
+確認:
 
 ```bash
 make ov ARGS="config list"
 make ov ARGS="config switch hermes-main-coder"
+make ov ARGS="config validate"
 ```
 
 ## 7. 既存記憶の初回投入

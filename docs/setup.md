@@ -147,7 +147,7 @@ hermes-owashota account
 
 #### 既存accountに指定名のuserを追加する
 
-OpenVikingを起動したうえで実行します。ターゲットが `root-admin` CLI configを作成・activateしてからaccountを作成します。
+OpenVikingを起動したうえで実行します。ターゲットが `root-admin` CLI configを作成・activateしてから既存accountへuserを追加します。
 
 ```bash
 make ov-provision-user ACCOUNT=hermes-main NAME=coder
