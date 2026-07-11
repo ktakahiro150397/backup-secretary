@@ -1,6 +1,8 @@
-# サーバー構築・運用ランブック
+# サーバー置換・構築・運用ランブック
 
-mainブランチでHermes 2インスタンスとOpenVikingを構築・更新する手順です。
+旧 `backup-secretary` をreworkへ置き換え、Hermes 2インスタンスとOpenVikingを構築・更新する手順です。
+
+置換時は旧環境を削除せず、ディレクトリごと退避します。最初にreworkのコードと空のenvファイルだけを配置し、秘密情報と既存データは後から選別して追加します。
 
 ## 0. 前提
 
@@ -25,7 +27,142 @@ runtime/owashota/hermes-data/.env
 
 既存サーバーでは通常運用時に `make ov-init` を再実行しません。これは新規runtimeの初期化時だけ使います。
 
-## 1. mainをサーバーへ反映
+置換作業では次を守ります。
+
+- reworkのデプロイ対象refをremoteへpushしてから作業する
+- `docker compose down` に `--volumes` を付けない
+- 旧runtimeや旧 `.env` を新環境へ一括コピーしない
+- キー投入前はHermesを起動しない
+- 旧環境は切り戻しとデータ選別が終わるまで削除しない
+
+## 1. 旧環境からreworkへの置換
+
+### 1.1 変数設定
+
+サーバー上のBashで実行します。reworkがmainへマージ済みなら `origin/main` を指定します。ブランチを直接検証する場合は、push済みのremote refへ変更します。
+
+```bash
+export REPO_DIR="$HOME/repo/backup-secretary"
+export DEPLOY_REF="origin/main"
+export CUTOVER_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+export LEGACY_DIR="$HOME/repo/backup-secretary.legacy-$CUTOVER_ID"
+export RECORD_DIR="$HOME/repo/cutover-records/$CUTOVER_ID"
+```
+
+### 1.2 置換前インベントリ
+
+旧環境を変更する前に状態を確認・記録します。envの値やファイル本文は表示しません。
+
+```bash
+cd "$REPO_DIR"
+git status --short --branch
+git rev-parse HEAD
+docker compose config --services
+docker compose ps
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+find runtime -maxdepth 3 -type f -printf '%p\n' 2>/dev/null | sort
+test ! -e "$LEGACY_DIR"
+```
+
+Compose外の関連コンテナも確認します。現行サーバーでは `dashboard` が旧Compose定義外で稼働していたため、所有元と停止要否を判断してから進みます。
+
+```bash
+mkdir -p "$RECORD_DIR"
+git status --short --branch > "$RECORD_DIR/git-status.txt"
+git rev-parse HEAD > "$RECORD_DIR/git-head.txt"
+docker compose ps > "$RECORD_DIR/compose-ps.txt"
+docker ps --format '{{json .}}' > "$RECORD_DIR/docker-ps.jsonl"
+find runtime -maxdepth 3 -type f -printf '%p\n' 2>/dev/null \
+  | sort > "$RECORD_DIR/runtime-files.txt"
+```
+
+次を確認してから停止します。
+
+- サーバー固有の追跡対象変更を把握している
+- bind mountとnamed volumeの保存先を把握している
+- Compose外コンテナの扱いを決めている
+- `LEGACY_DIR` が存在しない
+
+### 1.3 旧環境の停止と丸ごと退避
+
+ここからメンテナンス時間です。
+
+```bash
+cd "$REPO_DIR"
+docker compose down
+docker compose ps
+```
+
+Compose外コンテナは所有元を確認せず停止・削除しません。旧リポジトリはGit管理外データごと退避します。
+
+```bash
+cd "$HOME/repo"
+mv backup-secretary "$(basename "$LEGACY_DIR")"
+test -d "$LEGACY_DIR/.git"
+test ! -e "$REPO_DIR"
+chmod -R go-rwx "$LEGACY_DIR"
+```
+
+### 1.4 reworkコードの新規配置
+
+```bash
+OLD_REMOTE="$(git -C "$LEGACY_DIR" remote get-url origin)"
+git clone --no-checkout "$OLD_REMOTE" "$REPO_DIR"
+cd "$REPO_DIR"
+git fetch --prune origin
+git checkout --detach "$DEPLOY_REF"
+git status --short --branch
+git rev-parse HEAD
+```
+
+mainへマージ済みのものを通常運用する場合は、追跡ブランチへ切り替えます。
+
+```bash
+git switch main
+git pull --ff-only
+```
+
+reworkのComposeに `hermes-main`、`hermes-owashota`、`openviking` だけが定義されていることを確認します。
+
+```bash
+grep -E '^  [a-zA-Z0-9_-]+:$' compose.yaml
+```
+
+### 1.5 コードと空envだけを準備
+
+Composeは `env_file` の存在を検証するため、キー未設定でもexampleからファイルを作ります。旧envはコピーしません。
+
+```bash
+cp .env.example .env
+install -m 600 runtime/openviking/.env.example runtime/openviking/.env
+install -m 600 runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
+install -m 600 runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
+sed -i "s/^HERMES_UID=.*/HERMES_UID=$(id -u)/" .env
+sed -i "s/^HERMES_GID=.*/HERMES_GID=$(id -g)/" .env
+docker compose config --quiet
+docker compose config --services
+```
+
+ここが「reworkコードだけ置換済み、キーとデータは未投入」の安全な停止点です。秘密情報をまだ用意しない場合は、コンテナを起動せずここで終了します。
+
+### 1.6 切り戻し
+
+新環境に問題がある場合は、新Composeを停止して新ディレクトリを退避し、旧ディレクトリを元へ戻します。
+
+```bash
+cd "$REPO_DIR"
+docker compose down
+cd "$HOME/repo"
+mv backup-secretary "backup-secretary.failed-$CUTOVER_ID"
+mv "$(basename "$LEGACY_DIR")" backup-secretary
+cd "$REPO_DIR"
+docker compose up -d
+docker compose ps
+```
+
+旧環境を削除するのは、新環境の安定稼働、キー再発行、必要データの移行、バックアップ確認がすべて完了した後の別作業とします。
+
+## 2. 通常更新時にmainをサーバーへ反映
 
 サーバー固有の未コミット変更がないことを確認してから実行します。
 
@@ -35,16 +172,18 @@ git pull --ff-only
 docker compose config --quiet
 ```
 
-## 2. 初回env作成
+## 3. 秘密情報の後日投入
 
 存在しない場合だけコピーします。既存ファイルを上書きしません。
 
 ```bash
 test -f .env || cp .env.example .env
-test -f runtime/openviking/.env || cp runtime/openviking/.env.example runtime/openviking/.env
-test -f runtime/main/hermes-data/.env || cp runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
-test -f runtime/owashota/hermes-data/.env || cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
+test -f runtime/openviking/.env || install -m 600 runtime/openviking/.env.example runtime/openviking/.env
+test -f runtime/main/hermes-data/.env || install -m 600 runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
+test -f runtime/owashota/hermes-data/.env || install -m 600 runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
 ```
+
+旧 `.env` を一括コピーせず、必要な値だけを手動で転記または再発行します。
 
 `runtime/openviking/.env`:
 
@@ -73,7 +212,15 @@ OPENVIKING_API_KEY=<hermes-owashotaユーザーキー>
 
 LLMやDiscordの秘密情報も各Hermesの `.env` に置きます。rootの `.env` には秘密情報を置きません。
 
-## 3. OpenViking起動
+値を表示せず、ファイルの存在と権限だけを確認します。
+
+```bash
+stat -c '%a %n' runtime/openviking/.env \
+  runtime/main/hermes-data/.env \
+  runtime/owashota/hermes-data/.env
+```
+
+## 4. OpenViking起動
 
 新規runtimeだけ:
 
@@ -97,7 +244,7 @@ make ov ARGS="config validate"
 make ov ARGS="admin list-accounts --sudo"
 ```
 
-## 4. account初回作成
+## 5. account初回作成
 
 未作成の場合だけ実行します。
 
@@ -114,7 +261,7 @@ make ov ARGS="admin list-users hermes-main --sudo"
 make ov ARGS="admin list-users hermes-owashota --sudo"
 ```
 
-## 5. サブプロファイルuser追加
+## 6. サブプロファイルuser追加
 
 `hermes-main` account内へ `coder` userを追加する例です。
 
@@ -145,7 +292,7 @@ OPENVIKING_API_KEY=<coderユーザーキー>
 make ov ARGS="admin list-users hermes-main --sudo"
 ```
 
-## 6. user別CLI config
+## 7. user別CLI config
 
 root configでuser memoryを扱わず、対象userごとのconfigを作ります。API keyをシェル履歴へ残さないよう、Bash の対話入力で進めます。
 
@@ -208,7 +355,17 @@ make ov ARGS="config switch hermes-main-coder"
 make ov ARGS="config validate"
 ```
 
-## 7. 既存記憶の初回投入
+## 8. 既存データの後日移行
+
+新環境が空の状態で安定してから、必要なデータだけを種類ごとに移します。旧runtime全体やOpenViking workspace全体を新runtimeへ上書きコピーしません。
+
+推奨順序:
+
+1. `SOUL.md` と安定した `config.yaml` の差分を目視で反映
+2. 必要なprofile定義を追加
+3. memoryをuser別CLI config経由で投入
+4. 必要なskillsを互換性確認後に追加
+5. knowledgeやworkspaceファイルを用途別に追加
 
 初回に一度だけ実行します。再投入すると重複する可能性があります。
 
@@ -245,7 +402,9 @@ make ov ARGS="find '<USER.md内の固有語>' --context-type memory"
 
 検索語は各ファイルに実在する固有語へ置き換えます。
 
-## 8. Hermes設定
+投入元、対象user、実施日時を移行記録へ残します。
+
+## 9. Hermes設定
 
 各 `config.yaml` で次を有効化します。
 
@@ -266,7 +425,9 @@ runtime/owashota/hermes-data/config.yaml
 
 profileでは `SOUL.md`、`config.yaml`、`.env.example`をGit管理し、実キーを含む `.env` は管理しません。
 
-## 9. 起動・反映
+## 10. 起動・反映
+
+OpenVikingのaccount作成とユーザーAPI key設定が完了するまでHermesを起動しません。
 
 ```bash
 make pull
@@ -287,7 +448,7 @@ docker compose logs --tail=200 openviking hermes-main
 make hermes-main
 ```
 
-## 10. 疎通・分離確認
+## 11. 疎通・分離確認
 
 ```bash
 make ov-doctor
@@ -316,7 +477,7 @@ make ov ARGS="find '<main固有語>' --context-type memory"
 - `admin list-users hermes-main --sudo` では2 userと表示される
 - Hermesの各profileからも対応する固有記憶を回答できる
 
-## 11. APIキー再発行
+## 12. APIキー再発行
 
 古いキーは即時無効になります。
 
@@ -330,7 +491,7 @@ make ov-regenerate-key ACCOUNT=hermes-main NAME=coder
 make restart-main
 ```
 
-## 12. 通常更新
+## 13. 通常更新
 
 初回構築後はOpenViking初期化、account作成、memory初回投入を繰り返しません。
 
