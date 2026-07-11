@@ -26,7 +26,7 @@ runtime/main/hermes-data/.env          # hermes-main用。Git管理しない。
 runtime/owashota/hermes-data/.env      # hermes-owashota用。Git管理しない。
 ```
 
-詳細は `docs/env.md` を参照してください。
+詳細は `docs/env.md` を参照してください。サーバーへの初回構築、既存記憶の投入、起動、分離確認は `docs/server-runbook.md` にまとめています。
 
 ## 使い方
 
@@ -43,6 +43,14 @@ OpenVikingの初期化は以下です。
 make ov-init
 make ov-doctor
 ```
+
+既存accountにuserを追加し、専用API keyを発行する場合:
+
+```bash
+make ov-provision-user ACCOUNT=hermes-main NAME=coder
+```
+
+表示されたkeyは再表示できないため、その場で対象HermesプロファイルのGit管理外 `.env` に保存します。詳細は `docs/setup.md` を参照してください。
 
 OpenViking CLIとTUIはMakeターゲットから起動できます。
 

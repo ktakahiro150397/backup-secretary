@@ -1,7 +1,7 @@
 COMPOSE ?= docker compose
 OV_CLI ?= /app/.venv/bin/ov
 
-.PHONY: up down ps logs pull restart restart-main restart-owashota ov ov-tui ov-config ov-init ov-doctor setup-main setup-owashota hermes-main hermes-owashota
+.PHONY: up down ps logs pull restart restart-main restart-owashota ov ov-tui ov-config ov-init ov-doctor ov-root-config ov-provision-user ov-regenerate-key setup-main setup-owashota hermes-main hermes-owashota
 
 up:
 	$(COMPOSE) up -d openviking hermes-main hermes-owashota
@@ -43,6 +43,22 @@ ov-init:
 ov-doctor:
 	$(COMPOSE) exec openviking openviking-server doctor
 	curl -fsS http://127.0.0.1:$${OPENVIKING_PORT:-1933}/health
+
+ov-root-config:
+	$(COMPOSE) exec openviking $(OV_CLI) config add custom --name root-admin --url http://127.0.0.1:1933 --root-api-key-env OPENVIKING_ROOT_API_KEY --account root --user root --activate --force
+
+ov-provision-user: ov-root-config
+	@test -n "$(ACCOUNT)" -a -n "$(NAME)" || (echo 'usage: make ov-provision-user ACCOUNT=<account> NAME=<user>' >&2; exit 2)
+	@printf '%s' "$(ACCOUNT)" | grep -Eq '^[a-z0-9][a-z0-9_-]*$$' || (echo 'ACCOUNT must match ^[a-z0-9][a-z0-9_-]*$$' >&2; exit 2)
+	@printf '%s' "$(NAME)" | grep -Eq '^[a-z0-9][a-z0-9_-]*$$' || (echo 'NAME must match ^[a-z0-9][a-z0-9_-]*$$' >&2; exit 2)
+	$(COMPOSE) exec openviking $(OV_CLI) admin register-user "$(ACCOUNT)" "$(NAME)" --role user --sudo
+
+ov-regenerate-key:
+	@test -n "$(ACCOUNT)" -a -n "$(NAME)" || (echo 'usage: make ov-regenerate-key ACCOUNT=<account> NAME=<user>' >&2; exit 2)
+	@printf '%s' "$(ACCOUNT)" | grep -Eq '^[a-z0-9][a-z0-9_-]*$$' || (echo 'ACCOUNT must match ^[a-z0-9][a-z0-9_-]*$$' >&2; exit 2)
+	@printf '%s' "$(NAME)" | grep -Eq '^[a-z0-9][a-z0-9_-]*$$' || (echo 'NAME must match ^[a-z0-9][a-z0-9_-]*$$' >&2; exit 2)
+	@echo 'WARNING: this invalidates the current API key.'
+	$(COMPOSE) exec openviking $(OV_CLI) admin regenerate-key "$(ACCOUNT)" "$(NAME)" --sudo
 
 setup-main:
 	$(COMPOSE) --profile setup run --rm setup-main

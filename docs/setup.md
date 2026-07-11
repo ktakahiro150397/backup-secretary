@@ -129,7 +129,7 @@ make ov-config
 make ov-tui
 ```
 
-`make ov-config` で管理用CLI configを作成します。接続先はコンテナ内から見たOpenViking自身なので `http://127.0.0.1:1933`、root API keyはOpenVikingサーバーに設定した値を使います。CLI configは `runtime/openviking` 配下へ永続化されます。
+`make ov-root-config` で管理用CLI configを作成します。接続先はコンテナ内から見たOpenViking自身なので `http://127.0.0.1:1933`、root API keyはOpenVikingコンテナの `OPENVIKING_ROOT_API_KEY` から読み込みます。CLI configは `runtime/openviking` 配下へ永続化されます。
 
 ### accountとuser
 
@@ -145,9 +145,42 @@ hermes-owashota account
 
 管理用configを有効にしてaccountを作成します。
 
+#### 既存accountに指定名のuserを追加する
+
+OpenVikingを起動したうえで実行します。ターゲットが `root-admin` CLI configを作成・activateしてからaccountを作成します。
+
 ```bash
-make ov ARGS="admin create-account hermes-main --sudo"
-make ov ARGS="admin create-account hermes-owashota --sudo"
+make ov-provision-user ACCOUNT=hermes-main NAME=coder
+```
+
+このターゲットは、既存の `hermes-main` accountに通常権限の `coder` userを追加し、そのuser専用API keyを発行します。新しいaccountは作りません。
+
+発行されたkeyは、その場で対象プロファイルのGit管理外 `.env` に設定します。
+
+```dotenv
+OPENVIKING_ACCOUNT=hermes-main
+OPENVIKING_USER=coder
+OPENVIKING_AGENT=coder
+OPENVIKING_API_KEY=<表示されたcoder専用API key>
+```
+
+たとえばmain配下のcoderプロファイルなら、保存先は `runtime/main/hermes-data/profiles/coder/.env` です。設定後、該当するHermesコンテナ／プロセスを再起動してください。root API keyはOpenViking管理用にだけ使い、Hermesの `.env` には保存しません。
+
+`NAME` は小文字英数字で始まり、小文字英数字・`_`・`-`だけを使用できます。既存名に対して作成コマンドを再実行しないでください。
+
+既存ユーザーのkeyを紛失した場合に限り、明示的に再発行します。
+
+```bash
+make ov-regenerate-key ACCOUNT=hermes-main NAME=coder
+```
+
+再発行すると古いkeyは直ちに無効になります。新しいkeyを `.env` に反映してから、該当プロセスを再起動します。
+
+#### 個別に作成する
+
+```bash
+make ov ARGS="admin create-account --admin hermes-main hermes-main --sudo"
+make ov ARGS="admin create-account --admin hermes-owashota hermes-owashota --sudo"
 make ov ARGS="admin list-accounts --sudo"
 ```
 
