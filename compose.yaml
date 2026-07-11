@@ -59,6 +59,8 @@ services:
     image: ${OPENVIKING_IMAGE:-ghcr.io/volcengine/openviking:latest}
     container_name: backup-secretary-openviking
     restart: unless-stopped
+    env_file:
+      - ${OPENVIKING_ENV_FILE:-./runtime/openviking/.env}
     environment:
       OPENVIKING_WITH_BOT: ${OPENVIKING_WITH_BOT:-0}
     volumes:

@@ -27,6 +27,9 @@ runtime/**
 
 !runtime/openviking/
 !runtime/openviking/.gitkeep
+!runtime/openviking/.env.example
+!runtime/openviking/ov.conf
+!runtime/openviking/ov.conf.example
 
 # Never track real runtime secrets or generated state.
 runtime/**/.env
