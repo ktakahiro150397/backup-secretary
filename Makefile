@@ -1,6 +1,6 @@
 COMPOSE ?= docker compose
 
-.PHONY: up down ps logs pull restart restart-main restart-owashota ov-init ov-doctor setup-main setup-owashota
+.PHONY: up down ps logs pull restart restart-main restart-owashota ov-init ov-doctor setup-main setup-owashota hermes-main hermes-owashota
 
 up:
 	$(COMPOSE) up -d openviking hermes-main hermes-owashota
@@ -39,3 +39,9 @@ setup-main:
 
 setup-owashota:
 	$(COMPOSE) --profile setup run --rm setup-owashota
+
+hermes-main:
+	$(COMPOSE) run --rm hermes-main chat
+
+hermes-owashota:
+	$(COMPOSE) run --rm hermes-owashota chat
