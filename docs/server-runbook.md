@@ -39,14 +39,12 @@ runtime/owashota/hermes-data/.env
 
 ### 1.1 変数設定
 
-サーバー上のBashで実行します。reworkがmainへマージ済みなら `origin/main` を指定します。ブランチを直接検証する場合は、push済みのremote refへ変更します。
+サーバー上のBashで実行します。変数は今回の作業識別、退避先、記録先にだけ使い、子プロセスへ渡さないため `export` しません。
 
 ```bash
-export REPO_DIR="$HOME/repo/backup-secretary"
-export DEPLOY_REF="origin/main"
-export CUTOVER_ID="$(date -u +%Y%m%dT%H%M%SZ)"
-export LEGACY_DIR="$HOME/repo/backup-secretary.legacy-$CUTOVER_ID"
-export RECORD_DIR="$HOME/repo/cutover-records/$CUTOVER_ID"
+readonly BS_CUTOVER_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+readonly BS_LEGACY_DIR="$HOME/repo/backup-secretary.legacy-$BS_CUTOVER_ID"
+readonly BS_RECORD_DIR="$HOME/repo/cutover-records/backup-secretary-$BS_CUTOVER_ID"
 ```
 
 ### 1.2 置換前インベントリ
@@ -54,26 +52,26 @@ export RECORD_DIR="$HOME/repo/cutover-records/$CUTOVER_ID"
 旧環境を変更する前に状態を確認・記録します。envの値やファイル本文は表示しません。
 
 ```bash
-cd "$REPO_DIR"
+cd "$HOME/repo/backup-secretary"
 git status --short --branch
 git rev-parse HEAD
 docker compose config --services
 docker compose ps
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
 find runtime -maxdepth 3 -type f -printf '%p\n' 2>/dev/null | sort
-test ! -e "$LEGACY_DIR"
+test ! -e "$BS_LEGACY_DIR"
 ```
 
 Compose外の関連コンテナも確認します。現行サーバーでは `dashboard` が旧Compose定義外で稼働していたため、所有元と停止要否を判断してから進みます。
 
 ```bash
-mkdir -p "$RECORD_DIR"
-git status --short --branch > "$RECORD_DIR/git-status.txt"
-git rev-parse HEAD > "$RECORD_DIR/git-head.txt"
-docker compose ps > "$RECORD_DIR/compose-ps.txt"
-docker ps --format '{{json .}}' > "$RECORD_DIR/docker-ps.jsonl"
+mkdir -p "$BS_RECORD_DIR"
+git status --short --branch > "$BS_RECORD_DIR/git-status.txt"
+git rev-parse HEAD > "$BS_RECORD_DIR/git-head.txt"
+docker compose ps > "$BS_RECORD_DIR/compose-ps.txt"
+docker ps --format '{{json .}}' > "$BS_RECORD_DIR/docker-ps.jsonl"
 find runtime -maxdepth 3 -type f -printf '%p\n' 2>/dev/null \
-  | sort > "$RECORD_DIR/runtime-files.txt"
+  | sort > "$BS_RECORD_DIR/runtime-files.txt"
 ```
 
 次を確認してから停止します。
@@ -81,14 +79,14 @@ find runtime -maxdepth 3 -type f -printf '%p\n' 2>/dev/null \
 - サーバー固有の追跡対象変更を把握している
 - bind mountとnamed volumeの保存先を把握している
 - Compose外コンテナの扱いを決めている
-- `LEGACY_DIR` が存在しない
+- `BS_LEGACY_DIR` が存在しない
 
 ### 1.3 旧環境の停止と丸ごと退避
 
 ここからメンテナンス時間です。
 
 ```bash
-cd "$REPO_DIR"
+cd "$HOME/repo/backup-secretary"
 docker compose down
 docker compose ps
 ```
@@ -97,20 +95,21 @@ Compose外コンテナは所有元を確認せず停止・削除しません。�
 
 ```bash
 cd "$HOME/repo"
-mv backup-secretary "$(basename "$LEGACY_DIR")"
-test -d "$LEGACY_DIR/.git"
-test ! -e "$REPO_DIR"
-chmod -R go-rwx "$LEGACY_DIR"
+mv backup-secretary "$(basename "$BS_LEGACY_DIR")"
+test -d "$BS_LEGACY_DIR/.git"
+test ! -e "$HOME/repo/backup-secretary"
+chmod -R go-rwx "$BS_LEGACY_DIR"
 ```
 
 ### 1.4 reworkコードの新規配置
 
 ```bash
-OLD_REMOTE="$(git -C "$LEGACY_DIR" remote get-url origin)"
-git clone --no-checkout "$OLD_REMOTE" "$REPO_DIR"
-cd "$REPO_DIR"
+BS_OLD_REMOTE="$(git -C "$BS_LEGACY_DIR" remote get-url origin)"
+git clone --no-checkout "$BS_OLD_REMOTE" "$HOME/repo/backup-secretary"
+unset BS_OLD_REMOTE
+cd "$HOME/repo/backup-secretary"
 git fetch --prune origin
-git checkout --detach "$DEPLOY_REF"
+git checkout --detach origin/main
 git status --short --branch
 git rev-parse HEAD
 ```
@@ -150,12 +149,12 @@ docker compose config --services
 新環境に問題がある場合は、新Composeを停止して新ディレクトリを退避し、旧ディレクトリを元へ戻します。
 
 ```bash
-cd "$REPO_DIR"
+cd "$HOME/repo/backup-secretary"
 docker compose down
 cd "$HOME/repo"
-mv backup-secretary "backup-secretary.failed-$CUTOVER_ID"
-mv "$(basename "$LEGACY_DIR")" backup-secretary
-cd "$REPO_DIR"
+mv backup-secretary "backup-secretary.failed-$BS_CUTOVER_ID"
+mv "$(basename "$BS_LEGACY_DIR")" backup-secretary
+cd "$HOME/repo/backup-secretary"
 docker compose up -d
 docker compose ps
 ```
