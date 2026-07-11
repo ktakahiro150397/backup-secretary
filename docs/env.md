@@ -8,7 +8,7 @@ runtime/main/hermes-data/.env          # hermes-main用。Git管理しない。
 runtime/owashota/hermes-data/.env      # hermes-owashota用。Git管理しない。
 ```
 
-結論として、**root `.env` に秘密情報を置かない**。  
+結論として、**root `.env` に秘密情報を置かない**。
 Discord token、LLM API key、OpenViking API key、memory namespace は各Hermesインスタンス直下の `.env` に置きます。
 
 ## 1. root `.env`
@@ -90,8 +90,8 @@ cp runtime/main/hermes-data/.env.example runtime/main/hermes-data/.env
 最低限設定するもの:
 
 ```text
-OPENVIKING_ACCOUNT=personal
-OPENVIKING_USER=yanelmo
+OPENVIKING_ACCOUNT=hermes-main
+OPENVIKING_USER=hermes-main
 OPENVIKING_AGENT=hermes-main
 OPENVIKING_API_KEY=replace-me-main
 ```
@@ -122,13 +122,13 @@ cp runtime/owashota/hermes-data/.env.example runtime/owashota/hermes-data/.env
 最低限設定するもの:
 
 ```text
-OPENVIKING_ACCOUNT=owashota
-OPENVIKING_USER=owashota
+OPENVIKING_ACCOUNT=hermes-owashota
+OPENVIKING_USER=hermes-owashota
 OPENVIKING_AGENT=hermes-owashota
 OPENVIKING_API_KEY=replace-me-owashota
 ```
 
-`hermes-main` と同じ値にしないでください。  
+`hermes-main` と同じ値にしないでください。
 特に `OPENVIKING_ACCOUNT` / `OPENVIKING_USER` / `OPENVIKING_AGENT` / `OPENVIKING_API_KEY` は分けます。
 
 ## 4. OpenVikingの `ov.conf`
@@ -153,8 +153,10 @@ OpenViking Docker imageはコンテナ内で `0.0.0.0:1933` をbindするため�
 }
 ```
 
-Hermes側の `OPENVIKING_API_KEY` には、このOpenViking側で受け付けるAPI keyを入れます。  
-複数API keyを発行できる場合は、`hermes-main` と `hermes-owashota` で別keyにします。
+Hermes側の `OPENVIKING_API_KEY` には、対象account/user用に発行したAPI keyを入れます。root API keyは入れません。
+`hermes-main` と `hermes-owashota` には必ず別keyを使います。ユーザーAPI keyは作成・再発行時だけ表示されるため、その場でGit管理外の `.env` に保存します。
+
+OpenViking CLI/TUIの接続configにも閲覧対象userのAPI key、account、userを設定します。管理用root keyのconfigとは分けてください。
 
 ## 5. 起動前チェック
 

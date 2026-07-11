@@ -1,6 +1,7 @@
 COMPOSE ?= docker compose
+OV_CLI ?= /app/.venv/bin/ov
 
-.PHONY: up down ps logs pull restart restart-main restart-owashota ov-init ov-doctor setup-main setup-owashota hermes-main hermes-owashota
+.PHONY: up down ps logs pull restart restart-main restart-owashota ov ov-tui ov-config ov-init ov-doctor setup-main setup-owashota hermes-main hermes-owashota
 
 up:
 	$(COMPOSE) up -d openviking hermes-main hermes-owashota
@@ -25,6 +26,15 @@ restart-main:
 
 restart-owashota:
 	$(COMPOSE) restart hermes-owashota
+
+ov:
+	$(COMPOSE) exec openviking $(OV_CLI) $(ARGS)
+
+ov-tui:
+	$(COMPOSE) exec openviking $(OV_CLI) tui
+
+ov-config:
+	$(COMPOSE) exec openviking $(OV_CLI) config
 
 ov-init:
 	$(COMPOSE) up -d openviking

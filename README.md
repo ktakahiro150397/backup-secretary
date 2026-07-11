@@ -44,6 +44,23 @@ make ov-init
 make ov-doctor
 ```
 
+OpenViking CLIとTUIはMakeターゲットから起動できます。
+
+```bash
+make ov ARGS="health"
+make ov-config
+make ov-tui
+```
+
+Hermesの対話CLIはインスタンス別に起動します。
+
+```bash
+make hermes-main
+make hermes-owashota
+```
+
+OpenVikingではHermesごとにaccount、user、agent、API keyを分離します。CLI/TUIで各Hermesのデータを見る場合も、対象userのAPI keyを持つCLI configへ切り替えます。
+
 設定変更後の反映は以下です。
 
 ```bash

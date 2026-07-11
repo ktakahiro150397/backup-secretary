@@ -117,6 +117,72 @@ make ov-doctor
 
 Docker版OpenVikingはコンテナ内で `0.0.0.0:1933` をbindするため、OpenViking側の `ov.conf` には `root_api_key` を設定してください。
 
+### OpenViking CLI
+
+コンテナ内の `ov` CLIはMakeターゲットから実行できます。
+
+```bash
+make ov
+make ov ARGS="health"
+make ov ARGS="status"
+make ov-config
+make ov-tui
+```
+
+`make ov-config` で管理用CLI configを作成します。接続先はコンテナ内から見たOpenViking自身なので `http://127.0.0.1:1933`、root API keyはOpenVikingサーバーに設定した値を使います。CLI configは `runtime/openviking` 配下へ永続化されます。
+
+### accountとuser
+
+記憶を確実に分離するため、Hermesインスタンスごとにaccountを分けます。
+
+```text
+hermes-main account
+└── hermes-main user
+
+hermes-owashota account
+└── hermes-owashota user
+```
+
+管理用configを有効にしてaccountを作成します。
+
+```bash
+make ov ARGS="admin create-account hermes-main --sudo"
+make ov ARGS="admin create-account hermes-owashota --sudo"
+make ov ARGS="admin list-accounts --sudo"
+```
+
+ユーザーAPI keyは作成・再発行時だけ表示されます。後から同じkeyを表示することはできません。紛失した場合は再発行し、古いkeyは無効になります。
+
+```bash
+make ov ARGS="admin regenerate-key hermes-main hermes-main --sudo"
+make ov ARGS="admin regenerate-key hermes-owashota hermes-owashota --sudo"
+```
+
+発行されたkeyを各Hermesの `.env` に保存し、対象コンテナを再起動します。
+
+### TUIでデータを確認する
+
+管理用root keyのconfigでは、ユーザーnamespaceの内容は表示されません。`make ov-config` でHermesユーザーごとのCLI configを追加します。
+
+```text
+Name: hermes-main
+URL: http://127.0.0.1:1933
+API Key: hermes-main userのAPI key
+Account: hermes-main
+User: hermes-main
+```
+
+対象configへ切り替えてTUIを起動します。
+
+```bash
+make ov ARGS="config list"
+make ov ARGS="config switch hermes-main"
+make ov ARGS="config validate"
+make ov-tui
+```
+
+`hermes-owashota`も同様に別configを作成します。TUIが空に見える場合は、まずactive configのaccount/userが閲覧対象と一致しているか確認してください。
+
 ## Hermes
 
 Hermesは2つの別コンテナとして起動します。
@@ -133,6 +199,15 @@ make setup-main
 make setup-owashota
 ```
 
+ローカル端末から対話CLIを起動できます。
+
+```bash
+make hermes-main
+make hermes-owashota
+```
+
+一時コンテナは終了時に削除されますが、設定とsessionは各 `runtime/<instance>/hermes-data` に残ります。
+
 各インスタンスの秘密情報は、Git管理しないruntime側に置きます。
 
 ```text
@@ -146,14 +221,14 @@ OpenViking接続情報は、各インスタンス直下の `.env` で分けま�
 
 ```text
 runtime/main/hermes-data/.env
-  OPENVIKING_ACCOUNT=personal
-  OPENVIKING_USER=yanelmo
+  OPENVIKING_ACCOUNT=hermes-main
+  OPENVIKING_USER=hermes-main
   OPENVIKING_AGENT=hermes-main
   OPENVIKING_API_KEY=...
 
 runtime/owashota/hermes-data/.env
-  OPENVIKING_ACCOUNT=owashota
-  OPENVIKING_USER=owashota
+  OPENVIKING_ACCOUNT=hermes-owashota
+  OPENVIKING_USER=hermes-owashota
   OPENVIKING_AGENT=hermes-owashota
   OPENVIKING_API_KEY=...
 ```
