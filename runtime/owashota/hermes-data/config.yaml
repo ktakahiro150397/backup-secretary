@@ -1,34 +1,38 @@
 model:
   provider: opencode-go
-  model: moonshotai/kimi-k2.6
   base_url: https://opencode.ai/zen/go/v1
   api_mode: chat_completions
-
+  default: deepseek-v4-flash
 toolsets:
   - hermes-cli
-
 agent:
   max_turns: 60
   gateway_timeout: 1800
   api_max_retries: 3
   reasoning_effort: medium
-
+  verify_on_stop: false
 terminal:
   backend: local
   cwd: /workspace
   timeout: 180
   env_passthrough: []
-
 approvals:
   mode: manual
   timeout: 60
-
 memory:
   memory_enabled: true
   user_profile_enabled: true
   provider: openviking
-
 tool_output:
   max_bytes: 50000
   max_lines: 2000
   max_line_length: 2000
+display:
+  tool_progress: all
+plugins:
+  enabled: []
+_config_version: 33
+onboarding:
+  seen:
+    tool_progress_prompt: true
+    busy_input_prompt: true
