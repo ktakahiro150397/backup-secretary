@@ -81,7 +81,22 @@ find runtime -maxdepth 3 -type f -printf '%p\n' 2>/dev/null \
 - Compose外コンテナの扱いを決めている
 - `BS_LEGACY_DIR` が存在しない
 
-### 1.3 旧環境の停止と丸ごと退避
+### 1.3 リポジトリ外の旧Hermesデータ
+
+現行サーバーのHermesデータは、リポジトリ外の次のパスにあります。
+
+```text
+~/repo/backup-secretary-data
+```
+
+このディレクトリは約21GBあるため、カットオーバー時に移動・コピー・削除しません。そのまま旧環境のデータとして保全します。新しいreworkはリポジトリ内の新規runtimeを使うため、このパスとは衝突しません。
+
+- 新reworkから旧データディレクトリをbind mountしない
+- キーや必要データは、動作確認後に種類ごとに選別して移す
+- 切り戻し時は旧repoを元へ戻し、既存の外部データをそのまま再利用する
+- 移行完了とバックアップ確認まで旧データを削除しない
+
+### 1.4 旧環境の停止と丸ごと退避
 
 ここからメンテナンス時間です。
 
@@ -101,7 +116,7 @@ test ! -e "$HOME/repo/backup-secretary"
 chmod -R go-rwx "$BS_LEGACY_DIR"
 ```
 
-### 1.4 reworkコードの新規配置
+### 1.5 reworkコードの新規配置
 
 ```bash
 BS_OLD_REMOTE="$(git -C "$BS_LEGACY_DIR" remote get-url origin)"
@@ -127,7 +142,7 @@ reworkのComposeに `hermes-main`、`hermes-owashota`、`openviking` だけが�
 grep -E '^  [a-zA-Z0-9_-]+:$' compose.yaml
 ```
 
-### 1.5 コードと空envだけを準備
+### 1.6 コードと空envだけを準備
 
 Composeは `env_file` の存在を検証するため、キー未設定でもexampleからファイルを作ります。旧envはコピーしません。
 
@@ -144,7 +159,7 @@ docker compose config --services
 
 ここが「reworkコードだけ置換済み、キーとデータは未投入」の安全な停止点です。秘密情報をまだ用意しない場合は、コンテナを起動せずここで終了します。
 
-### 1.6 切り戻し
+### 1.7 切り戻し
 
 新環境に問題がある場合は、新Composeを停止して新ディレクトリを退避し、旧ディレクトリを元へ戻します。
 
