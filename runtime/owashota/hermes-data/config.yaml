@@ -20,8 +20,8 @@ approvals:
   mode: manual
   timeout: 60
 memory:
-  memory_enabled: true
-  user_profile_enabled: true
+  memory_enabled: false
+  user_profile_enabled: false
   provider: openviking
 tool_output:
   max_bytes: 50000
