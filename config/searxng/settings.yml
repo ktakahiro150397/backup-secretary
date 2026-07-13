@@ -1,0 +1,13 @@
+use_default_settings: true
+
+server:
+  limiter: true
+  image_proxy: true
+
+search:
+  formats:
+    - html
+    - json
+
+valkey:
+  url: valkey://valkey:6379/0
