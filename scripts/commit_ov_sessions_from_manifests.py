@@ -61,11 +61,30 @@ def append_event(path, event):
         output.write(json.dumps(event, ensure_ascii=False) + "\n")
 
 
-def wait_for_task(args, task_id):
+def wait_for_task(args, task_id, session_id, archive_uri):
     deadline = time.monotonic() + args.task_timeout
+    archive_id = archive_uri.rstrip("/").rsplit("/", 1)[-1]
     while True:
         task = request_json(args, "GET", f"/api/v1/tasks/{task_id}")
-        if task.get("status") in TERMINAL_STATES:
+        if task.get("status") == "completed":
+            return task
+        # OpenViking v0.4.9 can finish Phase 2 and write the archive's .done
+        # marker, then leave TaskTracker stuck in "running". The archive API
+        # only returns completed archives, so it is the durable source of truth.
+        try:
+            request_json(
+                args,
+                "GET",
+                f"/api/v1/sessions/{session_id}/archives/{archive_id}",
+            )
+            return {
+                "status": "completed",
+                "recovered_from_archive": True,
+                "task_status": task.get("status"),
+            }
+        except RuntimeError:
+            pass
+        if task.get("status") == "failed":
             return task
         if time.monotonic() >= deadline:
             raise TimeoutError(f"task {task_id} did not finish within {args.task_timeout}s")
@@ -127,20 +146,26 @@ def main():
             args, "POST", f"/api/v1/sessions/{session_id}/commit", {"keep_recent_count": 0}
         )
         task_id = result.get("task_id")
+        archive_uri = result.get("archive_uri")
         if not task_id:
             raise RuntimeError(f"commit for {session_id} returned no task_id: {result}")
+        if not archive_uri:
+            raise RuntimeError(f"commit for {session_id} returned no archive_uri: {result}")
         append_event(args.progress, {
             "session_id": session_id,
             "status": "submitted",
             "task_id": task_id,
+            "archive_uri": archive_uri,
             "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         })
-        task = wait_for_task(args, task_id)
+        task = wait_for_task(args, task_id, session_id, archive_uri)
         status = task.get("status")
         append_event(args.progress, {
             "session_id": session_id,
             "status": status,
             "task_id": task_id,
+            "archive_uri": archive_uri,
+            "recovered_from_archive": task.get("recovered_from_archive", False),
             "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "error": task.get("error"),
         })
