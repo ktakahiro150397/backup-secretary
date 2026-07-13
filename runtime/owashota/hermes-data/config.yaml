@@ -30,6 +30,8 @@ approvals:
   timeout: 60
 command_allowlist:
   - script execution via -e/-c flag
+web:
+  search_backend: searxng
 onboarding:
   seen:
     tool_progress_prompt: true
