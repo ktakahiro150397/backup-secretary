@@ -23,7 +23,8 @@ diff --git a/hooks.py b/hooks.py
 @@ -822,12 +817,6 @@ def on_pre_tool_call(tool_name: str, args: dict, task_id: str, **kwargs):
          if serialized_args is not None:
              attributes["gen_ai.tool.call.arguments"] = serialized_args
- 
+-
++
 -    # Richer identity — hermes.tool.* (opt-in namespace)
 -    target, command = resolve_tool_identity(args)
 -    if target:
@@ -45,7 +46,8 @@ diff --git a/hooks.py b/hooks.py
 @@ -902,14 +889,9 @@ def on_post_tool_call(tool_name: str, args: dict, result: str, task_id: str, **k
      outcome = extract_tool_result_status(result_json) or "completed"
      attributes["hermes.tool.outcome"] = outcome
- 
+-
++
 -    # Preserve existing error.message attribute when outcome == error
      has_error = outcome == "error"
 -    error_msg = ""
@@ -56,7 +58,8 @@ diff --git a/hooks.py b/hooks.py
 -            attributes["error.message"] = error_msg
 +    if has_error:
 +        attributes["error.type"] = "tool_error"
- 
+-
++
      # OpenInference output value — Phoenix shows this in Info
      preview = _preview(
 @@ -939,7 +921,5 @@ def on_post_tool_call(tool_name: str, args: dict, result: str, task_id: str, **k
