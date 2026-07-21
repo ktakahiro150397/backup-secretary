@@ -52,6 +52,97 @@ for name in ("main", "owashota"):
 print("CONFIG_ASSERTIONS_OK")
 PY
 
+python - <<'PY'
+import sys
+
+sys.path.insert(0, "/opt/hermes/plugins")
+
+from hermes_otel.hooks import (
+    on_post_llm_call,
+    on_pre_llm_call,
+    on_session_end,
+    on_session_start,
+    on_subagent_start,
+    on_subagent_stop,
+)
+from hermes_otel.plugin_config import HermesOtelConfig
+from hermes_otel.tracer import HermesOTelPlugin
+import hermes_otel.tracer as tracer_module
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+
+
+exporter = InMemorySpanExporter()
+provider = TracerProvider(resource=Resource.create({"service.name": "synthetic-test"}))
+provider.add_span_processor(SimpleSpanProcessor(exporter))
+plugin = HermesOTelPlugin(config=HermesOtelConfig(capture_sender_id=True))
+plugin.tracer = provider.get_tracer("subagent-sender-test")
+plugin._initialized = True
+tracer_module._tracer = plugin
+
+try:
+    on_session_start(session_id="parent", model="test-model", platform="discord")
+    on_pre_llm_call(
+        session_id="parent",
+        user_message="synthetic",
+        conversation_history=[],
+        is_first_turn=True,
+        model="test-model",
+        platform="discord",
+        sender_id="synthetic-user",
+    )
+    on_subagent_start(
+        parent_session_id="parent",
+        child_session_id="child",
+        child_role="synthetic-role",
+    )
+    on_session_start(session_id="child", model="test-model", platform="subagent")
+    on_session_end(
+        session_id="child",
+        completed=True,
+        interrupted=False,
+        model="test-model",
+        platform="subagent",
+    )
+    on_subagent_stop(
+        parent_session_id="parent",
+        child_session_id="child",
+        child_role="synthetic-role",
+        child_status="completed",
+    )
+    on_post_llm_call(
+        session_id="parent",
+        user_message="synthetic",
+        assistant_response="synthetic",
+        conversation_history=[],
+        model="test-model",
+        platform="discord",
+    )
+    on_session_end(
+        session_id="parent",
+        completed=True,
+        interrupted=False,
+        model="test-model",
+        platform="discord",
+    )
+
+    child_agents = [
+        span
+        for span in exporter.get_finished_spans()
+        if span.name == "agent" and dict(span.attributes).get("hermes.session.is_subagent") is True
+    ]
+    assert len(child_agents) == 1
+    child_attributes = dict(child_agents[0].attributes)
+    assert child_attributes["hermes.sender.id"] == "synthetic-user"
+    assert child_attributes["user.id"] == "discord:synthetic-user"
+    print("SUBAGENT_SENDER_INHERITANCE_OK")
+finally:
+    provider.shutdown()
+    tracer_module._tracer = None
+PY
+
 hermes plugins enable --no-allow-tool-override hermes_otel >/dev/null
 python - <<'PY'
 from hermes_cli.plugins import get_plugin_manager
