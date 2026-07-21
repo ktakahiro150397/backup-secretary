@@ -50,11 +50,12 @@ Prepare the standalone observability project first. Then:
 
 ```bash
 docker compose build hermes hermes-owashota
+./scripts/test-hermes-otel-image.sh
 ./scripts/enable-hermes-otel.sh
 docker compose up -d --no-build hermes hermes-owashota
 ```
 
-The enable helper uses Hermes' supported `plugins enable --no-allow-tool-override` command. It creates one local rollback copy of each existing Hermes config before changing only the plugin allow-list. It does not install into a running container.
+The image test checks both privacy configs and loads the plugin through Hermes' real plugin manager in a disposable tmpfs home. The enable helper uses Hermes' supported `plugins enable --no-allow-tool-override` command. It creates one local rollback copy of each existing Hermes config before changing only the plugin allow-list. It does not install into a running container.
 
 Do not execute this against a dirty or unreviewed checkout. Production rollout must use the separate Phase 1 branch/worktree and must preserve the currently running data mounts and secret environment.
 
