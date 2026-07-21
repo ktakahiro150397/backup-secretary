@@ -11,13 +11,19 @@ fi
 
 enable_for_service() {
   local service=$1
-  docker compose run --rm --no-deps "${service}" bash -lc '
+  local config_owner
+  config_owner=$(docker compose run --rm --no-deps --entrypoint stat "${service}" -c '%u:%g' /opt/data/config.yaml | tail -n 1)
+  if [[ ! "${config_owner}" =~ ^[0-9]+:[0-9]+$ ]]; then
+    echo "Could not determine config.yaml ownership for ${service}." >&2
+    exit 3
+  fi
+  docker compose run --rm --no-deps --user "${config_owner}" --entrypoint bash "${service}" -c '
     set -euo pipefail
     umask 077
     config="${HERMES_HOME}/config.yaml"
     if [[ ! -f "${config}" ]]; then
       echo "Missing Hermes config.yaml" >&2
-      exit 3
+      exit 4
     fi
     backup="${config}.phase1-otel-backup"
     if [[ ! -e "${backup}" ]]; then
