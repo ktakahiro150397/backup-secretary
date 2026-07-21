@@ -42,6 +42,21 @@ print("CONFIG_ASSERTIONS_OK")
 PY
 
 hermes plugins enable --no-allow-tool-override hermes_otel >/dev/null
+python - <<'PY'
+from hermes_cli.plugins import get_plugin_manager
+
+manager = get_plugin_manager()
+manager.discover_and_load(force=True)
+matches = [
+    loaded for key, loaded in manager._plugins.items()
+    if key == "hermes_otel" or loaded.manifest.name == "hermes_otel"
+]
+assert matches
+assert matches[0].enabled is True
+assert not matches[0].error
+print("PLUGIN_LOAD_OK")
+PY
+
 hermes plugins list --enabled --json | python -c '
 import json
 import sys
@@ -53,8 +68,7 @@ matches = [
     if row.get("name") == "hermes_otel" or row.get("key") == "hermes_otel"
 ]
 assert matches
-assert matches[0].get("enabled") is True
-assert not matches[0].get("error")
+assert matches[0].get("status") == "enabled"
 print("PLUGIN_ENABLED_OK")
 '
 CONTAINER_SCRIPT
