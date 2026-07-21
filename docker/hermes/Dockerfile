@@ -50,4 +50,3 @@ RUN set -eux; \
   chown -R hermes:hermes /opt/hermes/.venv; \
   mkdir -p /opt/data; \
   chown -R hermes:hermes /opt/data
-
