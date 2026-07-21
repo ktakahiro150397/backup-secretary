@@ -15,6 +15,8 @@ The Compose defaults for the other external service images are digest-pinned as 
 
 The Docker build clones exactly the reviewed plugin commit into Hermes' bundled plugin directory and installs dependencies into `/opt/hermes/.venv`. No running container installs plugin code or Python packages.
 
+The pinned Hermes 0.18.2 image already contains the free-response/auto-thread fix in its bundled Discord adapter. The obsolete pre-0.18.2 monkey patch was removed because its former module path no longer exists.
+
 ## Data and network path
 
 ```text
