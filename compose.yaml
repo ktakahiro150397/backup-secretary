@@ -1,16 +1,33 @@
 name: backup-secretary-hermes
 
+x-hermes-otel-env: &hermes-otel-env
+  HERMES_OTEL_ENABLED: "true"
+  HERMES_OTEL_CAPTURE_PREVIEWS: "false"
+  HERMES_OTEL_CAPTURE_CONVERSATION_HISTORY: "false"
+  HERMES_OTEL_CAPTURE_FULL_PROMPTS: "false"
+  HERMES_OTEL_CAPTURE_FULL_RESPONSES: "false"
+  HERMES_OTEL_CAPTURE_SENDER_ID: "true"
+  HERMES_OTEL_CAPTURE_LOGS: "false"
+  HERMES_OTEL_DASHBOARD_LIVE: "false"
+  HERMES_OTEL_FORCE_FLUSH_ON_SESSION_END: "false"
+  HERMES_OTEL_SPAN_BATCH_EXPORT_TIMEOUT_MS: "3000"
+  HERMES_OTEL_DEBUG: "false"
+
 x-hermes-common: &hermes-common
   image: ${HERMES_IMAGE:-backup-secretary/hermes-agent:local}
   build:
-    context: .
-    dockerfile: docker/hermes/Dockerfile
+    context: ./docker/hermes
+    dockerfile: Dockerfile
     args:
-      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent:latest}
+      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent@sha256:00f57d79b2b20745a4f2c47bd26135f0473100ca23103ffc3eb3f89f3f6cef50}
       HERMES_UID: ${HERMES_UID:-1000}
       HERMES_GID: ${HERMES_GID:-1000}
+      HERMES_OTEL_REF: ${HERMES_OTEL_REF:-0180c5e63b9d035ee0754d9a0d75c3499a8def26}
+      OTEL_PYTHON_VERSION: ${OTEL_PYTHON_VERSION:-1.44.0}
+      PYYAML_VERSION: ${PYYAML_VERSION:-6.0.3}
   restart: unless-stopped
   environment:
+    <<: *hermes-otel-env
     HERMES_HOME: /opt/data
     HOME: /opt/data
     HERMES_EXEC_ASK: "1"
@@ -25,6 +42,10 @@ x-hermes-common: &hermes-common
     - type: bind
       source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
       target: /managed-skills
+      read_only: true
+    - type: bind
+      source: ./observability/hermes-otel/main.yaml
+      target: /opt/data/.hermes/plugins/hermes_otel/config.yaml
       read_only: true
   networks:
     - hermes-net
@@ -51,6 +72,9 @@ services:
     <<: *hermes-common
     container_name: ${HERMES_CONTAINER_NAME:-backup-secretary-hermes}
     command: gateway run
+    networks:
+      - hermes-net
+      - local-observability-net
     ports:
       - "${HERMES_GATEWAY_BIND:-127.0.0.1}:${HERMES_GATEWAY_PORT:-8642}:8642"
     healthcheck:
@@ -71,6 +95,7 @@ services:
     ports:
       - "${HERMES_DASHBOARD_BIND:-127.0.0.1}:${HERMES_DASHBOARD_PORT:-9119}:9119"
     environment:
+      <<: *hermes-otel-env
       HERMES_HOME: /opt/data
       HOME: /opt/data
       GATEWAY_HEALTH_URL: http://hermes:8642
@@ -128,6 +153,13 @@ services:
         source: ${HERMES_MANAGED_SKILLS_DIR:-./skills}
         target: /managed-skills
         read_only: true
+      - type: bind
+        source: ./observability/hermes-otel/owashota.yaml
+        target: /opt/data/.hermes/plugins/hermes_otel/config.yaml
+        read_only: true
+    networks:
+      - hermes-net
+      - local-observability-net
     ports:
       - "${HERMES_OWASHOTA_GATEWAY_BIND:-127.0.0.1}:${HERMES_OWASHOTA_GATEWAY_PORT:-8643}:8642"
     healthcheck:
@@ -143,7 +175,7 @@ services:
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
   open-llm-vtuber:
-    image: ${OLLV_IMAGE:-openllmvtuber/open-llm-vtuber:latest}
+    image: ${OLLV_IMAGE:-openllmvtuber/open-llm-vtuber@sha256:98170895ae3bffcd7467209af93766e475ca43efc3fab0bf8232cda93c8560c8}
     container_name: open-llm-vtuber
     restart: unless-stopped
     networks:
@@ -161,7 +193,7 @@ services:
       - TZ=Asia/Tokyo
 
   searxng:
-    image: docker.io/searxng/searxng:latest
+    image: docker.io/searxng/searxng@sha256:201c62d470abf1b3ccad42562b6a8310267fbb022962d8bd410c4b011ec4516e
     container_name: searxng
     restart: unless-stopped
     ports:
@@ -181,7 +213,7 @@ services:
     cpus: ${SEARXNG_CPU_LIMIT:-0.5}
 
   redis:
-    image: docker.io/valkey/valkey:8-alpine
+    image: docker.io/valkey/valkey:8-alpine@sha256:b027235326507cfdade9b6684056ec1d0b0c0757412e628245129b5d7b788618
     container_name: searxng-redis
     restart: unless-stopped
     command: valkey-server --save 30 1 --loglevel warning
@@ -197,6 +229,9 @@ services:
 networks:
   hermes-net:
     driver: bridge
+  local-observability-net:
+    external: true
+    name: local-observability-net
 
 volumes:
   searxng_redis_data:
