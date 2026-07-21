@@ -24,6 +24,16 @@ import sys
 sys.path.insert(0, "/opt/hermes/plugins")
 from hermes_otel.plugin_config import load_config
 
+hooks_source = Path("/opt/hermes/plugins/hermes_otel/hooks.py").read_text()
+for blocked_key in (
+    "hermes.tool.command",
+    "hermes.tool.target",
+    "hermes.turn.tool_commands",
+    "hermes.turn.tool_targets",
+    "error.message",
+):
+    assert f'"{blocked_key}"' not in hooks_source
+
 for name in ("main", "owashota"):
     cfg = load_config(path=Path(f"/run/{name}.yaml"))
     attrs = cfg.resource_attributes

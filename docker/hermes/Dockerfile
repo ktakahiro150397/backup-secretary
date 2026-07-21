@@ -8,6 +8,8 @@ ARG HERMES_OTEL_REF=0180c5e63b9d035ee0754d9a0d75c3499a8def26
 ARG OTEL_PYTHON_VERSION=1.44.0
 ARG PYYAML_VERSION=6.0.3
 
+COPY hermes-otel-privacy.patch /tmp/hermes-otel-privacy.patch
+
 RUN set -eux; \
   apt-get update; \
   apt-get install -y --no-install-recommends gh git rsync; \
@@ -38,7 +40,12 @@ RUN set -eux; \
     /opt/hermes/plugins/hermes_otel; \
   git -C /opt/hermes/plugins/hermes_otel checkout --detach "${HERMES_OTEL_REF}"; \
   test "$(git -C /opt/hermes/plugins/hermes_otel rev-parse HEAD)" = "${HERMES_OTEL_REF}"; \
+  git -C /opt/hermes/plugins/hermes_otel apply --check /tmp/hermes-otel-privacy.patch; \
+  git -C /opt/hermes/plugins/hermes_otel apply /tmp/hermes-otel-privacy.patch; \
+  ! grep -Eq '"hermes\.(tool\.(command|target)|turn\.tool_(commands|targets))"' /opt/hermes/plugins/hermes_otel/hooks.py; \
+  ! grep -Fq '"error.message"' /opt/hermes/plugins/hermes_otel/hooks.py; \
   rm -rf /opt/hermes/plugins/hermes_otel/.git; \
+  rm -f /tmp/hermes-otel-privacy.patch; \
   if [ "$HERMES_GID" != "$(id -g hermes)" ]; then \
   groupmod -o -g "$HERMES_GID" hermes; \
   fi; \
