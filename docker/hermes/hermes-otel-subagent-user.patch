@@ -1,5 +1,5 @@
 diff --git a/hooks.py b/hooks.py
-index b8ea701..43ac761 100644
+index b8ea701..3a65677 100644
 --- a/hooks.py
 +++ b/hooks.py
 @@ -604,6 +604,12 @@ def _start_session_span(
@@ -15,7 +15,28 @@ index b8ea701..43ac761 100644
          if record.get("role"):
              attributes["hermes.subagent.role"] = truncate_string(record["role"], 200)
          if record.get("parent_session_id"):
-@@ -1638,6 +1644,8 @@ def on_subagent_start(
+@@ -1105,5 +1111,10 @@ def on_pre_llm_call(
+     if tracer.config.capture_sender_id:
+-        sender_id = truncate_string(kwargs.get("sender_id"), 200)
++        raw_sender_id = kwargs.get("sender_id")
++        sender_id = (
++            truncate_string(raw_sender_id, 200)
++            if raw_sender_id is not None and str(raw_sender_id).strip()
++            else None
++        )
+         if sender_id:
+             sender_platform = truncate_string(platform, 120)
+             sender_attrs = _sender_attributes(sender_id, sender_platform)
+@@ -1112,6 +1123,7 @@ def on_pre_llm_call(
+                 ps = tracer.sessions.get_or_create(session_id)
+                 ps.sender_id = sender_id
+                 ps.user_id = sender_attrs["user.id"]
++        attributes.update(_session_sender_attributes(tracer, session_id))
+-
++
+     # Opt-in: put the entire conversation the model is about to see on
+     # input.value. Falls back to just the latest user_message otherwise —
+@@ -1638,6 +1650,8 @@ def on_subagent_start(
          attributes["hermes.subagent.goal"] = goal_preview
          attributes["input.value"] = goal_preview
      attributes.update(_correlation_attributes(tracer, parent_session_id, kwargs))
@@ -25,7 +46,7 @@ index b8ea701..43ac761 100644
 +
      # Nest under the parent session's in-flight span (api/llm/session). The
      # delegation span is NOT pushed as a parent — the parent session keeps
-@@ -1655,6 +1663,7 @@ def on_subagent_start(
+@@ -1655,6 +1669,7 @@ def on_subagent_start(
          "span": span,
          "role": role,
          "parent_session_id": parent_session_id,
