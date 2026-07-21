@@ -1,0 +1,35 @@
+diff --git a/hooks.py b/hooks.py
+index b8ea701..43ac761 100644
+--- a/hooks.py
++++ b/hooks.py
+@@ -604,6 +604,12 @@ def _start_session_span(
+     record = tracer._subagent_registry.get(session_id)
+     if record:
+         attributes["hermes.session.is_subagent"] = True
++        sender_attributes = record.get("sender_attributes") or {}
++        attributes.update(sender_attributes)
++        if sender_attributes and session_id:
++            ps = tracer.sessions.get_or_create(session_id)
++            ps.sender_id = sender_attributes.get("hermes.sender.id", "")
++            ps.user_id = sender_attributes.get("user.id", "")
+         if record.get("role"):
+             attributes["hermes.subagent.role"] = truncate_string(record["role"], 200)
+         if record.get("parent_session_id"):
+@@ -1638,6 +1644,8 @@ def on_subagent_start(
+         attributes["hermes.subagent.goal"] = goal_preview
+         attributes["input.value"] = goal_preview
+     attributes.update(_correlation_attributes(tracer, parent_session_id, kwargs))
++    sender_attributes = _session_sender_attributes(tracer, parent_session_id)
++    attributes.update(sender_attributes)
+-
++
+     # Nest under the parent session's in-flight span (api/llm/session). The
+     # delegation span is NOT pushed as a parent — the parent session keeps
+@@ -1655,6 +1663,7 @@ def on_subagent_start(
+         "span": span,
+         "role": role,
+         "parent_session_id": parent_session_id,
++        "sender_attributes": sender_attributes,
+     }
+     if span is not None and hasattr(span, "get_span_context"):
+         try:
