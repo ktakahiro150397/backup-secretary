@@ -9,7 +9,6 @@ docker run --rm -i \
   --tmpfs /opt/testhome:rw,nosuid,size=32m,uid=1000,gid=1000,mode=0700 \
   -e HOME=/opt/testhome \
   -e HERMES_HOME=/opt/testhome \
-  -e PYTHONPATH=/opt/hermes/plugins \
   -v "${repo_dir}/observability/hermes-otel/main.yaml:/run/main.yaml:ro" \
   -v "${repo_dir}/observability/hermes-otel/owashota.yaml:/run/owashota.yaml:ro" \
   --entrypoint bash \
@@ -20,7 +19,9 @@ cp /run/main.yaml "${HOME}/.hermes/plugins/hermes_otel/config.yaml"
 
 python - <<'PY'
 from pathlib import Path
+import sys
 
+sys.path.insert(0, "/opt/hermes/plugins")
 from hermes_otel.plugin_config import load_config
 
 for name in ("main", "owashota"):

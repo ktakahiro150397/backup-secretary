@@ -138,6 +138,7 @@ services:
     container_name: ${HERMES_OWASHOTA_CONTAINER_NAME:-backup-secretary-hermes-owashota}
     command: gateway run
     environment:
+      <<: *hermes-otel-env
       HERMES_HOME: /opt/data
       HOME: /opt/data
       HERMES_EXEC_ASK: "1"
