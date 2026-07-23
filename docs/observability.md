@@ -15,6 +15,14 @@ The Compose defaults for the other external service images are digest-pinned as 
 
 The reviewed upstream commit emits `hermes.tool.command`, `hermes.tool.target`, their turn rollups, and raw tool error messages even when previews are disabled. A checked-in build-time privacy patch removes those content-bearing attributes while retaining tool names, outcomes, durations, errors as a fixed category, token counts, models, instance identity, and sender identity. The standalone collector independently deletes the same deny-listed attributes as defense in depth.
 
+The build also applies a focused patch that propagates the already captured
+parent sender identity to delegated child-agent sessions. This keeps
+content-free child `agent` token rollups attributable to the initiating
+Discord user without capturing any additional identity or message fields. The
+image test exercises a sender-less child LLM/API lifecycle with a synthetic
+parent sender and verifies the child `agent`, `llm.*`, and `api.*` spans retain
+that identity and token rollup without content attributes.
+
 The Docker build clones exactly the reviewed plugin commit into Hermes' bundled plugin directory and installs dependencies into `/opt/hermes/.venv`. No running container installs plugin code or Python packages.
 
 The pinned Hermes 0.18.2 image already contains the free-response/auto-thread fix in its bundled Discord adapter. The obsolete pre-0.18.2 monkey patch was removed because its former module path no longer exists.
