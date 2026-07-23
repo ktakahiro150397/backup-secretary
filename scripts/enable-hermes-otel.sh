@@ -33,7 +33,7 @@ enable_for_service() {
   '
 }
 
-enable_for_service hermes
+enable_for_service hermes-main
 enable_for_service hermes-owashota
 
 echo "hermes_otel is enabled for main and owashota; original configs have local rollback backups."
