@@ -211,7 +211,7 @@ Compose では次を設定している。
 | 変数 | 既定値 | 説明 |
 |---|---:|---|
 | `HERMES_IMAGE` | `backup-secretary/hermes-agent:local` | 起動するローカル派生イメージ |
-| `HERMES_BASE_IMAGE` | `nousresearch/hermes-agent:latest` | ローカル派生イメージの元にする Hermes 公式 image。PoC 固定後は tag または digest 固定を推奨 |
+| `HERMES_BASE_IMAGE` | `nousresearch/hermes-agent@sha256:00f57d79b2b20745a4f2c47bd26135f0473100ca23103ffc3eb3f89f3f6cef50` | ローカル派生イメージの元にする、実機で確認済みの Hermes 公式 image digest。更新時は再検証する |
 | `HERMES_DATA_DIR` | `./runtime/hermes-data` | `/opt/data` に mount する永続データディレクトリ |
 | `HERMES_WORKSPACE_DIR` | `./workspace` | `/workspace` に mount する許可作業ディレクトリ |
 | `HERMES_MANAGED_SKILLS_DIR` | `./skills` | repo管理するcustom skillsをread-onlyで `/managed-skills` にmountする |
@@ -289,7 +289,7 @@ ls -la runtime/hermes-data
 
 ```bash
 docker compose down
-docker run --rm --entrypoint sh -v "$PWD/runtime:/host" nousresearch/hermes-agent:latest -lc 'rm -rf /host/hermes-data && mkdir -p /host/hermes-data && chown '"$(id -u):$(id -g)"' /host/hermes-data && chmod 755 /host/hermes-data'
+docker run --rm --entrypoint sh -v "$PWD/runtime:/host" nousresearch/hermes-agent@sha256:00f57d79b2b20745a4f2c47bd26135f0473100ca23103ffc3eb3f89f3f6cef50 -lc 'rm -rf /host/hermes-data && mkdir -p /host/hermes-data && chown '"$(id -u):$(id -g)"' /host/hermes-data && chmod 755 /host/hermes-data'
 docker compose build hermes
 docker compose up -d hermes
 ```
