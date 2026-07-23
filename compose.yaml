@@ -5,13 +5,54 @@ x-hermes-environment: &hermes-environment
   HOME: /opt/data
   HERMES_UID: ${HERMES_UID:-1000}
   HERMES_GID: ${HERMES_GID:-1000}
+  HERMES_EXEC_ASK: "1"
   SEARXNG_URL: http://searxng:8080
 
+x-hermes-otel-env: &hermes-otel-env
+  HERMES_OTEL_ENABLED: "true"
+  HERMES_OTEL_CAPTURE_PREVIEWS: "false"
+  HERMES_OTEL_CAPTURE_CONVERSATION_HISTORY: "false"
+  HERMES_OTEL_CAPTURE_FULL_PROMPTS: "false"
+  HERMES_OTEL_CAPTURE_FULL_RESPONSES: "false"
+  HERMES_OTEL_CAPTURE_SENDER_ID: "true"
+  HERMES_OTEL_CAPTURE_LOGS: "false"
+  HERMES_OTEL_DASHBOARD_LIVE: "false"
+  HERMES_OTEL_FORCE_FLUSH_ON_SESSION_END: "false"
+  HERMES_OTEL_SPAN_BATCH_EXPORT_TIMEOUT_MS: "3000"
+  HERMES_OTEL_DEBUG: "false"
+
 x-hermes-common: &hermes-common
-  image: ${HERMES_IMAGE:-nousresearch/hermes-agent:latest}
+  image: ${HERMES_IMAGE:-backup-secretary/hermes-agent:local}
+  build:
+    context: ./docker/hermes
+    dockerfile: Dockerfile
+    args:
+      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent@sha256:00f57d79b2b20745a4f2c47bd26135f0473100ca23103ffc3eb3f89f3f6cef50}
+      HERMES_UID: ${HERMES_UID:-1000}
+      HERMES_GID: ${HERMES_GID:-1000}
+      HERMES_OTEL_REF: ${HERMES_OTEL_REF:-0180c5e63b9d035ee0754d9a0d75c3499a8def26}
+      OTEL_PYTHON_VERSION: ${OTEL_PYTHON_VERSION:-1.44.0}
+      PYYAML_VERSION: ${PYYAML_VERSION:-6.0.3}
   restart: unless-stopped
   networks:
     - hermes-net
+  read_only: ${HERMES_READ_ONLY:-false}
+  tmpfs:
+    - /tmp:rw,nosuid,size=512m
+    - /var/tmp:rw,noexec,nosuid,size=256m
+    - /run:rw,noexec,nosuid,size=64m
+  cap_drop:
+    - ALL
+  cap_add:
+    - CHOWN
+    - SETGID
+    - SETUID
+  security_opt:
+    - no-new-privileges:true
+  pids_limit: 256
+  mem_limit: ${HERMES_MEMORY_LIMIT:-4g}
+  cpus: ${HERMES_CPU_LIMIT:-2}
+  shm_size: ${HERMES_SHM_SIZE:-1g}
 
 services:
   hermes-main:
@@ -21,7 +62,7 @@ services:
     env_file:
       - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
     environment:
-      <<: *hermes-environment
+      <<: [*hermes-environment, *hermes-otel-env]
       OPENVIKING_ENDPOINT: http://openviking:1933
     volumes:
       - type: bind
@@ -30,8 +71,23 @@ services:
       - type: bind
         source: ${HERMES_WORKSPACE_DIR:-./workspace}
         target: /workspace
+      - type: bind
+        source: ./observability/hermes-otel/main.yaml
+        target: /opt/data/.hermes/plugins/hermes_otel/config.yaml
+        read_only: true
+    networks:
+      - hermes-net
+      - local-observability-net
     ports:
       - "${HERMES_MAIN_GATEWAY_BIND:-127.0.0.1}:${HERMES_MAIN_GATEWAY_PORT:-8642}:8642"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "pgrep -f 'hermes gateway run' >/dev/null"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     depends_on:
       - openviking
       - searxng
@@ -43,7 +99,7 @@ services:
     env_file:
       - ${HERMES_OWASHOTA_ENV_FILE:-./runtime/owashota/hermes-data/.env}
     environment:
-      <<: *hermes-environment
+      <<: [*hermes-environment, *hermes-otel-env]
       OPENVIKING_ENDPOINT: http://openviking:1933
     volumes:
       - type: bind
@@ -52,11 +108,29 @@ services:
       - type: bind
         source: ${HERMES_WORKSPACE_DIR:-./workspace}
         target: /workspace
+      - type: bind
+        source: ./observability/hermes-otel/owashota.yaml
+        target: /opt/data/.hermes/plugins/hermes_otel/config.yaml
+        read_only: true
+    networks:
+      - hermes-net
+      - local-observability-net
     ports:
       - "${HERMES_OWASHOTA_GATEWAY_BIND:-127.0.0.1}:${HERMES_OWASHOTA_GATEWAY_PORT:-8643}:8642"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "pgrep -f 'hermes gateway run' >/dev/null"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     depends_on:
       - openviking
       - searxng
+    mem_limit: ${HERMES_OWASHOTA_MEMORY_LIMIT:-2g}
+    cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
+    shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
   openviking:
     image: ${OPENVIKING_IMAGE:-ghcr.io/volcengine/openviking:latest}
@@ -163,6 +237,9 @@ services:
 networks:
   hermes-net:
     driver: bridge
+  local-observability-net:
+    external: true
+    name: local-observability-net
 
 volumes:
   searxng-valkey-data:
