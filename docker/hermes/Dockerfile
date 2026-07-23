@@ -9,6 +9,7 @@ ARG OTEL_PYTHON_VERSION=1.44.0
 ARG PYYAML_VERSION=6.0.3
 
 COPY hermes-otel-privacy.patch /tmp/hermes-otel-privacy.patch
+COPY hermes-otel-subagent-user.patch /tmp/hermes-otel-subagent-user.patch
 
 RUN set -eux; \
   apt-get update; \
@@ -42,10 +43,12 @@ RUN set -eux; \
   test "$(git -C /opt/hermes/plugins/hermes_otel rev-parse HEAD)" = "${HERMES_OTEL_REF}"; \
   git -C /opt/hermes/plugins/hermes_otel apply --check /tmp/hermes-otel-privacy.patch; \
   git -C /opt/hermes/plugins/hermes_otel apply /tmp/hermes-otel-privacy.patch; \
+  git -C /opt/hermes/plugins/hermes_otel apply --check /tmp/hermes-otel-subagent-user.patch; \
+  git -C /opt/hermes/plugins/hermes_otel apply /tmp/hermes-otel-subagent-user.patch; \
   ! grep -Eq '"hermes\.(tool\.(command|target)|turn\.tool_(commands|targets))"' /opt/hermes/plugins/hermes_otel/hooks.py; \
   ! grep -Fq '"error.message"' /opt/hermes/plugins/hermes_otel/hooks.py; \
   rm -rf /opt/hermes/plugins/hermes_otel/.git; \
-  rm -f /tmp/hermes-otel-privacy.patch; \
+  rm -f /tmp/hermes-otel-privacy.patch /tmp/hermes-otel-subagent-user.patch; \
   if [ "$HERMES_GID" != "$(id -g hermes)" ]; then \
   groupmod -o -g "$HERMES_GID" hermes; \
   fi; \
