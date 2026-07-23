@@ -37,6 +37,10 @@ cp .env.example .env
 
 ```text
 HERMES_IMAGE
+HERMES_BASE_IMAGE
+HERMES_OTEL_REF
+OTEL_PYTHON_VERSION
+PYYAML_VERSION
 OPENVIKING_IMAGE
 HERMES_MAIN_DATA_DIR
 HERMES_OWASHOTA_DATA_DIR
@@ -65,6 +69,19 @@ OAuth token
 ```
 
 root `.env` は、**コンテナをどう起動するか** だけを決めます。
+
+Hermes は `docker/hermes/Dockerfile` から
+`backup-secretary/hermes-agent:local` を再現可能にビルドします。既存の
+root `.env` が古い floating image を指定している場合は、ビルドとテストの
+完了後に次を実行して、将来の Compose recreate でも検証済みローカル image
+を使うようにします。
+
+```bash
+./scripts/set-hermes-runtime-image.sh
+```
+
+このスクリプトは root `.env` だけを対象にし、権限を維持したローカル
+バックアップを作ってから `HERMES_IMAGE` のみを更新します。
 
 ## 2. `runtime/main/hermes-data/.env`
 

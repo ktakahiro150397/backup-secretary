@@ -1,0 +1,26 @@
+# Reviewed against briancaffey/hermes-otel v0.11.0 at
+# 0180c5e63b9d035ee0754d9a0d75c3499a8def26.
+enabled: true
+resource_attributes:
+  service.name: backup-secretary-hermes
+  service.namespace: backup-secretary
+  service.instance.id: main
+  deployment.environment: home
+
+capture_previews: false
+capture_conversation_history: false
+capture_full_prompts: false
+capture_full_responses: false
+capture_sender_id: true
+capture_logs: false
+emit_genai_metrics: true
+dashboard_live: false
+force_flush_on_session_end: false
+span_batch_export_timeout_ms: 3000
+
+backends:
+  - type: signoz
+    endpoint: http://otel-router:4318/v1/traces
+    traces: true
+    metrics: true
+    logs: false

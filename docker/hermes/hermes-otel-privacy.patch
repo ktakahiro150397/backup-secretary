@@ -1,0 +1,73 @@
+diff --git a/hooks.py b/hooks.py
+--- a/hooks.py
++++ b/hooks.py
+@@ -24,7 +24,6 @@ from .helpers import (
+     detect_skill,
+     extract_tool_result_status,
+     http_status_class,
+-    resolve_tool_identity,
+     session_id_from_turn_id,
+     subagent_span_key,
+     subagent_status_to_span_status,
+@@ -91,10 +90,6 @@ def _summary_attributes(summary: TurnSummary) -> Dict[str, Any]:
+     if summary.tool_names:
+         attrs["hermes.turn.tool_count"] = len(summary.tool_names)
+         attrs["hermes.turn.tools"] = _clip_joined(sorted(summary.tool_names), ",")
+-    if summary.tool_targets:
+-        attrs["hermes.turn.tool_targets"] = _clip_joined(summary.tool_targets, "|")
+-    if summary.tool_commands:
+-        attrs["hermes.turn.tool_commands"] = _clip_joined(summary.tool_commands, "|")
+     if summary.tool_outcomes:
+         attrs["hermes.turn.tool_outcomes"] = _clip_joined(sorted(summary.tool_outcomes), ",")
+     if summary.skill_names:
+@@ -822,12 +817,6 @@ def on_pre_tool_call(tool_name: str, args: dict, task_id: str, **kwargs):
+         if serialized_args is not None:
+             attributes["gen_ai.tool.call.arguments"] = serialized_args
+-
++
+-    # Richer identity — hermes.tool.* (opt-in namespace)
+-    target, command = resolve_tool_identity(args)
+-    if target:
+-        attributes["hermes.tool.target"] = truncate_string(target, 500)
+-    if command:
+-        attributes["hermes.tool.command"] = truncate_string(command, 500)
+     skill, skill_source = detect_skill(tool_name, args)
+     if skill:
+         attributes["hermes.skill.name"] = skill
+@@ -847,8 +836,6 @@ def on_pre_tool_call(tool_name: str, args: dict, task_id: str, **kwargs):
+         attributes.update(_session_sender_attributes(tracer, session_id))
+         summary = tracer.sessions.get_or_create(session_id).turn_summary
+         summary.add_tool(tool_name)
+-        summary.add_target(target)
+-        summary.add_command(command)
+         summary.add_skill(skill)
+         if skill and tracer.config.skill_spans:
+             _open_skill_span(tracer, session_id, skill, skill_source, kwargs)
+@@ -902,14 +889,9 @@ def on_post_tool_call(tool_name: str, args: dict, result: str, task_id: str, **k
+     outcome = extract_tool_result_status(result_json) or "completed"
+     attributes["hermes.tool.outcome"] = outcome
+-
++
+-    # Preserve existing error.message attribute when outcome == error
+     has_error = outcome == "error"
+-    error_msg = ""
+-    if has_error and isinstance(result_json, dict):
+-        err_val = result_json.get("error")
+-        if err_val:
+-            error_msg = truncate_string(err_val, 500)
+-            attributes["error.message"] = error_msg
++    if has_error:
++        attributes["error.type"] = "tool_error"
+-
++
+     # OpenInference output value — Phoenix shows this in Info
+     preview = _preview(
+@@ -939,7 +921,5 @@ def on_post_tool_call(tool_name: str, args: dict, result: str, task_id: str, **k
+     # Map outcome to span status. Only "error" is ERROR; other non-ok outcomes
+     # (timeout, blocked, ...) are OK to avoid polluting error rates.
+     status = "error" if has_error else "ok"
+-    tracer.end_span(
+-        key, attributes=attributes, status=status, error_message=error_msg if has_error else None
+-    )
++    tracer.end_span(key, attributes=attributes, status=status)
+     debug_log(f"  span ended: status={status}, outcome={outcome}")
