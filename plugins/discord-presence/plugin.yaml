@@ -1,0 +1,12 @@
+name: discord-presence
+label: Discord Codex Usage Presence
+kind: platform
+version: 1.0.1
+description: >
+  Adds a plain-text Discord Custom Activity showing read-only Codex usage data.
+  Extends the bundled Discord adapter without modifying Hermes core files.
+author: local
+requires_env:
+  - name: DISCORD_BOT_TOKEN
+    description: Discord bot token used by the existing Discord platform
+    password: true
