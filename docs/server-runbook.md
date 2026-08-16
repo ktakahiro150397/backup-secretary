@@ -457,9 +457,9 @@ make resource-status
 
 `hermes-owashota` の確認基準:
 
-- `pids_limit=256`
-- `memory_limit_bytes=2147483648`
-- `memory_swap_limit_bytes=2147483648`
+- `pids_limit=384`
+- `memory_limit_bytes=4294967296`
+- `memory_swap_limit_bytes=4294967296`
 - `memory_swap_current_bytes=0`（通常時）
 - `oom_killed=false`
 

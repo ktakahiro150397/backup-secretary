@@ -135,9 +135,11 @@ services:
     depends_on:
       - openviking
       - searxng
-    mem_limit: ${HERMES_OWASHOTA_MEMORY_LIMIT:-2g}
-    memswap_limit: ${HERMES_OWASHOTA_MEMORY_SWAP_LIMIT:-2g}
-    pids_limit: ${HERMES_OWASHOTA_PIDS_LIMIT:-256}
+    # The owashota runtime supervises several persistent child services. Its
+    # measured steady state is close to 256 tasks and startup can exceed 2 GiB.
+    mem_limit: ${HERMES_OWASHOTA_MEMORY_LIMIT:-4g}
+    memswap_limit: ${HERMES_OWASHOTA_MEMORY_SWAP_LIMIT:-4g}
+    pids_limit: ${HERMES_OWASHOTA_PIDS_LIMIT:-384}
     cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 
