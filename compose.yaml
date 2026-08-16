@@ -40,11 +40,15 @@ x-hermes-common: &hermes-common
   tmpfs:
     - /tmp:rw,nosuid,size=512m
     - /var/tmp:rw,noexec,nosuid,size=256m
-    - /run:rw,noexec,nosuid,size=64m
+    # s6-overlay materializes and executes supervised service scripts in /run.
+    - /run:rw,exec,nosuid,size=64m
   cap_drop:
     - ALL
   cap_add:
     - CHOWN
+    # The root bootstrap enters the host-owned 0700 data directory before
+    # dropping to the remapped hermes UID.
+    - DAC_OVERRIDE
     - SETGID
     - SETUID
   security_opt:
