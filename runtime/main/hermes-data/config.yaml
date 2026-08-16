@@ -1,8 +1,6 @@
 model:
-  provider: opencode-go
-  base_url: https://opencode.ai/zen/go/v1
-  api_mode: chat_completions
-  default: deepseek-v4-flash
+  provider: openai-codex
+  default: gpt-5.6-sol
 toolsets:
   - hermes-cli
 agent:
@@ -11,6 +9,31 @@ agent:
   api_max_retries: 3
   reasoning_effort: medium
   verify_on_stop: false
+auxiliary:
+  web_extract:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  compression:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  session_search:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  skills_hub:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  approval:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  mcp:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  title_generation:
+    provider: opencode-go
+    model: deepseek-v4-flash
+  curator:
+    provider: opencode-go
+    model: deepseek-v4-flash
 session_reset:
   mode: idle
   idle_minutes: 1440
