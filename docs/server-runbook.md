@@ -449,6 +449,30 @@ make up
 make ps
 ```
 
+Hermes を再作成した直後は、内容データを出力しない resource check を実行します。
+
+```bash
+make resource-status
+```
+
+`hermes-owashota` の確認基準:
+
+- `pids_limit=256`
+- `memory_limit_bytes=2147483648`
+- `memory_swap_limit_bytes=2147483648`
+- `memory_swap_current_bytes=0`（通常時）
+- `oom_killed=false`
+
+`memory_limit_bytes` と `memory_swap_limit_bytes` が同値であることが重要です。
+既存コンテナに設定を反映するには `restart` ではなく再作成が必要です。
+
+```bash
+docker compose up -d --force-recreate hermes-owashota
+make resource-status
+```
+
+再作成は稼働セッションを中断するため、実行前に human approval を得ます。
+
 mainだけ反映:
 
 ```bash
@@ -467,6 +491,7 @@ make hermes-main
 ```bash
 make ov-doctor
 make ps
+make resource-status
 ```
 
 coder側:
