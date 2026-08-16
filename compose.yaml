@@ -49,8 +49,11 @@ x-hermes-common: &hermes-common
     - SETUID
   security_opt:
     - no-new-privileges:true
-  pids_limit: 256
+  pids_limit: ${HERMES_PIDS_LIMIT:-256}
   mem_limit: ${HERMES_MEMORY_LIMIT:-4g}
+  # Keep total memory+swap equal to the memory limit so Hermes/Chrome cannot
+  # exhaust host swap while under memory pressure.
+  memswap_limit: ${HERMES_MEMORY_SWAP_LIMIT:-4g}
   cpus: ${HERMES_CPU_LIMIT:-2}
   shm_size: ${HERMES_SHM_SIZE:-1g}
 
@@ -129,6 +132,8 @@ services:
       - openviking
       - searxng
     mem_limit: ${HERMES_OWASHOTA_MEMORY_LIMIT:-2g}
+    memswap_limit: ${HERMES_OWASHOTA_MEMORY_SWAP_LIMIT:-2g}
+    pids_limit: ${HERMES_OWASHOTA_PIDS_LIMIT:-256}
     cpus: ${HERMES_OWASHOTA_CPU_LIMIT:-1}
     shm_size: ${HERMES_OWASHOTA_SHM_SIZE:-512m}
 

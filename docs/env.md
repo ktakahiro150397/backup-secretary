@@ -52,6 +52,12 @@ HERMES_MAIN_GATEWAY_BIND
 HERMES_MAIN_GATEWAY_PORT
 HERMES_OWASHOTA_GATEWAY_BIND
 HERMES_OWASHOTA_GATEWAY_PORT
+HERMES_PIDS_LIMIT
+HERMES_MEMORY_LIMIT
+HERMES_MEMORY_SWAP_LIMIT
+HERMES_OWASHOTA_PIDS_LIMIT
+HERMES_OWASHOTA_MEMORY_LIMIT
+HERMES_OWASHOTA_MEMORY_SWAP_LIMIT
 OPENVIKING_BIND
 OPENVIKING_PORT
 OPENVIKING_WITH_BOT
@@ -69,6 +75,12 @@ OAuth token
 ```
 
 root `.env` は、**コンテナをどう起動するか** だけを決めます。
+
+Hermes の `*_MEMORY_SWAP_LIMIT` は対応する `*_MEMORY_LIMIT` と同じ値を
+維持します。Docker では両者を同値にするとコンテナの swap 使用を禁止でき、
+Chrome 子プロセスが増えた場合にもホスト全体の swap を食い尽くしません。
+`*_PIDS_LIMIT` と memory 上限を引き上げる前に、ホスト容量と異常時の影響を
+確認してください。
 
 Hermes は `docker/hermes/Dockerfile` から
 `backup-secretary/hermes-agent:local` を再現可能にビルドします。既存の
