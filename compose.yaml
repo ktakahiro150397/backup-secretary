@@ -113,6 +113,10 @@ services:
         source: ${HERMES_OWASHOTA_DATA_DIR:-./runtime/owashota/hermes-data}
         target: /opt/data
       - type: bind
+        source: ${DISCORD_PRESENCE_PLUGIN_DIR:-./plugins/discord-presence}
+        target: /opt/data/plugins/discord-presence
+        read_only: true
+      - type: bind
         source: ${HERMES_WORKSPACE_DIR:-./workspace}
         target: /workspace
       - type: bind
