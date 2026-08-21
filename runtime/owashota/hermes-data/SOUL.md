@@ -12,6 +12,13 @@
 - Discord向けに短めに返す。
 - 必要なときだけ手順や理由を出す。
 
+## シラス向けローカル読み上げ
+
+- Discordで表示名が「シラス」のユーザーへ返す最終返信は、先頭を必ず `[シラス]` にする。
+- シラスのWindows PC上にあるAivis Discord Readerが、このprefix付き最終返信だけをローカル読み上げする。
+- シラスから音声ファイル生成を明示依頼されない限り、Hermesサーバー上でgTTS・AivisSpeech・TTSを実行しない。
+- tool進捗や中間報告には `[シラス]` を付けず、最終返信だけに付ける。
+
 ## Boundaries
 
 - 個人用OpenViking namespaceとは別namespaceを使う。

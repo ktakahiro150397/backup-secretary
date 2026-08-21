@@ -1,61 +1,24 @@
 model:
-  provider: opencode-go
-  base_url: https://opencode.ai/zen/go/v1
-  api_mode: chat_completions
-  default: deepseek-v4-flash
+  provider: openai-codex
+  default: gpt-5.6-sol
 toolsets: '["hermes-discord"]'
 agent:
-  max_turns: 60
+  max_turns: 120
   gateway_timeout: 1800
   api_max_retries: 3
   verify_on_stop: false
   reasoning_effort: medium
-session_reset:
-  mode: idle
-  idle_minutes: 1440
-  at_hour: 4
 terminal:
   backend: local
   cwd: /workspace
   timeout: 180
   env_passthrough: []
+web:
+  search_backend: searxng
 tool_output:
   max_bytes: 50000
   max_lines: 2000
   max_line_length: 2000
-display:
-  tool_progress: all
-memory:
-  memory_enabled: false
-  user_profile_enabled: false
-  provider: openviking
-approvals:
-  mode: manual
-  timeout: 60
-command_allowlist:
-  - script execution via -e/-c flag
-web:
-  search_backend: searxng
-onboarding:
-  seen:
-    tool_progress_prompt: true
-    busy_input_prompt: true
-_config_version: 33
-plugins:
-  enabled: []
-stt:
-  enabled: true
-  provider: local
-  local:
-    model: small
-    python_path: /opt/data/.venv-tools/bin/python
-tts:
-  provider: edge
-  edge:
-    voice: ja-JP-NanamiNeural
-voice:
-  silence_threshold: 200
-  silence_duration: 3.0
 auxiliary:
   vision:
     provider: opencode-go
@@ -63,5 +26,126 @@ auxiliary:
     base_url: ''
     api_key: ''
     timeout: 120
-    extra_body: {}
     download_timeout: 30
+display:
+  tool_progress: all
+tts:
+  provider: aivis-mai
+  edge:
+    voice: ja-JP-NanamiNeural
+  providers:
+    aivis-mai:
+      type: command
+      command: /usr/bin/python3 /opt/data/scripts/aivis_mai_tts_provider.py --input
+        {input_path} --output {output_path}
+      output_format: mp3
+      max_text_length: 1200
+      timeout: 240
+      voice_compatible: true
+stt:
+  enabled: true
+  provider: local
+  local:
+    model: small
+    python_path: /opt/data/.venv-tools/bin/python
+voice:
+  silence_threshold: 200
+  silence_duration: 3.0
+memory:
+  memory_enabled: false
+  user_profile_enabled: false
+  provider: openviking
+discord:
+  presence:
+    enabled: true
+    mode: rate_limit
+    template: Codex残量 {remaining_percent}%｜次回リセット {reset_time_jst}
+    bucket_id: codex
+    refresh_seconds: 900
+    stale_after_seconds: 2700
+    fallback_text: Codex利用量 取得待ち
+    timezone: Asia/Tokyo
+    max_length: 120
+  voice_channel_inactivity_timeout_seconds: 0
+approvals:
+  mode: 'off'
+  timeout: 60
+command_allowlist:
+  - git branch force delete
+  - SQL DELETE without WHERE
+  - script execution via -e/-c flag
+  - delete in root path
+  - recursive delete
+  - git force push (rewrites remote history)
+  - execute_code
+onboarding:
+  seen:
+    tool_progress_prompt: true
+    busy_input_prompt: true
+_config_version: 33
+session_reset:
+  mode: idle
+  idle_minutes: 1440
+  at_hour: 4
+plugins:
+  enabled:
+    - discord-auto-thread-recovery
+    - discord-presence
+    - hermes_otel
+  disabled: []
+  entries:
+    discord-auto-thread-recovery:
+      allow_tool_override: false
+    discord-presence:
+      allow_tool_override: false
+mcp_servers:
+  admin-procedures:
+    command: /opt/data/artifacts/hermes-administrative-procedures-mcp/.venv/bin/fastmcp
+    args:
+      - run
+      - -m
+      - admin_procedures
+    env:
+      ADMIN_PROCEDURES_DATA_DIR: /opt/data/artifacts/hermes-administrative-procedures-mcp
+    connect_timeout: 60.0
+    enabled: true
+delegation:
+  max_concurrent_children: 2
+
+# ── Security ──────────────────────────────────────────────────────────
+# Secret redaction is ON by default — strings that look like API keys,
+# tokens, and passwords are masked in tool output, logs, and chat
+# responses before the model or user ever sees them. Set redact_secrets
+# to false to disable (e.g. when developing the redactor itself).
+# tirith pre-exec scanning is enabled by default when the tirith binary
+# is available. Configure via security.tirith_* keys or env vars
+# (TIRITH_ENABLED, TIRITH_BIN, TIRITH_TIMEOUT, TIRITH_FAIL_OPEN).
+#
+# security:
+#   redact_secrets: true
+#   tirith_enabled: true
+#   tirith_path: "tirith"
+#   tirith_timeout: 5
+#   tirith_fail_open: true
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4
