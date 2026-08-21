@@ -27,7 +27,7 @@ x-hermes-common: &hermes-common
     context: ./docker/hermes
     dockerfile: Dockerfile
     args:
-      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent@sha256:00f57d79b2b20745a4f2c47bd26135f0473100ca23103ffc3eb3f89f3f6cef50}
+      HERMES_BASE_IMAGE: ${HERMES_BASE_IMAGE:-nousresearch/hermes-agent@sha256:ce93952abf20bcfef10fca29d61b30738c28e3400f3494566d0b246ed30fe8f3}
       HERMES_UID: ${HERMES_UID:-1000}
       HERMES_GID: ${HERMES_GID:-1000}
       HERMES_OTEL_REF: ${HERMES_OTEL_REF:-0180c5e63b9d035ee0754d9a0d75c3499a8def26}
@@ -91,6 +91,45 @@ services:
       test:
         - CMD-SHELL
         - "pgrep -f 'hermes gateway run' >/dev/null"
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - openviking
+      - searxng
+
+  hermes-main-serve:
+    <<: *hermes-common
+    container_name: backup-secretary-hermes-main-serve
+    command: serve --host 0.0.0.0 --port 9119 --skip-build
+    env_file:
+      - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
+    environment:
+      <<: [*hermes-environment, *hermes-otel-env]
+      OPENVIKING_ENDPOINT: http://openviking:1933
+    volumes:
+      - type: bind
+        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
+        target: /opt/data
+      - type: bind
+        source: ${HERMES_WORKSPACE_DIR:-./workspace}
+        target: /workspace
+      - type: bind
+        source: ./observability/hermes-otel/main.yaml
+        target: /opt/data/.hermes/plugins/hermes_otel/config.yaml
+        read_only: true
+    networks:
+      - hermes-net
+      - local-observability-net
+    ports:
+      - "${HERMES_MAIN_SERVE_BIND:-127.0.0.1}:${HERMES_MAIN_SERVE_PORT:-9119}:9119"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9119/api/status', timeout=3)"
       interval: 30s
       timeout: 5s
       retries: 5

@@ -1,10 +1,10 @@
 COMPOSE ?= docker compose
 OV_CLI ?= /app/.venv/bin/ov
 
-.PHONY: up down ps logs pull restart restart-main restart-owashota resource-status patch-hermes-openviking ov ov-tui ov-config ov-init ov-doctor ov-root-config ov-provision-user ov-regenerate-key setup-main setup-owashota hermes-main hermes-owashota
+.PHONY: up down ps logs pull restart restart-main restart-main-serve restart-owashota resource-status patch-hermes-openviking ov ov-tui ov-config ov-init ov-doctor ov-root-config ov-provision-user ov-regenerate-key setup-main setup-owashota hermes-main hermes-owashota
 
 up:
-	$(COMPOSE) up -d openviking hermes-main hermes-owashota
+	$(COMPOSE) up -d openviking hermes-main hermes-main-serve hermes-owashota
 
 down:
 	$(COMPOSE) down
@@ -13,16 +13,19 @@ ps:
 	$(COMPOSE) ps
 
 logs:
-	$(COMPOSE) logs -f openviking hermes-main hermes-owashota
+	$(COMPOSE) logs -f openviking hermes-main hermes-main-serve hermes-owashota
 
 pull:
-	$(COMPOSE) pull openviking hermes-main hermes-owashota
+	$(COMPOSE) pull openviking hermes-main hermes-main-serve hermes-owashota
 
 restart:
-	$(COMPOSE) restart hermes-main hermes-owashota
+	$(COMPOSE) restart hermes-main hermes-main-serve hermes-owashota
 
 restart-main:
 	$(COMPOSE) restart hermes-main
+
+restart-main-serve:
+	$(COMPOSE) restart hermes-main-serve
 
 restart-owashota:
 	$(COMPOSE) restart hermes-owashota

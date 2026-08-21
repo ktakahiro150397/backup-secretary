@@ -226,6 +226,23 @@ OPENVIKING_API_KEY=<hermes-owashotaユーザーキー>
 
 LLMやDiscordの秘密情報も各Hermesの `.env` に置きます。rootの `.env` には秘密情報を置きません。
 
+Hermes Desktopから個人用backendへ接続する場合は、`runtime/main/hermes-data/.env`へ
+Basic認証を設定します。9119番はサーバーのloopbackだけに公開し、外部へ直接公開しません。
+
+```dotenv
+HERMES_DASHBOARD_BASIC_AUTH_USERNAME=<Desktopログイン名>
+HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=<十分に長いランダムパスワード>
+HERMES_DASHBOARD_BASIC_AUTH_SECRET=<安定したランダム署名secret>
+```
+
+`hermes-main-serve`を起動後、クライアントPCでSSH tunnelを維持します。
+
+```powershell
+ssh -N -L 9119:127.0.0.1:9119 yanelmoserver
+```
+
+Hermes DesktopのRemote gateway URLは`http://127.0.0.1:9119`です。
+
 値を表示せず、ファイルの存在と権限だけを確認します。
 
 ```bash
