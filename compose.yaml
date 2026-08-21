@@ -71,6 +71,9 @@ services:
     environment:
       <<: [*hermes-environment, *hermes-otel-env]
       OPENVIKING_ENDPOINT: http://openviking:1933
+      HERMES_DASHBOARD: "1"
+      HERMES_DASHBOARD_HOST: 0.0.0.0
+      HERMES_DASHBOARD_PORT: 9119
     volumes:
       - type: bind
         source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
@@ -87,49 +90,11 @@ services:
       - local-observability-net
     ports:
       - "${HERMES_MAIN_GATEWAY_BIND:-127.0.0.1}:${HERMES_MAIN_GATEWAY_PORT:-8642}:8642"
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - "pgrep -f 'hermes gateway run' >/dev/null"
-      interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    depends_on:
-      - openviking
-      - searxng
-
-  hermes-main-serve:
-    <<: *hermes-common
-    container_name: backup-secretary-hermes-main-serve
-    command: serve --host 0.0.0.0 --port 9119 --skip-build
-    env_file:
-      - ${HERMES_MAIN_ENV_FILE:-./runtime/main/hermes-data/.env}
-    environment:
-      <<: [*hermes-environment, *hermes-otel-env]
-      OPENVIKING_ENDPOINT: http://openviking:1933
-    volumes:
-      - type: bind
-        source: ${HERMES_MAIN_DATA_DIR:-./runtime/main/hermes-data}
-        target: /opt/data
-      - type: bind
-        source: ${HERMES_WORKSPACE_DIR:-./workspace}
-        target: /workspace
-      - type: bind
-        source: ./observability/hermes-otel/main.yaml
-        target: /opt/data/.hermes/plugins/hermes_otel/config.yaml
-        read_only: true
-    networks:
-      - hermes-net
-      - local-observability-net
-    ports:
       - "${HERMES_MAIN_SERVE_BIND:-127.0.0.1}:${HERMES_MAIN_SERVE_PORT:-9119}:9119"
     healthcheck:
       test:
-        - CMD
-        - python
-        - -c
-        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9119/api/status', timeout=3)"
+        - CMD-SHELL
+        - "pgrep -f 'hermes gateway run' >/dev/null && python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:9119/api/status', timeout=3)\""
       interval: 30s
       timeout: 5s
       retries: 5

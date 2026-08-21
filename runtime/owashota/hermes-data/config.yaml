@@ -82,7 +82,7 @@ onboarding:
   seen:
     tool_progress_prompt: true
     busy_input_prompt: true
-_config_version: 33
+_config_version: 38
 session_reset:
   mode: idle
   idle_minutes: 1440

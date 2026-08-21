@@ -37,7 +37,7 @@ memory:
 approvals:
   mode: manual
   timeout: 60
-_config_version: 33
+_config_version: 38
 plugins:
   enabled: []
 session_reset:

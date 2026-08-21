@@ -235,7 +235,8 @@ HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=<十分に長いランダムパスワード
 HERMES_DASHBOARD_BASIC_AUTH_SECRET=<安定したランダム署名secret>
 ```
 
-`hermes-main-serve`を起動後、クライアントPCでSSH tunnelを維持します。
+`hermes-main`を起動すると、gatewayとDesktop backendが同じコンテナ内で
+s6管理されます。起動後、クライアントPCでSSH tunnelを維持します。
 
 ```powershell
 ssh -N -L 9119:127.0.0.1:9119 yanelmoserver

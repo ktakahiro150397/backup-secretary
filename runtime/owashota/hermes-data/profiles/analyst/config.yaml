@@ -31,7 +31,7 @@ onboarding:
   seen:
     tool_progress_prompt: true
     busy_input_prompt: true
-_config_version: 33
+_config_version: 38
 plugins:
   enabled: []
 
