@@ -1,0 +1,12 @@
+# Pass a fixed local tag verified against the installed image ID (or a digest).
+# Docker build cannot use a raw local sha256 image ID as a FROM reference.
+# This layer
+# preserves newer runtime upgrades without installing into a live container.
+ARG HERMES_RUNTIME_IMAGE
+FROM ${HERMES_RUNTIME_IMAGE}
+USER root
+COPY usage_contract.py /opt/hermes/plugins/hermes_otel/usage_contract.py
+COPY install-usage-contract.py /tmp/install-usage-contract.py
+RUN python /tmp/install-usage-contract.py && rm /tmp/install-usage-contract.py
+ENV HERMES_OTEL_USAGE_ONLY=true
+ENV OTEL_EXPORTER_OTLP_TRACES_TIMEOUT=3

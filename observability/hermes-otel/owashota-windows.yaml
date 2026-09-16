@@ -1,0 +1,25 @@
+enabled: true
+resource_attributes:
+  service.name: backup-secretary-hermes
+  service.namespace: backup-secretary
+  service.instance.id: owashota
+  deployment.environment: home
+capture_previews: false
+capture_conversation_history: false
+capture_full_prompts: false
+capture_full_responses: false
+capture_sender_id: true
+capture_logs: false
+emit_genai_metrics: false
+dashboard_live: false
+force_flush_on_session_end: false
+span_batch_export_timeout_ms: 3000
+backends:
+- type: signoz
+  endpoint: http://usage-forwarder:14319/v1/traces
+  traces: true
+  metrics: false
+  logs: false
+span_batch_schedule_delay_ms: 1000
+span_batch_max_queue_size: 256
+span_batch_max_export_batch_size: 64

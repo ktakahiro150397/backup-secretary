@@ -1,5 +1,7 @@
 # Hermes OpenTelemetry integration
 
+**2026-09-16: Windowsへの所有者専用usage集約** — 新しいrequest単位の帰属・送信は [usage-windows.md](usage-windows.md) を参照。以下の旧shared/root構成は履歴として保持し、新データを旧routerへ送らない。
+
 This repository exports approved content-free Hermes telemetry to the separate `local-obserbablity` stack. It does not own an observability backend or expose Grafana.
 
 ## Pinned build inputs

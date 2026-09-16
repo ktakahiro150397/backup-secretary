@@ -10,6 +10,8 @@ ARG PYYAML_VERSION=6.0.3
 
 COPY hermes-otel-privacy.patch /tmp/hermes-otel-privacy.patch
 COPY hermes-otel-subagent-user.patch /tmp/hermes-otel-subagent-user.patch
+COPY usage_contract.py /tmp/usage_contract.py
+COPY install-usage-contract.py /tmp/install-usage-contract.py
 
 RUN set -eux; \
   apt-get update; \
@@ -45,6 +47,8 @@ RUN set -eux; \
   git -C /opt/hermes/plugins/hermes_otel apply /tmp/hermes-otel-privacy.patch; \
   git -C /opt/hermes/plugins/hermes_otel apply --check /tmp/hermes-otel-subagent-user.patch; \
   git -C /opt/hermes/plugins/hermes_otel apply /tmp/hermes-otel-subagent-user.patch; \
+  cp /tmp/usage_contract.py /opt/hermes/plugins/hermes_otel/usage_contract.py; \
+  python /tmp/install-usage-contract.py; \
   ! grep -Eq '"hermes\.(tool\.(command|target)|turn\.tool_(commands|targets))"' /opt/hermes/plugins/hermes_otel/hooks.py; \
   ! grep -Fq '"error.message"' /opt/hermes/plugins/hermes_otel/hooks.py; \
   rm -rf /opt/hermes/plugins/hermes_otel/.git; \
