@@ -117,6 +117,17 @@ make ov-doctor
 
 Docker版OpenVikingはコンテナ内で `0.0.0.0:1933` をbindするため、OpenViking側の `ov.conf` には `root_api_key` を設定してください。
 
+OpenCode GoをVLMとして使う場合は、OpenCode Goが要求するclient識別headerも設定します。`x-opencode-session`はOpenVikingから送る一連のrequestで安定した値にし、汎用HTTP client名ではなくOpenViking自身を示す`User-Agent`を送ります。
+
+```json
+"extra_headers": {
+  "x-opencode-session": "openviking-yanelmoserver",
+  "User-Agent": "backup-secretary-openviking/1.0"
+}
+```
+
+`runtime/openviking/ov.local.conf`が存在する環境では、OpenVikingは`ov.conf`よりローカル設定を優先します。ローカル設定にも同じheaderを反映してからコンテナを再起動してください。`openviking-server doctor`の単発probeだけでなく、実際の`ov search`と、新規session archiveの`.done` markerまで確認します。
+
 ### OpenViking CLI
 
 コンテナ内の `ov` CLIはMakeターゲットから実行できます。
