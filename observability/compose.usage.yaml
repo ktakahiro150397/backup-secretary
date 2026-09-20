@@ -1,0 +1,18 @@
+# Apply only to the current runtime Compose project, preserving its config and
+# data mounts. This file targets main-branch topology; adapt the service name
+# in a separate private overlay if the deployed service is named hermes-main.
+services:
+  hermes:
+    image: ${HERMES_USAGE_IMAGE:?set the tested immutable usage image ID}
+    environment:
+      HERMES_OTEL_USAGE_ONLY: "true"
+      OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: "3"
+    volumes:
+      - ./observability/hermes-otel/main-windows.yaml:/opt/data/.hermes/plugins/hermes_otel/config.yaml:ro
+  hermes-owashota:
+    image: ${HERMES_USAGE_IMAGE:?set the tested immutable usage image ID}
+    environment:
+      HERMES_OTEL_USAGE_ONLY: "true"
+      OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: "3"
+    volumes:
+      - ./observability/hermes-otel/owashota-windows.yaml:/opt/data/.hermes/plugins/hermes_otel/config.yaml:ro
