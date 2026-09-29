@@ -7,6 +7,7 @@ ARG HERMES_GID=1000
 ARG HERMES_OTEL_REF=0180c5e63b9d035ee0754d9a0d75c3499a8def26
 ARG OTEL_PYTHON_VERSION=1.44.0
 ARG PYYAML_VERSION=6.0.3
+ARG CODEX_VERSION=0.159.0
 
 COPY hermes-otel-privacy.patch /tmp/hermes-otel-privacy.patch
 COPY hermes-otel-subagent-user.patch /tmp/hermes-otel-subagent-user.patch
@@ -15,7 +16,7 @@ RUN set -eux; \
   apt-get update; \
   apt-get install -y --no-install-recommends gh git rsync; \
   rm -rf /var/lib/apt/lists/*; \
-  npm install -g @openai/codex; \
+  npm install -g "@openai/codex@${CODEX_VERSION}"; \
   npm install -g @anthropic-ai/claude-code; \
   npm cache clean --force; \
   # Install Scrapling for web extraction fallback (stealthy_fetch / fetch for JS-required & bot-protected sites)

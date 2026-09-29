@@ -1,0 +1,9 @@
+# Preserve the deployed Hermes and observability layers during a CLI-only update.
+# Supply an inspected local image tag or an immutable registry digest.
+ARG HERMES_RUNTIME_IMAGE=backup-secretary/hermes-agent:local
+FROM ${HERMES_RUNTIME_IMAGE}
+USER root
+ARG CODEX_VERSION=0.159.0
+RUN npm install -g "@openai/codex@${CODEX_VERSION}" \
+    && npm cache clean --force \
+    && test "$(codex --version)" = "codex-cli ${CODEX_VERSION}"
