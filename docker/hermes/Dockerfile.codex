@@ -7,3 +7,11 @@ ARG CODEX_VERSION=0.159.0
 RUN npm install -g "@openai/codex@${CODEX_VERSION}" \
     && npm cache clean --force \
     && test "$(codex --version)" = "codex-cli ${CODEX_VERSION}"
+
+# Account usage must route with the same account as the selected bearer token.
+COPY hermes-codex-usage-account.patch /tmp/hermes-codex-usage-account.patch
+COPY test_codex_usage_account.py /tmp/test_codex_usage_account.py
+RUN git -C /opt/hermes apply --check /tmp/hermes-codex-usage-account.patch \
+    && git -C /opt/hermes apply /tmp/hermes-codex-usage-account.patch \
+    && /opt/hermes/.venv/bin/python /tmp/test_codex_usage_account.py \
+    && rm /tmp/hermes-codex-usage-account.patch /tmp/test_codex_usage_account.py

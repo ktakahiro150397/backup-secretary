@@ -61,3 +61,11 @@ RUN set -eux; \
   chown -R hermes:hermes /opt/hermes/.venv; \
   mkdir -p /opt/data; \
   chown -R hermes:hermes /opt/data
+
+# Account usage must route with the same account as the selected bearer token.
+COPY hermes-codex-usage-account.patch /tmp/hermes-codex-usage-account.patch
+COPY test_codex_usage_account.py /tmp/test_codex_usage_account.py
+RUN git -C /opt/hermes apply --check /tmp/hermes-codex-usage-account.patch \
+    && git -C /opt/hermes apply /tmp/hermes-codex-usage-account.patch \
+    && /opt/hermes/.venv/bin/python /tmp/test_codex_usage_account.py \
+    && rm /tmp/hermes-codex-usage-account.patch /tmp/test_codex_usage_account.py

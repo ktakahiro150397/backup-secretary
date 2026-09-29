@@ -35,3 +35,21 @@ Codex CLIを起動しない。CLI更新だけで残量表示が変わるとは�
 このtagが指すimage IDと実行中containerの`.Image`をbuild前に照合する。
 DockerfileのFROMへ裸の`sha256:<image-id>`を渡すとregistry名として解釈されるため、
 local tagまたは`repository@sha256:<manifest-digest>`を使用する。
+
+## Codex残量がアプリと一致しない場合
+
+Hermes v0.20.5 (`fcbd1076`) のusage resolverはpool token利用時に
+`ChatGPT-Account-Id`を省略していた。2026-09-30の比較では同じtoken・URLで
+headerだけを追加すると使用率100%から52%、Astra利用不可から利用可能へ変化し、
+Codexアプリと一致した。headerなしのHTTP 200だけでquota枯渇と判断しない。
+
+`hermes-codex-usage-account.patch`は使用中tokenのaccount claimを読み、
+明示token・native resolver・pool fallbackすべてで同じaccount headerを付ける。
+別credentialのsingleton accountを混用せず、refresh失敗時の挙動は保持する。
+tokenの真正性検証は引き続きbackendが行う。秘密や実account IDはpatchへ含めない。
+
+Dockerfile2種ともpatchの適用可否と6件の回帰testをbuild時に確認する。
+基準は未patchのHermes v0.20.5 image。将来のHermes更新で適用不可なら、
+patchを強制適用せずupstream実装とtestを照合する。復旧は前述の旧imageへの切戻し。
+実機確認は両profileのusage API、presence collector、gateway接続で行い、
+Discord外部UIの確認と区別する。
