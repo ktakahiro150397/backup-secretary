@@ -1,0 +1,5 @@
+name: sarashina
+kind: model-provider
+version: 1.0.0
+description: Sarashina through a private container-loopback compatibility adapter
+author: Local configuration

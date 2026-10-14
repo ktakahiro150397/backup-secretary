@@ -1,0 +1,7 @@
+.env
+*.env
+owashota-sarashina/.env
+owashota-*-result.txt
+owashota-*.json
+__pycache__/
+**/__pycache__/
