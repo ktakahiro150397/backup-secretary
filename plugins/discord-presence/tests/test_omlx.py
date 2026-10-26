@@ -144,6 +144,31 @@ class IndependentRefreshTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([c.kwargs["activity"] for c in client.change_presence.await_args_list],
                          ["0.0tok/s｜ready", "5.0tok/s｜ready"])
 
+    async def test_slow_codex_read_does_not_pause_live_polling_and_is_cancelled_on_stop(self):
+        now = [0.0]
+        started = asyncio.Event()
+        cancelled = asyncio.Event()
+        async def slow_usage(_cfg):
+            started.set()
+            try:
+                await asyncio.Future()
+            except asyncio.CancelledError:
+                cancelled.set()
+                raise
+        cfg = PresenceConfig(enabled=True, fallback_text="waiting", omlx_base_url="http://127.0.0.1")
+        client = type("Client", (), {"change_presence": AsyncMock()})()
+        rates = AsyncMock(side_effect=["idle", "99.9tok/s"])
+        controller = PresenceController(client, config_loader=lambda: cfg, clock=lambda: now[0],
+            snapshot_fetcher=slow_usage, activity_fetcher=rates, activity_factory=lambda text: text)
+        await asyncio.wait_for(controller.refresh_once(), 1)
+        await asyncio.wait_for(started.wait(), 1)
+        now[0] = 5
+        await asyncio.wait_for(controller.refresh_once(), 1)
+        client.change_presence.assert_awaited_with(activity="99.9tok/s｜waiting")
+        self.assertEqual(rates.await_count, 2)
+        await controller.stop()
+        self.assertTrue(cancelled.is_set())
+
 
 if __name__ == "__main__":
     unittest.main()

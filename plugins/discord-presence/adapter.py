@@ -71,6 +71,7 @@ class PresenceController:
         self._next_usage_fetch_at = 0.0
         self._usage_text: str | None = None
         self._usage_config: PresenceConfig | None = None
+        self._usage_task: asyncio.Task[None] | None = None
         self._task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
         self._last_text: str | None = None
@@ -120,26 +121,41 @@ class PresenceController:
     async def _fetch_activity(config: PresenceConfig) -> str:
         return await asyncio.wait_for(asyncio.to_thread(fetch_omlx_activity, config), timeout=5)
 
+    async def _collect_usage(self, config: PresenceConfig) -> None:
+        try:
+            snapshot = None if config.mode == "static" else await self._snapshot_fetcher(config)
+            text = render_presence(snapshot, config)
+            if config == self._usage_config:
+                self._usage_text = text
+                self._last_success_at = self._clock()
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            logger.warning("Discord presence data unavailable (%s)", type(exc).__name__)
+
+    async def _stop_usage_fetch(self) -> None:
+        task, self._usage_task = self._usage_task, None
+        if task is not None:
+            if not task.done():
+                task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
     async def _refresh_omlx_presence(self, config: PresenceConfig) -> None:
         # oMLX polling must continue even when the Codex usage API is failing,
         # cached, or this Hermes gateway has no active agents.
         activity_task = asyncio.create_task(self._activity_fetcher(config))
         try:
             now = self._clock()
-            if config != self._usage_config or now >= self._next_usage_fetch_at:
+            if config != self._usage_config:
+                await self._stop_usage_fetch()
                 self._usage_config = config
+                self._usage_text = None
+                self._next_usage_fetch_at = 0
+            if now >= self._next_usage_fetch_at and (self._usage_task is None or self._usage_task.done()):
                 self._next_usage_fetch_at = now + config.refresh_seconds
-                try:
-                    snapshot = None if config.mode == "static" else await self._snapshot_fetcher(config)
-                    self._usage_text = render_presence(snapshot, config)
-                    self._last_success_at = self._clock()
-                except asyncio.CancelledError:
-                    raise
-                except Exception as exc:
-                    logger.warning("Discord presence data unavailable (%s)", type(exc).__name__)
-            usage = self._usage_text
-            if usage is None or self._last_success_at is None or self._clock() - self._last_success_at > config.stale_after_seconds:
-                usage = config.fallback_text
+                # The HTTP usage helper may take twenty seconds. Keep it off
+                # the live oMLX loop so a slow read never pauses speed updates.
+                self._usage_task = asyncio.create_task(self._collect_usage(config))
             try:
                 activity = await activity_task
             except asyncio.CancelledError:
@@ -147,6 +163,9 @@ class PresenceController:
             except Exception as exc:
                 logger.warning("oMLX presence data unavailable (%s)", type(exc).__name__)
                 activity = "oMLX取得待ち"
+            usage = self._usage_text
+            if usage is None or self._last_success_at is None or self._clock() - self._last_success_at > config.stale_after_seconds:
+                usage = config.fallback_text
             text = (activity + "｜" + usage)[:config.max_length]
             changed = text != self._last_text
             # Discord permits five presence updates per twenty seconds. Keep
@@ -213,6 +232,7 @@ class PresenceController:
         task = self._task
         self._task = None
         if task is None:
+            await self._stop_usage_fetch()
             return
         self._stop_event.set()
         try:
@@ -230,6 +250,8 @@ class PresenceController:
         except asyncio.CancelledError:
             task.cancel()
             raise
+        finally:
+            await self._stop_usage_fetch()
 
 
 def create_presence_adapter_class(
