@@ -41,6 +41,9 @@ class PresenceConfig:
     timezone: str = "Asia/Tokyo"
     max_length: int = 120
     static_text: str = "Hermes"
+    omlx_base_url: str = ""
+    omlx_key_env: str = "OMLX_API_KEY"
+    omlx_refresh_seconds: int = 1
     validation_errors: tuple[str, ...] = field(default_factory=tuple)
 
     @classmethod
@@ -69,6 +72,9 @@ class PresenceConfig:
             timezone=str(raw.get("timezone", cls.timezone)).strip() or cls.timezone,
             max_length=max_length,
             static_text=str(raw.get("static_text", cls.static_text)),
+            omlx_base_url=str(raw.get("omlx_base_url", "")).strip().rstrip("/"),
+            omlx_key_env=str(raw.get("omlx_key_env", cls.omlx_key_env)).strip() or cls.omlx_key_env,
+            omlx_refresh_seconds=max(1, _as_int(raw.get("omlx_refresh_seconds"), cls.omlx_refresh_seconds)),
             validation_errors=tuple(errors),
         )
 

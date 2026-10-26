@@ -11,6 +11,7 @@ from .collector import (
     fetch_codex_snapshot,
 )
 from .presence_config import PresenceConfig, load_presence_config
+from .omlx import fetch_omlx_activity
 from .renderer import build_custom_activity, render_presence
 
 
@@ -58,6 +59,7 @@ class PresenceController:
         activity_factory: ActivityFactory = build_custom_activity,
         clock: Callable[[], float] = time.monotonic,
         sleep_fn: Callable[[float], Awaitable[None]] = asyncio.sleep,
+        activity_fetcher: Callable[[PresenceConfig], Awaitable[str]] | None = None,
     ) -> None:
         self._client = client
         self._config_loader = config_loader
@@ -65,11 +67,16 @@ class PresenceController:
         self._activity_factory = activity_factory
         self._clock = clock
         self._sleep = sleep_fn
+        self._activity_fetcher = activity_fetcher or self._fetch_activity
+        self._next_usage_fetch_at = 0.0
+        self._usage_text: str | None = None
+        self._usage_config: PresenceConfig | None = None
         self._task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
         self._last_text: str | None = None
         self._last_success_at: float | None = None
         self._has_published = False
+        self._last_publish_at: float | None = None
 
     @property
     def task(self) -> asyncio.Task[None] | None:
@@ -83,9 +90,11 @@ class PresenceController:
             return PresenceConfig()
         return config if isinstance(config, PresenceConfig) else PresenceConfig()
 
-    async def _publish(self, text: str | None) -> bool:
+    async def _publish(self, text: str | None, *, min_interval: float = 0) -> bool:
         if self._has_published and text == self._last_text:
             return True
+        if self._last_publish_at is not None and self._clock() - self._last_publish_at < min_interval:
+            return False
         try:
             activity = None if text is None else self._activity_factory(text)
             await self._client.change_presence(activity=activity)
@@ -96,6 +105,7 @@ class PresenceController:
             return False
         self._last_text = text
         self._has_published = True
+        self._last_publish_at = self._clock()
         return True
 
     async def _handle_failure(self, config: PresenceConfig) -> None:
@@ -106,11 +116,57 @@ class PresenceController:
                 return
         await self._publish(config.fallback_text[: config.max_length])
 
+    @staticmethod
+    async def _fetch_activity(config: PresenceConfig) -> str:
+        return await asyncio.wait_for(asyncio.to_thread(fetch_omlx_activity, config), timeout=5)
+
+    async def _refresh_omlx_presence(self, config: PresenceConfig) -> None:
+        # oMLX polling must continue even when the Codex usage API is failing,
+        # cached, or this Hermes gateway has no active agents.
+        activity_task = asyncio.create_task(self._activity_fetcher(config))
+        try:
+            now = self._clock()
+            if config != self._usage_config or now >= self._next_usage_fetch_at:
+                self._usage_config = config
+                self._next_usage_fetch_at = now + config.refresh_seconds
+                try:
+                    snapshot = None if config.mode == "static" else await self._snapshot_fetcher(config)
+                    self._usage_text = render_presence(snapshot, config)
+                    self._last_success_at = self._clock()
+                except asyncio.CancelledError:
+                    raise
+                except Exception as exc:
+                    logger.warning("Discord presence data unavailable (%s)", type(exc).__name__)
+            usage = self._usage_text
+            if usage is None or self._last_success_at is None or self._clock() - self._last_success_at > config.stale_after_seconds:
+                usage = config.fallback_text
+            try:
+                activity = await activity_task
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                logger.warning("oMLX presence data unavailable (%s)", type(exc).__name__)
+                activity = "oMLX取得待ち"
+            text = (activity + "｜" + usage)[:config.max_length]
+            changed = text != self._last_text
+            # Discord permits five presence updates per twenty seconds. Keep
+            # a five-second gap while polling native oMLX activity every second.
+            if await self._publish(text, min_interval=5) and changed:
+                logger.info("Discord presence published (oMLX=%s)", activity)
+        finally:
+            if not activity_task.done():
+                activity_task.cancel()
+            await asyncio.gather(activity_task, return_exceptions=True)
+
     async def refresh_once(self) -> PresenceConfig:
         config = self._load_config()
         if not config.enabled:
             if self._has_published and self._last_text is not None:
                 await self._publish(None)
+            return config
+
+        if config.omlx_base_url:
+            await self._refresh_omlx_presence(config)
             return config
 
         try:
@@ -134,7 +190,8 @@ class PresenceController:
             config = await self.refresh_once()
             if self._stop_event.is_set():
                 break
-            sleep_task = asyncio.create_task(self._sleep(config.refresh_seconds))
+            interval = min(config.refresh_seconds, config.omlx_refresh_seconds) if config.omlx_base_url else config.refresh_seconds
+            sleep_task = asyncio.create_task(self._sleep(interval))
             stop_task = asyncio.create_task(self._stop_event.wait())
             done, pending = await asyncio.wait(
                 {sleep_task, stop_task},

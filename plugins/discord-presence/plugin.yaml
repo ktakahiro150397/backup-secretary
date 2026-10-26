@@ -1,9 +1,9 @@
 name: discord-presence
 label: Discord Codex Usage Presence
 kind: platform
-version: 1.1.0
+version: 1.2.0
 description: >
-  Adds a plain-text Discord Custom Activity showing read-only Codex usage data.
+  Adds a plain-text Discord Custom Activity showing Codex usage and optional live oMLX throughput.
   Extends the bundled Discord adapter without modifying Hermes core files.
 author: local
 requires_env:

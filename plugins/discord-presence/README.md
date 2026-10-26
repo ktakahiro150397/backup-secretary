@@ -1,6 +1,6 @@
 # Discord Codex Usage Presence
 
-Hermesの既存Discord adapterを継承し、Discord BotのCustom ActivityへCodex利用量を表示するuser pluginです。
+Hermesの既存Discord adapterを継承し、Discord BotのCustom ActivityへCodex利用量と、任意でoMLXの現在の生成速度を表示するuser pluginです。
 
 ```text
 Codex残量 73%｜次回リセット 07/30 18:00
@@ -12,15 +12,34 @@ Codex残量 73%｜次回リセット 07/30 18:00
 
 このdirectoryが存在するだけではpluginは動きません。Hermes user pluginはopt-in方式です。
 
-```text
-Plugin files: installed for development
-plugins.enabled: not changed
-Discord presence config: not changed
-Gateway restart: not performed
-Live Discord update: not performed
+実機ごとの有効化・接続先はruntime configで管理します。以下の例は自動適用されません。
+
+## oMLXの生成速度を先頭へ表示する
+
+```yaml
+discord:
+  presence:
+    enabled: true
+    template: "Codex残量 {remaining_percent}%｜次回リセット {reset_time_jst}"
+    refresh_seconds: 900
+    stale_after_seconds: 2700
+    omlx_base_url: http://127.0.0.1:8000
+    omlx_key_env: OMLX_API_KEY
+    omlx_refresh_seconds: 1
 ```
 
-`hermes plugins list`では`discord-presence / not enabled`と表示されるのが、導入前の正常状態です。
+oMLXの既存admin権限付きキーを、端末内の環境変数またはprofileのprivate `.env`へ登録します。configやGitにはキーを保存しません。リモート接続には既存の認証と暗号化transportを使用してください。
+
+`/admin/api/activity`を毎秒取得し、`active_models.models[].generating[].tokens_per_second`を小数1桁で先頭へ表示します。複数requestが生成中ならnative値を合計します。Hermes自身のactive agents数やモデルには依存せず、他のクライアント・他モデルの生成も含めます。
+
+- 生成中: `99.9tok/s｜Codex残量 …`
+- 全体が待機中: `idle｜Codex残量 …`
+- load・prefill・queue中で生成値なし: `0.0tok/s｜Codex残量 …`
+- oMLXへ到達不能・認証失敗・不正応答: `oMLX取得待ち｜Codex残量 …`
+
+Codexは`refresh_seconds`で別にcacheし、そのAPIが失敗しても速度表示を続けます。速度は取得済みの過去平均を流用しません。Discordへは変化時に最短5秒間隔で送り、[公式の20秒に5回という制限](https://github.com/discord/discord-api-docs/blob/main/developers/events/gateway-events.mdx#update-presence)に余裕を持たせます。同値の再送は抑止します。毎秒は取得間隔であり、API応答待ちやDiscord側の伝播時間は別です。
+
+成功した更新は`Discord presence published (oMLX=...)`として数値または状態だけをlogに残します。APIキー、Codexの残量、request ID、prompt、response本文は記録しません。`omlx_base_url`を空にすると従来の表示・取得間隔へ戻ります。
 
 ## 安全設計
 
@@ -31,7 +50,7 @@ Live Discord update: not performed
 - Hermesのcredential poolとHTTP usage APIを使うため、別のCodex CLI OAuthや認証ファイルを持ちません。
 - reset creditの消費、認証変更、thread作成等は行いません。
 - credential、account ID、plan、balance、raw responseを表示・log出力しません。
-- 更新間隔は最低60秒、default 300秒です。
+- Codex取得間隔は最低60秒、default 300秒です。任意のoMLX取得は別周期です。
 - 同じ文言はDiscordへ再送しません。
 - Codex取得失敗時もDiscord chat機能を停止しません。
 - 一時失敗時は前回値を維持し、default 15分後にfallback表示へ移行します。
